@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which Uni's Worth It?</title>
+<meta name="description" content="Real outcomes from real grads: how long it took to land a job in the field, and what they started on.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23FFC83D'/%3E%3Cpath d='M7 12l9-5 9 5-9 5z' fill='%23121212'/%3E%3Cpath d='M11 15v5c3 2.5 7 2.5 10 0v-5' fill='none' stroke='%23121212' stroke-width='2.4'/%3E%3C/svg%3E">
+<style>
+:root{
+  --sun:#FFC83D; --sun-deep:#F5B400; --ink:#121212; --ink-2:#3b3b3b; --muted:#6b6b6b;
+  --paper:#FFFCF4; --card:#ffffff; --line:#ece6d6;
+  --good:#17804a; --good-bg:#e3f5ea; --mid:#b26a00; --mid-bg:#fff1d6; --slow:#c2410c; --slow-bg:#ffe7dc;
+  --radius:18px; --shadow:0 1px 0 rgba(0,0,0,.04), 0 6px 18px -10px rgba(0,0,0,.25);
+  --head:'Schibsted Grotesk', system-ui, sans-serif; --body:'DM Sans', system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--head);letter-spacing:-.02em;line-height:1.05;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--ink);border-radius:999px;padding:10px 20px;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;transition:transform .12s, box-shadow .12s, background .12s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 var(--ink)}
+.btn:active{transform:none;box-shadow:none}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-light{background:#fff;color:var(--ink)}
+.btn-ghost{background:transparent;border-color:transparent;padding:10px 12px}
+.btn-ghost:hover{box-shadow:none;text-decoration:underline}
+.btn-lg{padding:14px 26px;font-size:17px}
+.btn-block{width:100%}
+.btn:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #2f5bff;outline-offset:2px}
+
+/* ---------- header ---------- */
+header.top{position:sticky;top:0;z-index:40;background:var(--sun);border-bottom:2px solid var(--ink)}
+.top .wrap{display:flex;align-items:center;gap:16px;height:66px}
+.logo{display:flex;align-items:center;gap:10px;white-space:nowrap;font-family:var(--head);font-weight:900;font-size:19px;text-decoration:none;letter-spacing:-.02em}
+.logo-mark{width:30px;height:30px;border-radius:8px;background:var(--ink);display:grid;place-items:center}
+.logo em{font-style:normal;background:#fff;border:2px solid var(--ink);border-radius:8px;padding:0 6px;margin-left:2px}
+nav.links{display:flex;gap:4px;margin-left:auto}
+nav.links a{font-weight:600;font-size:15px;text-decoration:none;padding:8px 12px;border-radius:999px}
+nav.links a:hover{background:rgba(0,0,0,.07)}
+nav.links a.active{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+.auth-slot{display:flex;gap:8px;align-items:center}
+.user-chip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 6px 4px 4px;font-weight:600;font-size:14px;cursor:pointer}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--sun);display:grid;place-items:center;font-weight:800;font-size:13px;font-family:var(--head)}
+.menu{position:absolute;right:20px;top:62px;background:#fff;border:2px solid var(--ink);border-radius:14px;box-shadow:0 6px 0 var(--ink);padding:8px;min-width:220px;display:none}
+.menu.open{display:block}
+.menu .meta{padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:6px;font-size:13px;color:var(--muted)}
+.menu .meta b{display:block;color:var(--ink);font-size:14px;word-break:break-all}
+.menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 10px;border-radius:8px;cursor:pointer;font-weight:600}
+.menu button:hover{background:var(--paper)}
+
+/* ---------- hero ---------- */
+.hero{background:var(--sun);border-bottom:2px solid var(--ink);padding:72px 0 0;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:end}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:5px 12px;font-weight:700;font-size:13px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--good)}
+.hero h1{font-size:clamp(40px,6.4vw,78px);font-weight:900;margin:22px 0 18px;line-height:1.14}
+.hero h1 .hl{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:0 .14em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.hero p.lead{font-size:19px;max-width:520px;color:var(--ink-2);margin:0 0 28px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:28px;margin:34px 0 56px;flex-wrap:wrap}
+.hero-stats div{font-size:14px;color:var(--ink-2)}
+.hero-stats b{display:block;font-family:var(--head);font-size:28px;color:var(--ink);font-weight:900}
+.hero-stack{position:relative;height:100%;min-height:380px}
+.float-card{position:absolute;left:0;right:0;background:#fff;border:2px solid var(--ink);border-radius:var(--radius);padding:16px 18px;box-shadow:0 6px 0 var(--ink)}
+.float-card:nth-child(1){bottom:200px;transform:rotate(-2.5deg);left:30px}
+.float-card:nth-child(2){bottom:100px;transform:rotate(1.5deg);right:20px}
+.float-card:nth-child(3){bottom:-8px;transform:rotate(-1deg);left:10px;right:40px}
+
+/* ---------- result card ---------- */
+.rcard{background:var(--card);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:1fr auto;gap:6px 18px;align-items:center}
+.rcard .t{font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tick{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--good);color:#fff;font-size:11px;font-weight:900}
+.rcard .meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted)}
+.rcard .meta span{display:inline-flex;align-items:center;gap:5px}
+.rcard .right{text-align:right;grid-row:1 / span 2;grid-column:2}
+.months{font-family:var(--head);font-weight:900;font-size:24px;line-height:1}
+.months.good{color:var(--good)} .months.mid{color:var(--mid)} .months.slow{color:var(--slow)}
+.sub{font-size:12px;color:var(--muted);margin-top:3px}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--paper);border:1px solid var(--line);color:var(--ink-2)}
+.pill.you{background:var(--ink);color:var(--sun);border-color:var(--ink)}
+
+/* ---------- sections ---------- */
+section.block{padding:84px 0}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:28px;flex-wrap:wrap}
+.sec-head h2{font-size:clamp(30px,4vw,46px);font-weight:900}
+.sec-head p{margin:8px 0 0;color:var(--muted);max-width:560px}
+.kicker{font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-bottom:10px}
+
+.course-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ccard{background:#fff;border:2px solid var(--ink);border-radius:var(--radius);padding:20px;text-decoration:none;display:flex;flex-direction:column;gap:14px;transition:transform .12s, box-shadow .12s;cursor:pointer;text-align:left}
+.ccard:hover{transform:translateY(-3px);box-shadow:0 5px 0 var(--ink)}
+.ccard h3{font-size:21px;font-weight:800}
+.ccard .row{display:flex;justify-content:space-between;align-items:end}
+.ccard .big{font-family:var(--head);font-weight:900;font-size:34px;line-height:1}
+.ccard small{color:var(--muted);font-size:13px}
+.bar{height:8px;border-radius:99px;background:var(--paper);border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+.step{background:#fff;border:2px solid var(--ink);border-radius:var(--radius);padding:24px}
+.step::before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--sun);border:2px solid var(--ink);font-family:var(--head);font-weight:900;font-size:20px;margin-bottom:16px}
+.step h3{font-size:20px;margin-bottom:8px}
+.step p{margin:0;color:var(--ink-2)}
+
+.who{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.who-card{border-radius:var(--radius);padding:24px;border:2px solid var(--ink);background:#fff}
+.who-card.feat{background:var(--ink);color:#fff}
+.who-card.feat p{color:#d6d6d6}
+.who-card h3{font-size:22px;margin:10px 0 8px}
+.who-card p{margin:0 0 14px;color:var(--ink-2)}
+.who-card .tag{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.who-card.feat .tag{color:var(--sun)}
+
+.cta-band{background:var(--ink);color:#fff;border-radius:28px;padding:48px;display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap}
+.cta-band h2{font-size:clamp(28px,3.6vw,42px);font-weight:900;max-width:580px}
+.cta-band p{color:#cfcfcf;margin:10px 0 0;max-width:520px}
+.cta-band .btn-light{border-color:#fff}
+
+footer{border-top:2px solid var(--ink);padding:36px 0 48px;margin-top:20px;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+/* ---------- database page ---------- */
+.db-hero{background:var(--sun);border-bottom:2px solid var(--ink);padding:48px 0 36px}
+.db-hero h1{font-size:clamp(36px,5vw,58px);font-weight:900}
+.db-hero p{margin:10px 0 0;color:var(--ink-2);font-size:17px}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:10px;margin-top:26px;background:#fff;border:2px solid var(--ink);border-radius:var(--radius);padding:14px}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--ink-2);margin:0 0 5px 2px}
+.field input,.field select{width:100%;border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--paper);min-height:44px}
+.field input:focus,.field select:focus{border-color:var(--ink);outline:none}
+.filter-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.toggle{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:14px;cursor:pointer;user-select:none}
+.toggle input{appearance:none;width:42px;height:24px;border-radius:99px;background:#d9d3c4;border:2px solid var(--ink);position:relative;cursor:pointer;transition:background .15s;margin:0}
+.toggle input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--ink);transition:left .15s;box-sizing:border-box}
+.toggle input:checked{background:var(--good)}
+.toggle input:checked::after{left:20px}
+.link-btn{background:none;border:0;padding:0;font-weight:700;text-decoration:underline;cursor:pointer;font-size:14px}
+
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:28px 0 22px}
+.stat{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:16px 18px}
+.stat b{display:block;font-family:var(--head);font-weight:900;font-size:30px;line-height:1.05}
+.stat span{font-size:13px;color:var(--muted)}
+.list-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.list-head select{border:2px solid var(--ink);border-radius:999px;padding:7px 12px;background:#fff;font-weight:600}
+.panel{background:var(--sun);border:2px solid var(--ink);border-radius:26px;padding:14px;display:flex;flex-direction:column;gap:10px;position:relative}
+.panel .rcard{border:2px solid var(--ink)}
+.lock-wrap{position:relative}
+.lock-wrap .blurred{filter:blur(5px);pointer-events:none;user-select:none;display:flex;flex-direction:column;gap:10px;opacity:.85}
+.lock{position:absolute;inset:0;display:grid;place-items:center;padding:16px}
+.lock-card{background:#fff;border:2px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);padding:26px;text-align:center;max-width:430px}
+.lock-card h3{font-size:24px;margin:8px 0}
+.lock-card p{margin:0 0 18px;color:var(--ink-2)}
+.empty{background:#fff;border:2px dashed var(--ink);border-radius:14px;padding:36px;text-align:center}
+.more{display:flex;justify-content:center;padding-top:6px}
+.note{font-size:13px;color:var(--muted);margin-top:14px;text-align:center}
+.sample-badge{display:inline-flex;gap:6px;align-items:center;background:#fff;border:2px dashed var(--ink);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
+
+/* ---------- share page ---------- */
+.share-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:start}
+.share-intro h1{font-size:clamp(36px,5vw,56px);font-weight:900;margin:12px 0 16px}
+.share-intro p{color:var(--ink-2);font-size:17px}
+.checks{list-style:none;padding:0;margin:22px 0;display:grid;gap:10px}
+.checks li{display:flex;gap:10px;align-items:center;font-weight:600}
+.form-card{background:#fff;border:2px solid var(--ink);border-radius:24px;padding:26px;box-shadow:0 6px 0 var(--ink)}
+.q{margin-bottom:20px}
+.q > label,.q > .ql{display:block;font-weight:700;margin-bottom:8px}
+.q .hint{font-weight:400;color:var(--muted);font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{color:var(--slow);font-size:13px;font-weight:600;margin-top:6px;display:none}
+.err.show{display:block}
+.result-card{background:var(--ink);color:#fff;border-radius:24px;padding:30px}
+.result-card h2{font-size:34px;font-weight:900;margin-bottom:10px}
+.result-card p{color:#d6d6d6}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+.compare div{background:#232323;border-radius:16px;padding:16px}
+.compare b{display:block;font-family:var(--head);font-size:30px;color:var(--sun)}
+.compare span{font-size:13px;color:#bdbdbd}
+
+/* ---------- modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(18,18,18,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+.overlay.open{display:flex}
+.modal{background:#fff;border:2px solid var(--ink);border-radius:24px;box-shadow:0 8px 0 var(--ink);width:100%;max-width:460px;max-height:calc(100vh - 32px);overflow:auto;padding:26px;position:relative}
+.modal h2{font-size:28px;font-weight:900;margin-bottom:6px}
+.modal .sub2{color:var(--muted);margin:0 0 18px}
+.x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:2px solid var(--ink);background:#fff;cursor:pointer;font-size:18px;font-weight:700;line-height:1}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:4px;margin-bottom:20px}
+.tabs button{border:0;background:none;border-radius:999px;padding:8px;font-weight:700;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:#fff}
+.roles{display:grid;gap:8px}
+.role{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--line);border-radius:14px;padding:12px;cursor:pointer;text-align:left;background:#fff}
+.role[aria-pressed="true"]{border-color:var(--ink);background:#fff8e3}
+.role .ico{font-size:22px;line-height:1}
+.role b{display:block}
+.role small{color:var(--muted)}
+.mock-note{font-size:12px;color:var(--muted);text-align:center;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:999px;font-weight:600;opacity:0;transition:all .25s;z-index:200;pointer-events:none;max-width:calc(100vw - 32px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.page{display:none}
+.page.active{display:block}
+.about p{max-width:720px;font-size:17px;color:var(--ink-2)}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-stack{min-height:330px;margin-top:-10px}
+  .course-grid,.steps,.who{grid-template-columns:1fr 1fr}
+  .filters{grid-template-columns:1fr 1fr}
+  .filters .field:first-child{grid-column:1 / -1}
+  .summary{grid-template-columns:1fr 1fr}
+  .share-grid{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  nav.links{display:none}
+  .auth-slot{margin-left:auto}
+  .logo{font-size:16px}
+  .logo .logo-mark{display:none}
+  .hero-stack{display:none}
+  .hero-stats{margin-bottom:40px}
+  .logo em{padding:0 4px}
+  .hero{padding-top:44px}
+  .course-grid,.steps,.who{grid-template-columns:1fr}
+  .cta-band{padding:30px}
+  .btn{padding:9px 15px;font-size:14px}
+  .btn-lg{padding:13px 22px;font-size:16px}
+  .rcard{grid-template-columns:1fr}
+  .rcard .right{grid-row:auto;grid-column:auto;text-align:left;display:flex;align-items:baseline;gap:10px}
+  .two,.compare{grid-template-columns:1fr}
+  section.block{padding:60px 0}
+  .float-card:nth-child(1){left:0}
+  .float-card:nth-child(3){right:0}
+  .mobile-nav{display:flex!important}
+}
+.mobile-nav{display:none;gap:6px;overflow-x:auto;padding:8px 20px;background:var(--sun);border-bottom:2px solid var(--ink);position:sticky;top:66px;z-index:39}
+.mobile-nav a{flex:none;font-weight:700;font-size:14px;text-decoration:none;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:5px 12px}
+.mobile-nav a.active{background:var(--ink);color:#fff}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#/" aria-label="Which Uni's Worth It? home">
+      <span class="logo-mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 32 32"><path d="M4 12l12-6 12 6-12 6z" fill="#FFC83D"/><path d="M9 15v6c4 3 10 3 14 0v-6" fill="none" stroke="#FFC83D" stroke-width="2.6"/></svg></span>
+      <span>Which Uni's <em>Worth It?</em></span>
+    </a>
+    <nav class="links" aria-label="Main">
+      <a href="#/database" data-nav="database">Database</a>
+      <a href="#/how" data-nav="how">How it works</a>
+      <a href="#/about" data-nav="about">About</a>
+    </nav>
+    <div class="auth-slot" id="authSlot"></div>
+  </div>
+  <div class="menu" id="userMenu" role="menu"></div>
+</header>
+<nav class="mobile-nav" aria-label="Main (mobile)">
+  <a href="#/" data-nav="home">Home</a>
+  <a href="#/database" data-nav="database">Database</a>
+  <a href="#/share" data-nav="share">Share result</a>
+  <a href="#/how" data-nav="how">How it works</a>
+  <a href="#/about" data-nav="about">About</a>
+</nav>
+
+<main>
+<!-- ================= HOME ================= -->
+<div class="page" id="page-home">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow"><span class="dot"></span>Real outcomes from verified grads</span>
+        <h1>Find out what your degree <span class="hl">really</span> leads&nbsp;to.</h1>
+        <p class="lead">How long grads took to land a job in their field, what they started on, and how they got it. Shared anonymously by people who've been there.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-dark btn-lg" href="#/database">Explore the database →</a>
+          <a class="btn btn-light btn-lg" href="#/share">Share your result</a>
+        </div>
+        <div class="hero-stats">
+          <div><b id="statResults">0</b>grad results</div>
+          <div><b id="statCourses">0</b>courses</div>
+          <div><b id="statUnis">0</b>universities</div>
+        </div>
+      </div>
+      <div class="hero-stack" id="heroStack" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="kicker">Time to first job in the field</div>
+          <h2>Which courses land jobs fastest?</h2>
+          <p>Median months from graduating to a job in the field, across all universities.</p>
+        </div>
+        <a class="btn btn-light" href="#/database">See all courses →</a>
+      </div>
+      <div class="course-grid" id="courseGrid"></div>
+      <p class="note"><span class="sample-badge">⚑ Sample data for this demo</span></p>
+    </div>
+  </section>
+
+  <section class="block" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><div><div class="kicker">Who it's for</div><h2>Grads share. Students learn.</h2></div></div>
+      <div class="who">
+        <div class="who-card feat">
+          <span class="tag">Graduates</span>
+          <h3>Share your result, unlock everything</h3>
+          <p>Four quick questions, no name needed. Help the next student choose with real data.</p>
+          <a class="btn btn-light" href="#/share">Share your result</a>
+        </div>
+        <div class="who-card">
+          <span class="tag">Current uni students</span>
+          <h3>See where your course leads</h3>
+          <p>Compare outcomes for your degree across unis, and see how other grads got their first job.</p>
+          <button class="btn btn-dark" data-open-auth="signup">Sign up free</button>
+        </div>
+        <div class="who-card">
+          <span class="tag">Future students</span>
+          <h3>Choose with your eyes open</h3>
+          <p>Before you pick a uni, see how quickly its grads actually get hired, in plain numbers.</p>
+          <button class="btn btn-dark" data-open-auth="signup">Sign up free</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" style="padding-top:0">
+    <div class="wrap">
+      <div class="cta-band">
+        <div>
+          <h2>Graduated in the last 5 years?</h2>
+          <p>Takes 60 seconds. Your result is shown only as part of the group, never with your name or email.</p>
+        </div>
+        <a class="btn btn-light btn-lg" href="#/share">Share your result →</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= DATABASE ================= -->
+<div class="page" id="page-database">
+  <section class="db-hero">
+    <div class="wrap">
+      <h1>The outcomes database</h1>
+      <p>Search real grad results by course, university and year.</p>
+      <div class="filters" role="search">
+        <div class="field">
+          <label for="fText">Course or keyword</label>
+          <input id="fText" type="search" placeholder="e.g. Nursing, Data Science" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fUni">University</label>
+          <select id="fUni"><option value="">All universities</option></select>
+        </div>
+        <div class="field">
+          <label for="fField">Field</label>
+          <select id="fField"><option value="">All fields</option></select>
+        </div>
+        <div class="field">
+          <label for="fYear">Graduated</label>
+          <select id="fYear">
+            <option value="">Any year</option>
+            <option value="2">Last 2 years</option>
+            <option value="5">Last 5 years</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fType">Student type</label>
+          <select id="fType">
+            <option value="">All students</option>
+            <option value="Domestic">Domestic</option>
+            <option value="International">International</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-row">
+        <label class="toggle"><input type="checkbox" id="fVerified" checked> Verified grads only</label>
+        <button class="link-btn" id="fReset">Reset filters</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom:40px">
+    <div class="summary" id="summary"></div>
+    <div class="list-head">
+      <span id="countLabel"></span>
+      <label>Sort by
+        <select id="fSort" aria-label="Sort results">
+          <option value="recent">Most recent</option>
+          <option value="fast">Fastest to a job</option>
+          <option value="salary">Highest starting salary</option>
+        </select>
+      </label>
+    </div>
+    <div class="panel" id="resultPanel"></div>
+    <p class="note">To protect privacy, salaries are shown as bands and no names or emails are ever displayed. <span class="sample-badge">⚑ Sample data</span></p>
+  </section>
+</div>
+
+<!-- ================= SHARE ================= -->
+<div class="page" id="page-share">
+  <section class="block">
+    <div class="wrap share-grid">
+      <div class="share-intro">
+        <div class="kicker">For grads</div>
+        <h1>Share your result in 60 seconds.</h1>
+        <p>A few quick questions. As soon as you submit, you'll see how your result compares with others from the same course.</p>
+        <ul class="checks">
+          <li><span class="tick">✓</span>Never shown with your name or email</li>
+          <li><span class="tick">✓</span>See how you compare, instantly</li>
+          <li><span class="tick">✓</span>Help the next student choose with real data</li>
+        </ul>
+      </div>
+      <div id="shareSlot"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= HOW ================= -->
+<div class="page" id="page-how">
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head"><div><div class="kicker">How it works</div><h2>Real numbers, from real grads.</h2><p>No marketing brochures, no cherry-picked case studies. Just what happened after graduation.</p></div></div>
+      <div class="steps">
+        <div class="step"><h3>Sign up free</h3><p>Tell us if you're a graduate, a current student or still choosing. It takes seconds.</p></div>
+        <div class="step"><h3>Grads share their result</h3><p>Course, uni, year, how long it took to land a job in the field, and how they got it.</p></div>
+        <div class="step"><h3>Everyone gets clarity</h3><p>Search by course and uni to see typical time to a job and starting salary bands.</p></div>
+      </div>
+      <div class="cta-band" style="margin-top:40px">
+        <div><h2>Ready to look?</h2><p>Browse outcomes by course and university.</p></div>
+        <a class="btn btn-light btn-lg" href="#/database">Explore the database →</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= ABOUT ================= -->
+<div class="page about" id="page-about">
+  <section class="block">
+    <div class="wrap">
+      <div class="kicker">About</div>
+      <h2 style="font-size:clamp(32px,4.5vw,52px);font-weight:900;margin-bottom:22px">Every student deserves to know what a degree really leads to.</h2>
+      <p>Choosing a uni is one of the biggest financial decisions most people make, yet the information available is mostly marketing. Which Uni's Worth It? collects outcomes straight from graduates: how long it took them to find work in their field, roughly what they started on, and what actually got them hired.</p>
+      <p>We're independent and not affiliated with any university. Results are shown only in groups, and salaries only as bands, so no one can be identified.</p>
+      <p style="margin-top:28px"><span class="sample-badge">⚑ This is an early demo. All figures shown are sample data.</span></p>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b style="color:var(--ink)">Which Uni's Worth It?</b> · Independent, not affiliated with any university.</span>
+    <span>Demo build · sample data only</span>
+  </div>
+</footer>
+
+<!-- ================= AUTH MODAL ================= -->
+<div class="overlay" id="authOverlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <button class="x" id="authClose" aria-label="Close">×</button>
+    <h2 id="authTitle">Create your free account</h2>
+    <p class="sub2" id="authSub">Unlock every result in the database.</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabSignup" aria-selected="true">Sign up</button>
+      <button role="tab" id="tabLogin" aria-selected="false">Log in</button>
+    </div>
+    <form id="authForm" novalidate>
+      <div id="roleBlock" class="q">
+        <span class="ql">I'm a…</span>
+        <div class="roles" id="roles">
+          <button type="button" class="role" data-role="graduate" aria-pressed="true"><span class="ico">🎓</span><span><b>Graduate</b><small>Finished in the last few years. Share your result to unlock everything.</small></span></button>
+          <button type="button" class="role" data-role="student" aria-pressed="false"><span class="ico">📚</span><span><b>Current uni student</b><small>See where your course leads.</small></span></button>
+          <button type="button" class="role" data-role="future" aria-pressed="false"><span class="ico">🧭</span><span><b>Future student</b><small>Still choosing a uni or course.</small></span></button>
+        </div>
+      </div>
+      <div class="q field">
+        <label for="aEmail">Email</label>
+        <input id="aEmail" type="email" placeholder="you@example.com" autocomplete="email">
+        <div class="err" id="aEmailErr">Enter a valid email address.</div>
+      </div>
+      <div class="q field">
+        <label for="aPass">Password</label>
+        <input id="aPass" type="password" placeholder="At least 8 characters" autocomplete="new-password">
+        <div class="err" id="aPassErr">Password needs at least 8 characters.</div>
+      </div>
+      <button class="btn btn-dark btn-block btn-lg" type="submit" id="authSubmit">Create account</button>
+      <p class="mock-note">Demo sign-up: nothing is stored or sent. Email verification comes later.</p>
+    </form>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ sample data (fictional universities) ============ */
+const UNIS = ["Banksia University","Kestrel University","Marlow Institute of Technology","Wattle Hill University","Eastgate University","Harbourline University"];
+const COURSES = [
+  {c:"Nursing",f:"Health",m:2,s:76},{c:"Teaching (Primary)",f:"Education",m:2,s:75},{c:"Pharmacy",f:"Health",m:3,s:70},
+  {c:"Social Work",f:"Health",m:4,s:72},{c:"Civil Engineering",f:"Engineering",m:4,s:80},{c:"Computer Science",f:"IT",m:5,s:82},
+  {c:"Data Science",f:"IT",m:5,s:85},{c:"Mechanical Engineering",f:"Engineering",m:5,s:78},{c:"Accounting",f:"Business",m:6,s:66},
+  {c:"Commerce (Finance)",f:"Business",m:7,s:68},{c:"Marketing",f:"Business",m:8,s:60},{c:"Law",f:"Law",m:9,s:74},
+  {c:"Architecture",f:"Design",m:9,s:62},{c:"Psychology",f:"Health",m:11,s:58},{c:"Biomedical Science",f:"Science",m:12,s:55}
+];
+const ROUTES = ["Grad program","Internship conversion","Referral","Cold applications","Placement employer","Recruiter"];
+const THIS_YEAR = 2026;
+
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const r = rng(20261012);
+const pick = a => a[Math.floor(r()*a.length)];
+
+let DATA = [];
+(function gen(){
+  let id = 1;
+  for (let i=0;i<260;i++){
+    const co = COURSES[Math.floor(r()*COURSES.length)];
+    const uni = UNIS[Math.floor(r()*UNIS.length)];
+    const uniBias = (UNIS.indexOf(uni)-2.5)*0.5;          // some unis slightly faster/slower
+    const intl = r() < 0.32;
+    let months = co.m + uniBias + (intl?3:0) + (r()-0.45)*co.m*1.3;
+    if (r() < 0.12) months = 0;                            // got job before graduating
+    months = Math.max(0, Math.round(months));
+    let sal = co.s*(intl?0.95:1)*(0.85+r()*0.32) + (months===0?3:0);
+    const level = r() < 0.72 ? "Undergrad" : "Postgrad";
+    if (level==="Postgrad") sal += 6;
+    DATA.push({
+      id:id++, course:co.c, field:co.f, uni, year: THIS_YEAR-1-Math.floor(r()*6),
+      level, type: intl?"International":"Domestic", months, salary: Math.round(sal),
+      inField: r()<0.78?"Yes":(r()<0.6?"Partly":"No"),
+      route: months===0 ? pick(["Grad program","Internship conversion","Placement employer"]) : pick(ROUTES),
+      verified: r() < 0.86, daysAgo: Math.floor(r()*240), you:false
+    });
+  }
+})();
+
+/* ============ helpers ============ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const median = a => { if(!a.length) return null; const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; };
+const band = k => { const lo=Math.floor(k/10)*10; return `$${lo}–${lo+10}k`; };
+const monthsText = m => m===0 ? "Before grad" : (m===1 ? "1 month" : `${Math.round(m)} months`);
+const speed = m => m<=4 ? "good" : (m<=8 ? "mid" : "slow");
+const speedColor = m => ({good:"var(--good)",mid:"var(--mid)",slow:"var(--slow)"})[speed(m)];
+const ago = d => d<1?"today":d<30?`${d} days ago`:d<60?"1 month ago":`${Math.floor(d/30)} months ago`;
+const MIN_GROUP = 3;
+
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),2600); }
+
+/* ============ session (demo only — kept in this tab) ============ */
+let user = null;
+try { const s = sessionStorage.getItem("wuwi_user"); if (s) user = JSON.parse(s); } catch(e){}
+function saveUser(){ try { user ? sessionStorage.setItem("wuwi_user", JSON.stringify(user)) : sessionStorage.removeItem("wuwi_user"); } catch(e){} }
+
+function renderAuthSlot(){
+  const slot = $("#authSlot"), menu = $("#userMenu");
+  if (!user){
+    slot.innerHTML = `<button class="btn btn-ghost" data-open-auth="login">Log in</button><button class="btn btn-dark" data-open-auth="signup">Sign up</button>`;
+    menu.classList.remove("open"); menu.innerHTML = "";
+  } else {
+    const roleName = {graduate:"Graduate",student:"Current student",future:"Future student"}[user.role];
+    slot.innerHTML = `<a class="btn btn-dark" href="#/share" ${user.role!=="graduate"?'style="display:none"':''}>Share result</a>
+      <button class="user-chip" id="chip" aria-haspopup="menu" aria-expanded="false"><span class="avatar">${esc(user.email[0].toUpperCase())}</span><span class="chip-label">${esc(roleName)}</span></button>`;
+    menu.innerHTML = `<div class="meta">Signed in as<b>${esc(user.email)}</b></div>
+      ${user.role==="graduate"?`<button data-go="#/share">${user.shared?"View my result":"Share my result"}</button>`:""}
+      <button data-go="#/database">Browse the database</button>
+      <button id="logout">Log out</button>`;
+    $("#chip").onclick = e => { e.stopPropagation(); const o=menu.classList.toggle("open"); e.currentTarget.setAttribute("aria-expanded",o); };
+  }
+}
+document.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]"); if (go){ location.hash = go.dataset.go; $("#userMenu").classList.remove("open"); }
+  if (e.target.id==="logout"){ user=null; saveUser(); renderAll(); toast("Logged out"); }
+  const oa = e.target.closest("[data-open-auth]"); if (oa) openAuth(oa.dataset.openAuth);
+  if (!e.target.closest("#userMenu") && !e.target.closest("#chip")) $("#userMenu").classList.remove("open");
+});
+
+/* ============ auth modal (mock) ============ */
+let authMode = "signup", chosenRole = "graduate", afterAuth = null;
+function openAuth(mode, then){
+  afterAuth = then || null; setMode(mode || "signup");
+  $("#authOverlay").classList.add("open"); $("#authOverlay").setAttribute("aria-hidden","false");
+  setTimeout(()=>$("#aEmail").focus(), 50);
+}
+function closeAuth(){ $("#authOverlay").classList.remove("open"); $("#authOverlay").setAttribute("aria-hidden","true"); }
+function setMode(m){
+  authMode = m;
+  $("#tabSignup").setAttribute("aria-selected", m==="signup"); $("#tabLogin").setAttribute("aria-selected", m==="login");
+  $("#roleBlock").style.display = m==="signup" ? "" : "none";
+  $("#authTitle").textContent = m==="signup" ? "Create your free account" : "Welcome back";
+  $("#authSub").textContent = m==="signup" ? "Unlock every result in the database." : "Log in to see the full database.";
+  $("#authSubmit").textContent = m==="signup" ? "Create account" : "Log in";
+  $("#aPass").setAttribute("autocomplete", m==="signup" ? "new-password" : "current-password");
+  document.querySelectorAll("#authForm .err").forEach(x=>x.classList.remove("show"));
+}
+$("#tabSignup").onclick = ()=>setMode("signup");
+$("#tabLogin").onclick = ()=>setMode("login");
+$("#authClose").onclick = closeAuth;
+$("#authOverlay").addEventListener("click", e => { if (e.target.id==="authOverlay") closeAuth(); });
+document.addEventListener("keydown", e => { if (e.key==="Escape") closeAuth(); });
+document.querySelectorAll(".role").forEach(b => b.onclick = () => {
+  chosenRole = b.dataset.role; document.querySelectorAll(".role").forEach(x=>x.setAttribute("aria-pressed", x===b));
+});
+$("#authForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const email = $("#aEmail").value.trim(), pass = $("#aPass").value;
+  const okE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email), okP = pass.length >= 8;
+  $("#aEmailErr").classList.toggle("show", !okE); $("#aPassErr").classList.toggle("show", !okP);
+  if (!okE || !okP) return;
+  user = { email, role: authMode==="signup" ? chosenRole : (user?.role || "graduate"), shared:false };
+  saveUser(); closeAuth(); $("#authForm").reset();
+  toast(authMode==="signup" ? "Account created. Welcome!" : "Logged in");
+  if (afterAuth) location.hash = afterAuth;
+  else if (authMode==="signup" && user.role==="graduate") location.hash = "#/share";
+  renderAll();
+});
+
+/* ============ home ============ */
+function renderHome(){
+  const v = DATA.filter(d=>d.verified);
+  $("#statResults").textContent = v.length.toLocaleString();
+  $("#statCourses").textContent = new Set(v.map(d=>d.course)).size;
+  $("#statUnis").textContent = new Set(v.map(d=>d.uni)).size;
+
+  const sample = [...v].sort((a,b)=>a.daysAgo-b.daysAgo).slice(0,3);
+  $("#heroStack").innerHTML = sample.map(d=>`<div class="float-card">${cardInner(d)}</div>`).join("");
+
+  const by = {};
+  v.forEach(d => (by[d.course] ||= []).push(d));
+  const rows = Object.entries(by).map(([c,a])=>({c, n:a.length, m:median(a.map(x=>x.months)), s:median(a.map(x=>x.salary))}))
+    .sort((a,b)=>a.m-b.m).slice(0,6);
+  const max = 14;
+  $("#courseGrid").innerHTML = rows.map(x=>`
+    <a class="ccard" href="#/database?q=${encodeURIComponent(x.c)}">
+      <div class="row"><h3>${esc(x.c)}</h3><span class="pill">${x.n} results</span></div>
+      <div class="row"><div><div class="big" style="color:${speedColor(x.m)}">${x.m===0?"0":Math.round(x.m)}<span style="font-size:18px"> mo</span></div><small>median to first job</small></div>
+      <div style="text-align:right"><b style="font-size:18px">${band(x.s)}</b><br><small>typical start</small></div></div>
+      <div class="bar"><i style="width:${Math.max(6,Math.min(100,x.m/max*100))}%;background:${speedColor(x.m)}"></i></div>
+    </a>`).join("");
+}
+
+function cardInner(d){
+  return `<div class="rcard" style="padding:0">
+    <div class="t">${esc(d.course)} ${d.verified?'<span class="tick" title="Verified grad">✓</span>':''} ${d.you?'<span class="pill you">You</span>':''}</div>
+    <div class="right"><div class="months ${speed(d.months)}">${monthsText(d.months)}</div><div class="sub">to first job in field</div></div>
+    <div class="meta"><span>🏛 ${esc(d.uni)}</span><span>🎓 ${d.year}</span><span>💵 ${band(d.salary)}</span></div>
+  </div>`;
+}
+
+/* ============ database ============ */
+const PAGE = 12;
+let shown = PAGE;
+function fillSelect(sel, items){ items.forEach(v=>{ const o=document.createElement("option"); o.value=o.textContent=v; sel.appendChild(o); }); }
+fillSelect($("#fUni"), [...UNIS].sort());
+fillSelect($("#fField"), [...new Set(COURSES.map(c=>c.f))].sort());
+
+function filtered(){
+  const q = $("#fText").value.trim().toLowerCase(), uni=$("#fUni").value, field=$("#fField").value,
+        yr=$("#fYear").value, type=$("#fType").value, ver=$("#fVerified").checked;
+  let a = DATA.filter(d =>
+    (!q || (d.course+" "+d.uni+" "+d.field+" "+d.route).toLowerCase().includes(q)) &&
+    (!uni || d.uni===uni) && (!field || d.field===field) && (!type || d.type===type) &&
+    (!yr || d.year >= THIS_YEAR-1-(+yr-1)) && (!ver || d.verified || d.you));
+  const s = $("#fSort").value;
+  a.sort(s==="fast" ? (x,y)=>x.months-y.months : s==="salary" ? (x,y)=>y.salary-x.salary : (x,y)=>(y.you-x.you)||(x.daysAgo-y.daysAgo));
+  return a;
+}
+
+function rcard(d){
+  return `<article class="rcard">
+    <div class="t">${esc(d.course)} ${d.verified?'<span class="tick" title="Verified grad">✓</span>':''} ${d.you?'<span class="pill you">You</span>':''} <span class="pill">${d.level}</span></div>
+    <div class="right"><div class="months ${speed(d.months)}">${monthsText(d.months)}</div><div class="sub">to first job in field</div></div>
+    <div class="meta"><span>🏛 ${esc(d.uni)}</span><span>🎓 Class of ${d.year}</span><span>💵 ${band(d.salary)}</span><span>🧭 ${esc(d.route)}</span><span>🌏 ${d.type}</span><span>🕒 ${d.you?"just now":ago(d.daysAgo)}</span></div>
+  </article>`;
+}
+
+function renderDB(){
+  const a = filtered();
+  const enough = a.length >= MIN_GROUP;
+  const m = median(a.map(d=>d.months)), s = median(a.map(d=>d.salary));
+  const before = a.length ? Math.round(a.filter(d=>d.months===0).length/a.length*100) : 0;
+  const inField = a.length ? Math.round(a.filter(d=>d.inField==="Yes").length/a.length*100) : 0;
+  $("#summary").innerHTML = enough ? `
+    <div class="stat"><b>${a.length}</b><span>matching results</span></div>
+    <div class="stat"><b style="color:${speedColor(m)}">${m===0?"Before grad":Math.round(m)+" mo"}</b><span>median time to first job</span></div>
+    <div class="stat"><b>${band(s)}</b><span>typical starting salary</span></div>
+    <div class="stat"><b>${before}%</b><span>had a job before graduating</span></div>`
+    : `<div class="stat" style="grid-column:1/-1"><b>Not enough results yet</b><span>We only show summaries for groups of ${MIN_GROUP}+ grads, to protect privacy. Try widening your filters.</span></div>`;
+  $("#countLabel").textContent = `${a.length.toLocaleString()} result${a.length===1?"":"s"} found`;
+
+  const panel = $("#resultPanel");
+  if (!a.length){ panel.innerHTML = `<div class="empty"><h3 style="margin-bottom:6px">No results match</h3><p style="margin:0 0 14px;color:var(--muted)">Try a different course or clear your filters.</p><button class="btn btn-dark" id="emptyReset">Reset filters</button></div>`; $("#emptyReset").onclick=resetFilters; return; }
+
+  if (!user){
+    const free = a.slice(0,3), locked = a.slice(3,7);
+    panel.innerHTML = free.map(rcard).join("") + (locked.length ? `
+      <div class="lock-wrap"><div class="blurred">${locked.map(rcard).join("")}</div>
+        <div class="lock"><div class="lock-card"><span class="eyebrow">🔒 ${a.length-3} more results</span>
+          <h3>Sign up free to see everything</h3>
+          <p>Create a free account to browse every result, filter by uni and see how grads got hired.</p>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn btn-dark" data-open-auth="signup">Sign up free</button><button class="btn btn-light" data-open-auth="login">Log in</button></div>
+        </div></div></div>` : "");
+    return;
+  }
+  panel.innerHTML = a.slice(0,shown).map(rcard).join("") +
+    (a.length>shown ? `<div class="more"><button class="btn btn-light" id="moreBtn">Load more results →</button></div>` : "");
+  const mb = $("#moreBtn"); if (mb) mb.onclick = ()=>{ shown += PAGE; renderDB(); };
+}
+["#fText","#fUni","#fField","#fYear","#fType","#fVerified","#fSort"].forEach(id=>{
+  $(id).addEventListener(id==="#fText"?"input":"change", ()=>{ shown=PAGE; renderDB(); });
+});
+function resetFilters(){ $("#fText").value=""; ["#fUni","#fField","#fYear","#fType"].forEach(i=>$(i).value=""); $("#fVerified").checked=true; $("#fSort").value="recent"; shown=PAGE; renderDB(); }
+$("#fReset").onclick = resetFilters;
+
+/* ============ share ============ */
+const form = { months:null, salary:null, route:null, type:"Domestic", level:"Undergrad", inField:"Yes" };
+function chips(name, opts, val){ return `<div class="chips" data-name="${name}">${opts.map(o=>`<button type="button" class="chip" data-val="${esc(o[0])}" aria-pressed="${String(o[0])===String(val)}">${esc(o[1])}</button>`).join("")}</div>`; }
+
+function renderShare(){
+  const slot = $("#shareSlot");
+  if (!user){
+    slot.innerHTML = `<div class="form-card" style="text-align:center"><span class="eyebrow">Step 1 of 2</span>
+      <h2 style="font-size:30px;margin:14px 0 8px">Create a free account first</h2>
+      <p style="color:var(--ink-2);margin:0 0 20px">One result per account keeps the data honest. Your email is never shown.</p>
+      <button class="btn btn-dark btn-lg" id="shareSignup">Sign up as a graduate</button>
+      <p style="margin:14px 0 0;font-size:14px">Already have an account? <button class="link-btn" data-open-auth="login">Log in</button></p></div>`;
+    $("#shareSignup").onclick = ()=>{ chosenRole="graduate"; document.querySelectorAll(".role").forEach(x=>x.setAttribute("aria-pressed", x.dataset.role==="graduate")); openAuth("signup","#/share"); };
+    return;
+  }
+  if (user.role!=="graduate"){
+    slot.innerHTML = `<div class="form-card"><h2 style="font-size:28px;margin-bottom:8px">This form is for graduates</h2>
+      <p style="color:var(--ink-2)">You're signed up as a ${user.role==="student"?"current student":"future student"}, so you already have full access to the database. Come back once you've graduated and found your first job!</p>
+      <a class="btn btn-dark" href="#/database">Browse the database →</a></div>`;
+    return;
+  }
+  const mine = DATA.find(d=>d.you);
+  if (mine){ slot.innerHTML = resultView(mine); return; }
+
+  const courseOpts = COURSES.map(c=>c.c).sort().map(c=>`<option>${esc(c)}</option>`).join("");
+  const uniOpts = [...UNIS].sort().map(u=>`<option>${esc(u)}</option>`).join("");
+  const years = Array.from({length:6},(_,i)=>THIS_YEAR-1-i).map(y=>`<option>${y}</option>`).join("");
+  slot.innerHTML = `<form class="form-card" id="shareForm" novalidate>
+    <div class="q field"><label for="sCourse">1. What did you study?</label><select id="sCourse"><option value="">Choose your course</option>${courseOpts}</select><div class="err" id="eCourse">Choose your course.</div></div>
+    <div class="q field"><label for="sUni">2. Where did you study?</label><select id="sUni"><option value="">Choose your university</option>${uniOpts}</select><div class="err" id="eUni">Choose your university.</div></div>
+    <div class="two">
+      <div class="q field"><label for="sYear">3. When did you graduate?</label><select id="sYear"><option value="">Choose year</option>${years}</select><div class="err" id="eYear">Choose a year.</div></div>
+      <div class="q"><span class="ql">Level</span>${chips("level",[["Undergrad","Undergrad"],["Postgrad","Postgrad"]],form.level)}</div>
+    </div>
+    <div class="q"><span class="ql">4. How long until your first job in that field?</span>
+      ${chips("months",[[0,"Before graduating"],[2,"Under 3 months"],[4,"3–6 months"],[9,"6–12 months"],[15,"Over a year"]],form.months)}<div class="err" id="eMonths">Pick one.</div></div>
+    <div class="q"><span class="ql">5. Starting salary <span class="hint">(shown only as a band)</span></span>
+      ${chips("salary",[[45,"Under $50k"],[55,"$50–60k"],[65,"$60–70k"],[75,"$70–80k"],[85,"$80–90k"],[95,"$90k+"]],form.salary)}<div class="err" id="eSalary">Pick one.</div></div>
+    <div class="q"><span class="ql">6. How did you get it?</span>${chips("route",ROUTES.map(x=>[x,x]),form.route)}<div class="err" id="eRoute">Pick one.</div></div>
+    <div class="two">
+      <div class="q"><span class="ql">Student type</span>${chips("type",[["Domestic","Domestic"],["International","International"]],form.type)}</div>
+      <div class="q"><span class="ql">Job in your field?</span>${chips("inField",[["Yes","Yes"],["Partly","Partly"],["No","No"]],form.inField)}</div>
+    </div>
+    <button class="btn btn-dark btn-lg btn-block" type="submit">Submit and see how I compare →</button>
+    <p class="mock-note">Demo: your answer is added to this page only and disappears on refresh.</p>
+  </form>`;
+  slot.querySelectorAll(".chips").forEach(g => g.addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    g.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x===b));
+    const v = b.dataset.val; form[g.dataset.name] = isNaN(+v) ? v : +v;
+  }));
+  $("#shareForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const c=$("#sCourse").value, u=$("#sUni").value, y=$("#sYear").value;
+    const checks = [["eCourse",!!c],["eUni",!!u],["eYear",!!y],["eMonths",form.months!==null],["eSalary",form.salary!==null],["eRoute",!!form.route]];
+    checks.forEach(([id,ok])=>$("#"+id).classList.toggle("show",!ok));
+    if (checks.some(x=>!x[1])) { slot.querySelector(".err.show")?.scrollIntoView({block:"center",behavior:"smooth"}); return; }
+    const co = COURSES.find(x=>x.c===c);
+    const entry = { id: Date.now(), course:c, field:co.f, uni:u, year:+y, level:form.level, type:form.type, months:form.months,
+      salary:form.salary, inField:form.inField, route:form.route, verified:true, daysAgo:0, you:true };
+    DATA.unshift(entry); user.shared = true; saveUser();
+    toast("Thanks! Your result has been added.");
+    renderAll(); window.scrollTo({top:0,behavior:"smooth"});
+  });
+}
+
+function resultView(me){
+  const peers = DATA.filter(d=>d.course===me.course && !d.you && d.verified);
+  const m = median(peers.map(d=>d.months)), faster = peers.length ? Math.round(peers.filter(d=>d.months>me.months).length/peers.length*100) : 0;
+  return `<div class="result-card">
+    <span class="eyebrow" style="color:var(--ink)">✓ Result added</span>
+    <h2 style="margin-top:16px">You found work ${me.months===0?"before graduating":"in "+monthsText(me.months).toLowerCase()}.</h2>
+    <p>Here's how you compare with ${peers.length} other ${esc(me.course)} grads.</p>
+    <div class="compare">
+      <div><b>${m===null?"–":(m===0?"Before grad":Math.round(m)+" mo")}</b><span>median for ${esc(me.course)}</span></div>
+      <div><b>${faster}%</b><span>of grads took longer than you</span></div>
+    </div>
+    <a class="btn btn-light" href="#/database?q=${encodeURIComponent(me.course)}">See all ${esc(me.course)} results →</a>
+  </div>`;
+}
+
+/* ============ router ============ */
+function route(){
+  const h = location.hash.replace(/^#\/?/, "");
+  const [path, qs] = h.split("?");
+  const page = ["database","share","how","about"].includes(path) ? path : "home";
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active", p.id==="page-"+page));
+  document.querySelectorAll("[data-nav]").forEach(a=>a.classList.toggle("active", a.dataset.nav===page));
+  if (page==="database" && qs){ const q = new URLSearchParams(qs).get("q"); if (q!==null){ $("#fText").value=q; shown=PAGE; } }
+  document.title = {home:"Which Uni's Worth It?",database:"Database · Which Uni's Worth It?",share:"Share your result · Which Uni's Worth It?",how:"How it works · Which Uni's Worth It?",about:"About · Which Uni's Worth It?"}[page];
+  renderAll();
+  window.scrollTo(0,0);
+}
+function renderAll(){ renderAuthSlot(); renderHome(); renderDB(); renderShare(); }
+window.addEventListener("hashchange", route);
+route();
+})();
+</script>
+</body>
+</html>
