@@ -2,7 +2,7 @@
 
 Real outcomes from real grads: how long it took to land a job in the field, what they started on, and how they got it.
 
-**Status:** front-end MVP. Sign-up is a mock (nothing is stored or sent) and every figure is sample data about fictional universities.
+**Status:** front-end MVP. Sign-up is a mock (nothing is stored or sent). The institution list is the real one from the MVP Product Brief, but **every result is made up**; a banner on every page and a "Demo data" label on every card say so. Replace with real submissions before promoting the site.
 
 ## Features
 - **Home**: hero, fastest-to-a-job courses, who it's for
@@ -31,7 +31,7 @@ js/
     stats.js            median, summarise, summariseByCourse
     validate.js         Email + password rules
   data/
-    taxonomy.js         Universities, courses, answer options
+    taxonomy.js         Institutions (with short names like UTS, Macca), courses, answer options
     sample-data.js      Seeded fake results for the demo
   services/             The only code that touches data or accounts
     auth.js             Mock sign-up / log-in / log-out
@@ -42,6 +42,7 @@ js/
     result-card.js      One grad's outcome
     course-card.js      Median outcome for a course
     chips.js            Pick-one pill buttons
+    uni-picker.js       Searchable institution dropdown (+ "Other / not listed" text box)
     toast.js            Pop-up confirmation message
   pages/                One file per page; each exports { title, render(root, params) }
     home.js  database.js  share.js  how.js  about.js
@@ -53,7 +54,8 @@ js/
 | I want to… | Edit |
 |---|---|
 | Change colours or fonts | `css/base.css` (`:root` tokens) |
-| Add a university or course | `js/data/taxonomy.js` |
+| Add a university, short name or course | `js/data/taxonomy.js` |
+| Remove the demo banner (once data is real) | `index.html` (`.demo-banner`) and the `Demo data` pill in `js/components/result-card.js` |
 | Change the privacy threshold or page size | `js/config.js` |
 | Add a new page | Create `js/pages/new.js`, register it in `js/main.js`, add a nav link in `index.html` |
 | Connect a real backend | Replace the function bodies in `js/services/` (see below) |

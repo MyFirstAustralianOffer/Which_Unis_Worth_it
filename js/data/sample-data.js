@@ -1,6 +1,7 @@
 /**
- * Generates realistic-looking sample results for the demo.
- * Seeded, so everyone sees the same numbers on every load.
+ * Generates FAKE sample results for the demo. The numbers are random and
+ * say nothing about any real university. Seeded, so everyone sees the same
+ * numbers on every load.
  *
  * Delete this file once real results come from the database.
  */
@@ -18,18 +19,20 @@ function seededRandom(seed) {
   };
 }
 
-export function generateSampleResults({ count = 260, seed = 20261012 } = {}) {
+export function generateSampleResults({ count = 900, seed = 20261012 } = {}) {
   const rand = seededRandom(seed);
   const pick = (list) => list[Math.floor(rand() * list.length)];
   const results = [];
 
+  // Random (fake) per-institution offset of up to ±1.5 months. Not based on anything real.
+  const uniBias = Object.fromEntries(UNIVERSITIES.map((u) => [u, (rand() - 0.5) * 3]));
+
   for (let i = 0; i < count; i++) {
     const course = pick(COURSES);
     const uni = pick(UNIVERSITIES);
-    const uniBias = (UNIVERSITIES.indexOf(uni) - 2.5) * 0.5; // some unis a bit faster/slower
     const international = rand() < 0.32;
 
-    let months = course.months + uniBias + (international ? 3 : 0) + (rand() - 0.45) * course.months * 1.3;
+    let months = course.months + uniBias[uni] +(international ? 3 : 0) + (rand() - 0.45) * course.months * 1.3;
     if (rand() < 0.12) months = 0; // had a job before graduating
     months = Math.max(0, Math.round(months));
 

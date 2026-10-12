@@ -104,3 +104,21 @@
   .rcard { grid-template-columns: 1fr; }
   .rcard .right { grid-row: auto; grid-column: auto; text-align: left; display: flex; align-items: baseline; gap: 10px; }
 }
+
+/* ---------- uni picker (searchable dropdown) ---------- */
+.combo { position: relative; }
+.combo-list {
+  position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 6px);
+  max-height: 280px; overflow-y: auto; margin: 0; padding: 6px; list-style: none;
+  background: #fff; border: 2px solid var(--ink); border-radius: 14px; box-shadow: 0 6px 0 var(--ink);
+}
+.combo-list [role=option] { padding: 9px 10px; border-radius: 8px; cursor: pointer; font-size: 15px; }
+.combo-list [role=option][aria-selected="true"] { background: var(--sun); }
+.combo-group { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 10px 10px 4px; border-top: 1px solid var(--line); margin-top: 4px; }
+.combo-group:empty { padding: 0; }
+.combo-other { margin-top: 10px; }
+
+/* ---------- demo banner ---------- */
+.demo-banner { background: var(--ink); color: #fff; text-align: center; font-size: 13px; font-weight: 600; padding: 8px 16px; line-height: 1.4; }
+.demo-banner b { color: var(--sun); }
+.pill.demo { background: #fff; border: 1px dashed var(--muted); color: var(--muted); font-weight: 600; }

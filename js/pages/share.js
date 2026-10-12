@@ -12,12 +12,13 @@ import { monthsLabel, monthsShort } from "../lib/format.js";
 import { median, pctSlowerThan } from "../lib/stats.js";
 import { LATEST_GRAD_YEAR, ROLES } from "../config.js";
 import {
-  UNIVERSITIES, COURSE_NAMES, JOB_ROUTES, LEVELS, STUDENT_TYPES,
+  OTHER_INSTITUTION, COURSE_NAMES, JOB_ROUTES, LEVELS, STUDENT_TYPES,
   MONTH_OPTIONS, SALARY_OPTIONS, IN_FIELD_OPTIONS,
 } from "../data/taxonomy.js";
 import { getUser, markShared } from "../services/auth.js";
 import { getMyResult, getVerifiedResults, addMyResult } from "../services/results.js";
 import { chipGroup, bindChips } from "../components/chips.js";
+import { uniPicker, bindUniPicker } from "../components/uni-picker.js";
 import { openAuthModal } from "../components/auth-modal.js";
 import { showToast } from "../components/toast.js";
 
@@ -96,7 +97,7 @@ function renderForm(slot) {
   slot.innerHTML = `
     <form class="form-card" id="shareForm" novalidate>
       ${selectQuestion("course", "1. What did you study?", "Choose your course", COURSE_NAMES)}
-      ${selectQuestion("uni", "2. Where did you study?", "Choose your university", [...UNIVERSITIES].sort())}
+      ${uniPicker("uni", { label: "2. Where did you study?" })}
       <div class="two">
         ${selectQuestion("year", "3. When did you graduate?", "Choose year", years)}
         ${chipQuestion("level", "Level", LEVELS, answers.level)}
@@ -114,6 +115,11 @@ function renderForm(slot) {
 
   const form = $("#shareForm", slot);
   bindChips(form, (name, value) => { answers[name] = value; showError(form, name, false); });
+  bindUniPicker(form, "uni", (value, otherText) => {
+    answers.uni = value;
+    answers.uniOther = otherText;
+    if (value) showError(form, "uni", false);
+  });
   form.addEventListener("change", (e) => {
     if (e.target.dataset.q) {
       answers[e.target.dataset.q] = e.target.value;
@@ -129,7 +135,9 @@ function renderForm(slot) {
       form.querySelector(".err.show")?.scrollIntoView({ block: "center", behavior: "smooth" });
       return;
     }
-    addMyResult({ ...answers, year: Number(answers.year) });
+    const { uniOther, ...rest } = answers;
+    const uni = rest.uni === OTHER_INSTITUTION && uniOther ? uniOther : rest.uni;
+    addMyResult({ ...rest, uni, year: Number(rest.year) });
     markShared();
     showToast("Thanks! Your result has been added.");
     window.scrollTo({ top: 0, behavior: "smooth" });

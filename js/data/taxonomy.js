@@ -2,18 +2,84 @@
  * The fixed lists the app is built around: universities, courses and
  * answer options. When a real database arrives, these can be loaded from it.
  *
- * NOTE: university names are fictional on purpose. The demo never shows
- * invented numbers about real universities.
+ * Institution list from the MVP Product Brief. Check it against the
+ * TEQSA National Register before launch.
+ *
+ * NOTE: while the site runs on sample data, every page carries a
+ * "these results are made up" banner (see index.html).
  */
 
-export const UNIVERSITIES = [
-  "Banksia University",
-  "Kestrel University",
-  "Marlow Institute of Technology",
-  "Wattle Hill University",
-  "Eastgate University",
-  "Harbourline University",
+/** Australian universities. `aliases` are short names people type. */
+export const UNIVERSITY_LIST = [
+  { name: "Adelaide University", aliases: ["AU", "Adelaide Uni"] },
+  { name: "Australian Catholic University", aliases: ["ACU"] },
+  { name: "Australian National University", aliases: ["ANU"] },
+  { name: "Avondale University", aliases: [] },
+  { name: "Bond University", aliases: ["Bond"] },
+  { name: "Central Queensland University", aliases: ["CQU", "CQUniversity"] },
+  { name: "Charles Darwin University", aliases: ["CDU"] },
+  { name: "Charles Sturt University", aliases: ["CSU"] },
+  { name: "Curtin University", aliases: ["Curtin"] },
+  { name: "Deakin University", aliases: ["Deakin"] },
+  { name: "Edith Cowan University", aliases: ["ECU"] },
+  { name: "Federation University Australia", aliases: ["FedUni", "Federation"] },
+  { name: "Flinders University", aliases: ["Flinders"] },
+  { name: "Griffith University", aliases: ["Griffith"] },
+  { name: "James Cook University", aliases: ["JCU"] },
+  { name: "La Trobe University", aliases: ["La Trobe", "LTU"] },
+  { name: "Macquarie University", aliases: ["MQ", "Macca", "Macq"] },
+  { name: "Monash University", aliases: ["Monash"] },
+  { name: "Murdoch University", aliases: ["Murdoch"] },
+  { name: "Queensland University of Technology (QUT)", aliases: ["QUT"] },
+  { name: "RMIT University", aliases: ["RMIT"] },
+  { name: "Southern Cross University", aliases: ["SCU"] },
+  { name: "Swinburne University of Technology", aliases: ["Swinburne", "Swin"] },
+  { name: "Torrens University Australia", aliases: ["Torrens"] },
+  { name: "University of Adelaide (legacy name)", aliases: ["UofA", "Adelaide", "Adelaide Uni"] },
+  { name: "University of Canberra", aliases: ["UC", "UCanberra"] },
+  { name: "University of Divinity", aliases: [] },
+  { name: "University of Melbourne", aliases: ["UniMelb", "Melb Uni", "Melbourne"] },
+  { name: "University of New England", aliases: ["UNE"] },
+  { name: "UNSW Sydney", aliases: ["UNSW", "New South Wales"] },
+  { name: "University of Newcastle", aliases: ["UoN", "Newcastle"] },
+  { name: "University of Notre Dame Australia", aliases: ["Notre Dame", "UNDA"] },
+  { name: "University of Queensland", aliases: ["UQ"] },
+  { name: "University of South Australia (UniSA, legacy name)", aliases: ["UniSA", "USA"] },
+  { name: "University of Southern Queensland (UniSQ)", aliases: ["UniSQ", "USQ"] },
+  { name: "University of the Sunshine Coast", aliases: ["UniSC", "USC", "Sunshine Coast"] },
+  { name: "University of Sydney", aliases: ["USYD", "Sydney Uni", "Sydney"] },
+  { name: "University of Tasmania", aliases: ["UTAS"] },
+  { name: "University of Technology Sydney (UTS)", aliases: ["UTS"] },
+  { name: "University of Western Australia", aliases: ["UWA"] },
+  { name: "University of Wollongong", aliases: ["UOW", "Wollongong"] },
+  { name: "Victoria University", aliases: ["VU", "Vic Uni"] },
+  { name: "Western Sydney University", aliases: ["WSU", "UWS"] },
 ];
+
+/** Private higher education providers, listed after the universities. */
+export const PRIVATE_PROVIDERS = [
+  { name: "Holmes Institute", aliases: ["Holmes"] },
+  { name: "Kaplan Business School", aliases: ["Kaplan", "KBS"] },
+  { name: "SP Jain School of Global Management", aliases: ["SP Jain", "SPJ"] },
+];
+
+export const OTHER_INSTITUTION = "Other / not listed";
+
+/** Every selectable institution, in display order (universities → private → other). */
+export const INSTITUTIONS = [...UNIVERSITY_LIST, ...PRIVATE_PROVIDERS];
+
+/** Plain list of names, used by filters and sample data. */
+export const UNIVERSITIES = INSTITUTIONS.map((u) => u.name);
+
+/** Does `query` match this institution's name or one of its short names? */
+export function matchesInstitution(inst, query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return inst.name.toLowerCase().includes(q) || inst.aliases.some((a) => a.toLowerCase().startsWith(q));
+}
+
+/** Short names for a given institution name (used by keyword search). */
+export const aliasesOf = (name) => INSTITUTIONS.find((u) => u.name === name)?.aliases ?? [];
 
 /** course, field, typical months to a job, typical starting salary ($k). */
 export const COURSES = [

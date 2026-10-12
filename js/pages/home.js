@@ -45,7 +45,7 @@ function hero(verified, latest) {
           <div class="hero-stats">
             <div><b>${verified.length.toLocaleString()}</b>grad results</div>
             <div><b>${courses}</b>courses</div>
-            <div><b>${unis}</b>universities</div>
+            <div><b>${unis}</b>institutions</div>
           </div>
         </div>
         <div class="hero-stack" aria-hidden="true">
@@ -68,7 +68,7 @@ function fastestCourses(summaries) {
           <a class="btn btn-light" href="#/database">See all courses →</a>
         </div>
         <div class="course-grid">${summaries.map(courseCard).join("")}</div>
-        <p class="note"><span class="sample-badge">⚑ Sample data for this demo</span></p>
+        <p class="note"><span class="sample-badge">⚑ Made-up demo data, not real outcomes for these universities</span></p>
       </div>
     </section>`;
 }

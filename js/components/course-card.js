@@ -14,7 +14,7 @@ export function courseCard(s) {
     <a class="ccard" href="#/database?q=${encodeURIComponent(s.course)}">
       <div class="row">
         <h3>${esc(s.course)}</h3>
-        <span class="pill">${s.count} results</span>
+        <span class="pill">${s.count} demo results</span>
       </div>
       <div class="row">
         <div>

@@ -10,6 +10,7 @@ export function resultCard(r, { compact = false } = {}) {
     r.verified ? `<span class="tick" title="Verified grad">✓</span>` : "",
     r.isMine ? `<span class="pill you">You</span>` : "",
     compact ? "" : `<span class="pill">${esc(r.level)}</span>`,
+    r.isMine ? "" : `<span class="pill demo">Demo data</span>`,
   ].join(" ");
 
   const meta = compact

@@ -5,7 +5,7 @@
  * these functions for Supabase calls; the pages won't need to change.
  */
 import { generateSampleResults } from "../data/sample-data.js";
-import { fieldOf } from "../data/taxonomy.js";
+import { fieldOf, aliasesOf } from "../data/taxonomy.js";
 import { LATEST_GRAD_YEAR } from "../config.js";
 
 let results = generateSampleResults();
@@ -40,7 +40,7 @@ export function queryResults(filters = {}, sort = "recent") {
   const minYear = filters.years ? LATEST_GRAD_YEAR - (Number(filters.years) - 1) : null;
 
   const list = results.filter((r) =>
-    (!text || `${r.course} ${r.uni} ${r.field} ${r.route}`.toLowerCase().includes(text)) &&
+    (!text || `${r.course} ${r.uni} ${aliasesOf(r.uni).join(" ")} ${r.field} ${r.route}`.toLowerCase().includes(text)) &&
     (!filters.uni || r.uni === filters.uni) &&
     (!filters.field || r.field === filters.field) &&
     (!filters.type || r.type === filters.type) &&

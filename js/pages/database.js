@@ -41,7 +41,7 @@ export default {
           </label>
         </div>
         <div class="panel" id="dbResults"></div>
-        <p class="note">To protect privacy, salaries are shown as bands and no names or emails are ever displayed. <span class="sample-badge">⚑ Sample data</span></p>
+        <p class="note">To protect privacy, salaries are shown as bands and no names or emails are ever displayed. <span class="sample-badge">⚑ All results are made up for this demo</span></p>
       </section>`;
 
     $("#dbSort", root).value = sort;
@@ -57,7 +57,7 @@ function filterBar() {
     <section class="db-hero">
       <div class="wrap">
         <h1>The outcomes database</h1>
-        <p>Search real grad results by course, university and year.</p>
+        <p>Search grad results by course, university and year.</p>
         <div class="filters" role="search">
           <div class="field">
             <label for="fText">Course or keyword</label>
@@ -65,7 +65,7 @@ function filterBar() {
           </div>
           <div class="field">
             <label for="fUni">University</label>
-            <select id="fUni" data-filter="uni"><option value="">All universities</option>${options([...UNIVERSITIES].sort(), filters.uni)}</select>
+            <select id="fUni" data-filter="uni"><option value="">All universities</option>${options(UNIVERSITIES, filters.uni)}</select>
           </div>
           <div class="field">
             <label for="fField">Field</label>
