@@ -9,7 +9,7 @@
  *   rou_demo_entries      demo mode only: answers kept on this device
  *
  * showStorageNotice()  shows a small notice once per browser
- * resetSiteData()      clears all of the above and reloads ("Reset this site" link)
+ * resetSiteData()      clears all of the above and reloads (visit any page with ?reset)
  */
 const PREFIX = "rou_";
 const SEEN_KEY = "rou_notice_ok";

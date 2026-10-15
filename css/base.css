@@ -91,8 +91,6 @@ img, svg { display: block; max-width: 100%; }
 .footer-links { display: flex; gap: 18px; }
 .footer-links a { color: var(--muted); text-underline-offset: 3px; }
 
-.footer-reset { background: none; border: 0; padding: 0; font: inherit; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-
 /* "No cookies, no tracking" notice (once per browser) */
 .storage-notice {
   position: fixed; left: 16px; bottom: 16px; z-index: 50; max-width: 380px;

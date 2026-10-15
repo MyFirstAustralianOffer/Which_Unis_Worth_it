@@ -50,7 +50,7 @@ js/
     entry-filters.js  Course / University / Graduated / Student type filters (homepage + database)
     course-input.js   Course box: real course titles as type-ahead + "Did you mean…?"
     icons.js          SVG icons
-    storage-notice.js "No cookies, no tracking" notice + "Reset this site"
+    storage-notice.js "No cookies, no tracking" notice + ?reset
   pages/
     home.js  share.js  database.js
 
@@ -100,7 +100,7 @@ node tools/release.mjs
 
 This adds a content fingerprint (`?v=…`) to every CSS, JS and data URL, so visitors' browsers fetch changed files straight away instead of using a cached copy for up to 10 minutes. A normal page reload then always shows the latest version.
 
-**Testing tip:** add `?reset` to any page URL (or click **Reset this site** in the footer) to clear everything the site saved on your device: the unlock, cached data and the notice.
+**Testing tip:** add `?reset` to any page URL to clear everything the site saved on your device: the unlock, cached data and the notice.
 
 ## Deploy (GitHub Pages)
 

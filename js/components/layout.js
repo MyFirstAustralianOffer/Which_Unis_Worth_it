@@ -7,7 +7,7 @@
  */
 import { CONFIG, isConnected } from "../config.js?v=c8c5fba1";
 import { esc } from "../lib/dom.js?v=5a71cd6c";
-import { showStorageNotice, resetSiteData } from "./storage-notice.js?v=8cfabe12";
+import { showStorageNotice, resetSiteData } from "./storage-notice.js?v=69534ca8";
 
 const logo = `<a class="logo" href="index.html" aria-label="Return on Uni home">Return on <span class="hl">Uni</span></a>`;
 
@@ -43,18 +43,16 @@ function footer(el) {
         <a href="privacy.html">Privacy policy</a>
         <a href="terms.html">Terms</a>
         ${contact}
-        <button type="button" class="footer-reset" title="Clears everything this site saved on this device">Reset this site</button>
       </div>
       <span>© ${new Date().getFullYear()} Return on Uni</span>
     </div>`;
-  el.querySelector(".footer-reset").addEventListener("click", resetSiteData);
 }
 
 export function renderLayout() {
   document.querySelectorAll('[data-layout="header"]').forEach(header);
   document.querySelectorAll('[data-layout="footer"]').forEach(footer);
   showStorageNotice();
-  // Handy for testing: add ?reset to any page URL to start fresh.
+  // Add ?reset to any page URL to clear everything the site saved on this device.
   if (new URLSearchParams(location.search).has("reset")) {
     history.replaceState(null, "", location.pathname + location.hash);
     resetSiteData();

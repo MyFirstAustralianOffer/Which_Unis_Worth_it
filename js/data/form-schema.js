@@ -13,6 +13,8 @@
  *   text    – text box                   (placeholder)
  *   money   – $ number box               (placeholder)
  *   unis3   – three university dropdowns (fields; only the first is required)
+ *
+ * A question with `showIf(answers)` is only asked when that returns true.
  */
 import {
   LEVELS, UNIVERSITIES, STUDENT_TYPES, GRAD_YEARS, GRADUATING_YEARS, START_YEARS, TIME_TO_JOB, JOB_IN_FIELD,
@@ -36,6 +38,10 @@ export const START = [
   },
 ];
 
+/** Graduates who answered "Still looking" haven't had a first job in their field yet. */
+export const STILL_LOOKING = "Still looking";
+const hasFirstJob = (a) => a.time_to_first_job !== STILL_LOOKING;
+
 export const PATHS = {
   /* Form A: public. Each graduate becomes one database card. */
   graduated: {
@@ -46,8 +52,9 @@ export const PATHS = {
       { type: "choice", field: "student_type", title: "Did you study as a domestic or international student?", options: STUDENT_TYPES },
       { type: "select", field: "graduation_year", title: "When did you graduate?", options: GRAD_YEARS, placeholder: "Choose year" },
       { type: "choice", field: "time_to_first_job", title: "How long until your first job in your field?", options: TIME_TO_JOB },
-      { type: "text", field: "first_role", title: "What was your first role after your degree?", placeholder: "e.g. Graduate Nurse" },
-      { type: "money", field: "starting_salary", title: "What was your starting salary?", placeholder: "e.g. 72,000", helper: SALARY_HELP },
+      // Skipped for grads still looking for a job in their field: there's no first role or starting salary yet.
+      { type: "text", field: "first_role", title: "What was your first role after your degree?", placeholder: "e.g. Graduate Nurse", showIf: hasFirstJob },
+      { type: "money", field: "starting_salary", title: "What was your starting salary?", placeholder: "e.g. 72,000", helper: SALARY_HELP, showIf: hasFirstJob },
       { type: "text", field: "current_role", title: "What’s your role now?", placeholder: "e.g. Registered Nurse" },
       { type: "money", field: "current_salary", title: "What do you earn now?", placeholder: "e.g. 88,000", helper: SALARY_HELP },
     ],
@@ -85,9 +92,9 @@ export const PATHS = {
 /** Before someone picks a path, the progress bar uses the Graduated total. */
 export const DEFAULT_PATH = "graduated";
 
-/** All questions for a path, start questions included. */
-export function questionsFor(path) {
-  return [...START, ...PATHS[path || DEFAULT_PATH].questions];
+/** The questions this person will be asked, given their answers so far (start questions included). */
+export function questionsFor(path, answers = {}) {
+  return [...START, ...PATHS[path || DEFAULT_PATH].questions].filter((q) => !q.showIf || q.showIf(answers));
 }
 
 export const ERRORS = {

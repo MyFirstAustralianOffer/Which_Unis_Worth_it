@@ -2,10 +2,10 @@
  * Share page: one question at a time, branching after "Which one are you?".
  * Behaviour follows the Share Form Spec ("How the form behaves").
  */
-import { renderLayout } from "../components/layout.js?v=9e490b42";
-import { renderQuestion, bindQuestion, validateQuestion, fieldsOf } from "../components/question.js?v=fb28deae";
+import { renderLayout } from "../components/layout.js?v=98893472";
+import { renderQuestion, bindQuestion, validateQuestion, fieldsOf } from "../components/question.js?v=871abbf2";
 import { icons } from "../components/icons.js?v=ecd0f942";
-import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=6b755735";
+import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=52b9726d";
 import { submitResponse } from "../services/api.js?v=034a0f94";
 import { unlock } from "../services/access.js?v=6ff55857";
 import { $, esc } from "../lib/dom.js?v=5a71cd6c";
@@ -18,7 +18,7 @@ let step = 0;
 let consent = false;
 let submitting = false;
 
-const questions = () => questionsFor(answers.path);
+const questions = () => questionsFor(answers.path, answers);
 const isLast = () => step === questions().length - 1;
 
 function render() {
@@ -88,6 +88,12 @@ async function next() {
     const keep = new Set([...START.flatMap(fieldsOf), ...PATHS[answers.path].questions.flatMap(fieldsOf)]);
     answers = Object.fromEntries(Object.entries(answers).filter(([k]) => keep.has(k)));
   }
+
+  // Drop answers to questions that no longer apply (e.g. they changed to "Still looking").
+  const asked = new Set(questions().flatMap(fieldsOf));
+  PATHS[answers.path || "graduated"].questions.forEach((x) => {
+    if (x.showIf && !asked.has(fieldsOf(x)[0])) fieldsOf(x).forEach((f) => delete answers[f]);
+  });
 
   if (!isLast()) { step++; render(); return; }
   await submit();

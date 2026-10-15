@@ -21,8 +21,8 @@ export function entryCard(e, { open = false, id = "" } = {}) {
   const detailsId = `entry-${id}`;
   const rows = [
     ["Time to first job in field", e.time_to_first_job],
-    ["First role after degree", e.first_role],
-    ["Starting salary", money(e.starting_salary)],
+    ["First role after degree", e.first_role || "–"],
+    ["Starting salary", e.starting_salary ? money(e.starting_salary) : "–"],
     ["Role now", e.current_role],
     ["Salary now", money(e.current_salary)],
   ];
@@ -33,7 +33,7 @@ export function entryCard(e, { open = false, id = "" } = {}) {
         <button class="entry-toggle" type="button" aria-expanded="${open}" aria-controls="${detailsId}" aria-label="Show full entry">${icons.chevronDown()}</button>
       </div>
       <p class="entry-sub">${esc(shortUni(e.university))} (${esc(e.graduation_year)}) · ${esc(e.student_type)}${e.example ? `<span class="tag-example">Example</span>` : ""}</p>
-      <span class="entry-path">${esc(e.first_role)} → ${esc(e.current_role)}</span>
+      <span class="entry-path">${e.first_role ? `${esc(e.first_role)} → ${esc(e.current_role)}` : `Still looking · now ${esc(e.current_role)}`}</span>
       <button class="entry-more" type="button" aria-controls="${detailsId}">See full entry ${icons.chevronDown(12)}</button>
       <dl class="entry-details" id="${detailsId}">
         ${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}

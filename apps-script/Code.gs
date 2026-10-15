@@ -91,8 +91,12 @@ function doPost(e) {
     if (!EMAIL_RE.test(String(data.email || '').trim())) return json({ ok: false, error: 'Please enter a valid email.' });
     if (data.consent_privacy !== true) return json({ ok: false, error: 'Please agree to the Privacy policy.' });
 
+    // Grads still looking for a job in their field skip first role + starting salary.
+    var stillLooking = data.path === 'graduated' && data.time_to_first_job === 'Still looking';
+    var optional = stillLooking ? ['first_role', 'starting_salary'] : [];
     for (var i = 0; i < tab.required.length; i++) {
       var key = tab.required[i];
+      if (optional.indexOf(key) !== -1) continue;
       var v = data[key];
       if (v === undefined || v === null || String(v).trim() === '') {
         return json({ ok: false, error: 'Some answers are missing. Please go back and check.' });
