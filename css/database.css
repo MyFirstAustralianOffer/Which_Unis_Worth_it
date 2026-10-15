@@ -1,0 +1,19 @@
+/* ==========================================================================
+   database.css: the full database page
+   ========================================================================== */
+
+.db-page { padding: 56px 0 88px; background: var(--bg-soft); min-height: 70vh; }
+.db-page h1 { font-size: clamp(30px, 4vw, 44px); margin-bottom: 10px; }
+.db-page .lead { margin-bottom: 28px; }
+.db-panel { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 18px; }
+.db-more { display: flex; justify-content: center; margin-top: 18px; }
+
+/* locked state: blurred cards with a call to action on top */
+.locked { position: relative; }
+.locked .entries { filter: blur(4px); pointer-events: none; user-select: none; opacity: .8; }
+.lock-card { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; }
+.lock-card > div { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 28px; max-width: 420px; text-align: center; }
+.lock-card h2 { font-size: 22px; margin-bottom: 8px; }
+.lock-card p { color: var(--muted); margin-bottom: 18px; font-size: 15px; }
+#dbArea:not(.locked) .lock-card { display: none; }
+.locked { min-height: 380px; }

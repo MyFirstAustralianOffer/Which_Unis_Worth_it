@@ -1,0 +1,66 @@
+/* ==========================================================================
+   form.css: "Share your story" one-question-at-a-time form
+   ========================================================================== */
+
+.form-page { padding: 64px 0 96px; }
+.form-page .wrap { max-width: 640px; }
+.form-page h1 { font-size: clamp(30px, 4vw, 36px); margin-bottom: 24px; }
+
+.form-card { background: #fff; border: 1px solid var(--line-2); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 28px 30px; min-height: 420px; display: flex; flex-direction: column; }
+
+.progress-meta { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+.progress-meta .path { color: var(--muted); font-weight: 500; }
+.progress { height: 6px; background: var(--line-2); border-radius: 99px; overflow: hidden; margin-bottom: 26px; }
+.progress i { display: block; height: 100%; background: var(--green); border-radius: 99px; transition: width .25s; }
+
+.q-title { font-size: 19px; font-weight: 700; color: var(--navy); margin: 0 0 16px; letter-spacing: -.01em; }
+.q-title .req { color: var(--red); }
+
+.field { width: 100%; height: 50px; border: 1px solid var(--line); border-radius: 10px; padding: 0 14px; font-size: 15px; background: #fff; }
+select.field { appearance: none; -webkit-appearance: none; padding-right: 40px; cursor: pointer;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2315213b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center; }
+.field:focus { border-color: var(--navy); outline: none; }
+.field.invalid { border-color: var(--red); }
+.stack { display: grid; gap: 12px; }
+
+.money { position: relative; }
+.money span { position: absolute; left: 1px; top: 1px; bottom: 1px; width: 40px; display: grid; place-items: center; background: var(--bg-soft); border-radius: 9px 0 0 9px; color: var(--navy); font-weight: 600; border-right: 1px solid var(--line); }
+.money .field { padding-left: 54px; }
+
+.helper { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 12px; }
+.helper svg { color: var(--green); flex: none; }
+
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--navy); }
+.opt:hover { border-color: #c9ced6; }
+.opt[aria-pressed="true"] { background: var(--peach); border-color: #f0c98d; font-weight: 600; }
+
+.choice-label { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; display: block; }
+.choice-label small { color: var(--muted); font-weight: 500; }
+
+.consent { display: flex; align-items: center; gap: 10px; margin-top: 18px; font-size: 14px; color: var(--text); cursor: pointer; }
+.consent input { width: 18px; height: 18px; accent-color: var(--navy); margin: 0; }
+.consent a { color: var(--navy); font-weight: 700; }
+.consent .req { color: var(--red); }
+
+.error { color: var(--red); font-size: 13px; font-weight: 600; margin-top: 12px; min-height: 0; }
+.error:empty { display: none; }
+
+.form-actions { margin-top: auto; padding-top: 28px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.form-actions .btn-primary { margin-left: auto; }
+.form-actions .btn[disabled] { opacity: .6; cursor: progress; }
+
+/* done screen */
+.done { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; flex: 1; padding: 12px 0; }
+.done-icon { width: 46px; height: 46px; border-radius: 50%; background: var(--peach); display: grid; place-items: center; color: var(--navy); margin-bottom: 18px; }
+.done h2 { font-size: 24px; margin-bottom: 10px; }
+.done p { color: var(--text); margin-bottom: 20px; }
+.done .text-link { margin-top: 16px; font-size: 14px; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+
+@media (max-width: 560px) {
+  .form-page { padding: 40px 0 64px; }
+  .form-card { padding: 22px 18px; min-height: 380px; }
+}
+
+/* keep Back/Next pinned to the bottom of the card, as in the mockup */
+.form-card > form { display: flex; flex-direction: column; flex: 1; }

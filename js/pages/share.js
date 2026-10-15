@@ -1,186 +1,137 @@
 /**
- * Share page: grads submit their result and see how they compare.
- *
- * Four possible states:
- *   1. logged out          → prompt to sign up as a graduate
- *   2. not a graduate      → explain the form is for grads
- *   3. grad, not shared    → the form
- *   4. grad, already shared → "how you compare" card
+ * Share page: one question at a time, branching after "Which one are you?".
+ * Behaviour follows the Share Form Spec ("How the form behaves").
  */
-import { $, esc, options } from "../lib/dom.js";
-import { monthsLabel, monthsShort } from "../lib/format.js";
-import { median, pctSlowerThan } from "../lib/stats.js";
-import { LATEST_GRAD_YEAR, ROLES } from "../config.js";
-import {
-  OTHER_INSTITUTION, COURSE_NAMES, JOB_ROUTES, LEVELS, STUDENT_TYPES,
-  MONTH_OPTIONS, SALARY_OPTIONS, IN_FIELD_OPTIONS,
-} from "../data/taxonomy.js";
-import { getUser, markShared } from "../services/auth.js";
-import { getMyResult, getVerifiedResults, addMyResult } from "../services/results.js";
-import { chipGroup, bindChips } from "../components/chips.js";
-import { uniPicker, bindUniPicker } from "../components/uni-picker.js";
-import { openAuthModal } from "../components/auth-modal.js";
-import { showToast } from "../components/toast.js";
+import { renderLayout } from "../components/layout.js";
+import { renderQuestion, bindQuestion, validateQuestion, fieldsOf } from "../components/question.js";
+import { icons } from "../components/icons.js";
+import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js";
+import { submitResponse } from "../services/api.js";
+import { unlock } from "../services/access.js";
+import { $, esc } from "../lib/dom.js";
 
-/** Fields that must be answered, with the error element they control. */
-const REQUIRED = ["course", "uni", "year", "months", "salary", "route"];
-const DEFAULT_ANSWERS = { level: "Undergrad", type: "Domestic", inField: "Yes" };
+renderLayout();
 
-export default {
-  title: "Share your result",
+const card = $("#formCard");
+let answers = {};
+let step = 0;
+let consent = false;
+let submitting = false;
 
-  render(root) {
-    root.innerHTML = `
-      <section class="block">
-        <div class="wrap share-grid">
-          ${intro()}
-          <div id="shareSlot"></div>
-        </div>
-      </section>`;
-    renderSlot($("#shareSlot", root));
-  },
-};
+const questions = () => questionsFor(answers.path);
+const isLast = () => step === questions().length - 1;
 
-function intro() {
-  return `
-    <div class="share-intro">
-      <div class="kicker">For grads</div>
-      <h1>Share your result in 60 seconds.</h1>
-      <p>A few quick questions. As soon as you submit, you'll see how your result compares with others from the same course.</p>
-      <ul class="checks">
-        <li><span class="tick">✓</span>Never shown with your name or email</li>
-        <li><span class="tick">✓</span>See how you compare, instantly</li>
-        <li><span class="tick">✓</span>Help the next student choose with real data</li>
-      </ul>
-    </div>`;
-}
+function render() {
+  const list = questions();
+  const q = list[step];
+  const total = list.length;
+  const pathLabel = answers.path ? PATHS[answers.path].label : "";
 
-function renderSlot(slot) {
-  const user = getUser();
-  if (!user) return renderSignUpPrompt(slot);
-  if (user.role !== "graduate") return renderNotGraduate(slot, user);
-  const mine = getMyResult();
-  if (mine) return renderComparison(slot, mine);
-  renderForm(slot);
-}
+  card.innerHTML = `
+    <div class="progress-meta">
+      <span>Question ${step + 1} of ${total}</span>
+      <span class="path">${esc(pathLabel)}</span>
+    </div>
+    <div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="${total}" aria-valuenow="${step + 1}" aria-label="Form progress"><i style="width:${((step + 1) / total) * 100}%"></i></div>
 
-/* ---------- state 1: logged out ---------- */
-function renderSignUpPrompt(slot) {
-  slot.innerHTML = `
-    <div class="form-card center">
-      <span class="eyebrow">Step 1 of 2</span>
-      <h2>Create a free account first</h2>
-      <p>One result per account keeps the data honest. Your email is never shown.</p>
-      <button class="btn btn-dark btn-lg" data-auth="signup">Sign up as a graduate</button>
-      <p style="margin:14px 0 0;font-size:14px">Already have an account? <button class="link-btn" data-auth="login">Log in</button></p>
-    </div>`;
-  slot.querySelectorAll("[data-auth]").forEach((btn) =>
-    btn.addEventListener("click", () =>
-      openAuthModal({ mode: btn.dataset.auth, role: "graduate", redirect: "#/share" })));
-}
-
-/* ---------- state 2: student / future student ---------- */
-function renderNotGraduate(slot, user) {
-  slot.innerHTML = `
-    <div class="form-card">
-      <h2 style="margin-top:0">This form is for graduates</h2>
-      <p>You're signed up as a ${esc(ROLES[user.role].label.toLowerCase())}, so you already have full access to the database. Come back once you've graduated and found your first job!</p>
-      <a class="btn btn-dark" href="#/database">Browse the database →</a>
-    </div>`;
-}
-
-/* ---------- state 3: the form ---------- */
-function renderForm(slot) {
-  const answers = { ...DEFAULT_ANSWERS };
-  const years = Array.from({ length: 6 }, (_, i) => LATEST_GRAD_YEAR - i);
-
-  slot.innerHTML = `
-    <form class="form-card" id="shareForm" novalidate>
-      ${selectQuestion("course", "1. What did you study?", "Choose your course", COURSE_NAMES)}
-      ${uniPicker("uni", { label: "2. Where did you study?" })}
-      <div class="two">
-        ${selectQuestion("year", "3. When did you graduate?", "Choose year", years)}
-        ${chipQuestion("level", "Level", LEVELS, answers.level)}
+    <form id="qForm" novalidate>
+      <h2 class="q-title" id="qTitle">${esc(q.title)} <span class="req" aria-hidden="true">*</span></h2>
+      <div id="qBody">${renderQuestion(q, answers)}</div>
+      ${isLast() ? `
+        <label class="consent">
+          <input type="checkbox" id="consent"${consent ? " checked" : ""}>
+          <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>. <span class="req" aria-hidden="true">*</span></span>
+        </label>` : ""}
+      <!-- spam trap: real people never see or fill this -->
+      <input type="text" name="website" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <p class="error" id="qError" role="alert"></p>
+      <div class="form-actions">
+        ${step > 0 ? `<button type="button" class="btn btn-outline" id="backBtn">Back</button>` : ""}
+        <button type="submit" class="btn btn-primary" id="nextBtn">${isLast() ? "Unlock the database" : "Next"}</button>
       </div>
-      ${chipQuestion("months", "4. How long until your first job in that field?", MONTH_OPTIONS)}
-      ${chipQuestion("salary", `5. Starting salary <span class="hint">(shown only as a band)</span>`, SALARY_OPTIONS)}
-      ${chipQuestion("route", "6. How did you get it?", JOB_ROUTES)}
-      <div class="two">
-        ${chipQuestion("type", "Student type", STUDENT_TYPES, answers.type)}
-        ${chipQuestion("inField", "Job in your field?", IN_FIELD_OPTIONS, answers.inField)}
-      </div>
-      <button class="btn btn-dark btn-lg btn-block" type="submit">Submit and see how I compare →</button>
-      <p class="mock-note">Demo: your answer is added to this page only and disappears on refresh.</p>
     </form>`;
 
-  const form = $("#shareForm", slot);
-  bindChips(form, (name, value) => { answers[name] = value; showError(form, name, false); });
-  bindUniPicker(form, "uni", (value, otherText) => {
-    answers.uni = value;
-    answers.uniOther = otherText;
-    if (value) showError(form, "uni", false);
-  });
-  form.addEventListener("change", (e) => {
-    if (e.target.dataset.q) {
-      answers[e.target.dataset.q] = e.target.value;
-      showError(form, e.target.dataset.q, false);
-    }
-  });
+  const form = $("#qForm", card);
+  const clearError = () => { $("#qError", card).textContent = ""; };
+  bindQuestion($("#qBody", card), q, answers, clearError);
+  $("#consent", card)?.addEventListener("change", (e) => { consent = e.target.checked; clearError(); });
+  $("#backBtn", card)?.addEventListener("click", back);
+  form.addEventListener("submit", (e) => { e.preventDefault(); next(); });
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const missing = REQUIRED.filter((k) => answers[k] === undefined || answers[k] === "");
-    REQUIRED.forEach((k) => showError(form, k, missing.includes(k)));
-    if (missing.length) {
-      form.querySelector(".err.show")?.scrollIntoView({ block: "center", behavior: "smooth" });
-      return;
-    }
-    const { uniOther, ...rest } = answers;
-    const uni = rest.uni === OTHER_INSTITUTION && uniOther ? uniOther : rest.uni;
-    addMyResult({ ...rest, uni, year: Number(rest.year) });
-    markShared();
-    showToast("Thanks! Your result has been added.");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
+  // Move focus to the first input (not on first load, to avoid jumping the page).
+  if (render.started) ($("#q-input", card) || $(".opt", card))?.focus();
+  render.started = true;
 }
 
-function selectQuestion(name, label, placeholder, items) {
-  return `
-    <div class="q field">
-      <label for="q-${name}">${label}</label>
-      <select id="q-${name}" data-q="${name}"><option value="">${esc(placeholder)}</option>${options(items)}</select>
-      <div class="err" data-err="${name}">Please choose one.</div>
+function showError(message, q) {
+  $("#qError", card).textContent = message;
+  if (q.type === "email") $("#q-input", card)?.classList.add("invalid");
+}
+
+function back() {
+  if (step > 0) { step--; render(); }
+}
+
+async function next() {
+  if (submitting) return;
+  const q = questions()[step];
+
+  const error = validateQuestion(q, answers);
+  if (error) return showError(error, q);
+  if (isLast() && !consent) return showError(ERRORS.consent, q);
+
+  // Changing "Which one are you?" drops answers from the other paths.
+  if (q.field === "path") {
+    const keep = new Set([...START.flatMap(fieldsOf), ...PATHS[answers.path].questions.flatMap(fieldsOf)]);
+    answers = Object.fromEntries(Object.entries(answers).filter(([k]) => keep.has(k)));
+  }
+
+  if (!isLast()) { step++; render(); return; }
+  await submit();
+}
+
+async function submit() {
+  submitting = true;
+  const btn = $("#nextBtn", card);
+  btn.disabled = true;
+  btn.textContent = "Saving…";
+
+  const now = new Date().toISOString();
+  const payload = {
+    ...answers,
+    email: String(answers.email).trim().toLowerCase(),
+    consent_privacy: true,
+    consent_at: now,
+    submitted_at: now,
+    form_version: 1,
+    website: $("#hp", card).value, // spam trap
+  };
+
+  try {
+    await submitResponse(payload);
+    unlock();
+    renderDone();
+  } catch (err) {
+    $("#qError", card).textContent = err.message;
+    btn.disabled = false;
+    btn.textContent = "Unlock the database";
+  } finally {
+    submitting = false;
+  }
+}
+
+function renderDone() {
+  card.innerHTML = `
+    <div class="done">
+      <div class="done-icon">${icons.check()}</div>
+      <h2>You're in!</h2>
+      <p>Thanks for sharing. The full database is now unlocked for you.</p>
+      <a class="btn btn-primary" href="database.html">Explore the database →</a>
+      <button class="text-link" type="button" id="againBtn">Start again</button>
     </div>`;
+  $("#againBtn", card).addEventListener("click", () => {
+    answers = {}; step = 0; consent = false; render();
+  });
 }
 
-function chipQuestion(name, label, opts, selected) {
-  return `
-    <div class="q">
-      <span class="ql">${label}</span>
-      ${chipGroup(name, opts, selected)}
-      <div class="err" data-err="${name}">Pick one.</div>
-    </div>`;
-}
-
-function showError(form, name, show) {
-  form.querySelector(`[data-err="${name}"]`)?.classList.toggle("show", show);
-}
-
-/* ---------- state 4: comparison ---------- */
-function renderComparison(slot, mine) {
-  const peers = getVerifiedResults().filter((r) => r.course === mine.course && !r.isMine);
-  const peerMedian = median(peers.map((r) => r.months));
-  const headline = mine.months === 0 ? "before graduating" : `in ${monthsLabel(mine.months).toLowerCase()}`;
-
-  slot.innerHTML = `
-    <div class="result-card">
-      <span class="eyebrow">✓ Result added</span>
-      <h2>You found work ${headline}.</h2>
-      <p>Here's how you compare with ${peers.length} other ${esc(mine.course)} grads.</p>
-      <div class="compare">
-        <div><b>${monthsShort(peerMedian)}</b><span>median for ${esc(mine.course)}</span></div>
-        <div><b>${pctSlowerThan(peers, mine.months)}%</b><span>of grads took longer than you</span></div>
-      </div>
-      <a class="btn btn-light" href="#/database?q=${encodeURIComponent(mine.course)}">See all ${esc(mine.course)} results →</a>
-    </div>`;
-}
+render();

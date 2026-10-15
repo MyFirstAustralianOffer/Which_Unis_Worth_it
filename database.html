@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Database | Return on Uni</title>
+  <meta name="description" content="Search real outcomes from Australian graduates: where they started, and where they are now.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/entries.css">
+  <link rel="stylesheet" href="css/database.css">
+</head>
+<body>
+  <header data-layout="header" data-active="database"></header>
+
+  <main class="db-page">
+    <div class="wrap">
+      <h1>Search real outcomes</h1>
+      <p class="lead">Every card is one real person: where they started, and where they are now.</p>
+
+      <div class="db-panel">
+        <form class="filters" id="filters" role="search">
+          <div class="filter"><label for="fCourse">Course</label><select id="fCourse"><option value="">All courses</option></select></div>
+          <div class="filter"><label for="fUni">University</label><select id="fUni"><option value="">All universities</option></select></div>
+          <div class="filter"><label for="fYears">Graduated</label>
+            <select id="fYears">
+              <option value="">Any year</option>
+              <option value="2">Last 2 years</option>
+              <option value="5">Last 5 years</option>
+              <option value="10">Last 10 years</option>
+            </select>
+          </div>
+          <div class="filter"><label for="fType">Student type</label><select id="fType"><option value="">All</option></select></div>
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+
+        <p class="entries-status" id="status" aria-live="polite"></p>
+        <div id="dbArea">
+          <div class="entries" id="entries"></div>
+          <div class="lock-card">
+            <div>
+              <h2>Share your story to unlock the database</h2>
+              <p>It takes about two minutes. Every answer makes the picture clearer for the next student.</p>
+              <a class="btn btn-primary" href="share.html">Join the movement</a>
+            </div>
+          </div>
+        </div>
+        <div class="db-more" id="more"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer data-layout="footer"></footer>
+  <script type="module" src="js/pages/database.js"></script>
+</body>
+</html>

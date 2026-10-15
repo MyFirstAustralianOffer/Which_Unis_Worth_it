@@ -1,81 +1,88 @@
-# Which Uni's Worth It?
+# Return on Uni
 
-Real outcomes from real grads: how long it took to land a job in the field, what they started on, and how they got it.
+Real outcomes from real Australian graduates: where people who studied your degree started, and what they're earning now.
 
-**Status:** front-end MVP. Sign-up is a mock (nothing is stored or sent). The institution list is the real one from the MVP Product Brief, but **every result is made up**; a banner on every page and a "Demo data" label on every card say so. Replace with real submissions before promoting the site.
+- **Homepage**: mission, database preview, independence, why we exist, ASK
+- **Share your story**: one form, three paths (Graduated · Currently studying · Planning to study), one question at a time
+- **Database**: searchable graduate cards, unlocked after finishing the form
+- **Google Sheets backend**: answers go into a Google Sheet, and the database reads from it
 
-## Features
-- **Home**: hero, fastest-to-a-job courses, who it's for
-- **Database**: search and filter by course, uni, field, year and student type; verified-only toggle; summary stats; sorting; "load more". Logged-out visitors see 3 results, then a sign-up prompt.
-- **Share your result**: grads answer six quick questions and instantly see how they compare.
-- **Mock sign-up / log in**: Graduate, Current student or Future student. Kept only for the browser tab.
-- **Privacy rules built in**: salaries shown only as bands; summaries hidden for groups smaller than 3.
+Plain HTML, CSS and JavaScript modules. No build step, no server, no accounts.
+
+## Status
+
+Runs in **demo mode** until Google Sheets is connected: the database shows labelled *Example* cards and answers stay in your browser.
+To go live, follow **[docs/google-sheets-setup.md](docs/google-sheets-setup.md)** (about 10 minutes).
 
 ## Project structure
 
 ```
-index.html              Page shell: header, nav, <main id="app">, footer
-assets/favicon.svg
+index.html            Homepage
+share.html            "Share your story" form
+database.html         Full database
+privacy.html          Privacy policy (draft, review before launch)
+terms.html            Terms (draft, review before launch)
+
 css/
-  base.css              Design tokens (colours, fonts), reset, buttons
-  layout.css            Header, mobile nav, user menu, footer
-  components.css        Cards, pills, chips, form fields, stats, modal, toast
-  pages.css             Page-specific layouts + responsive rules
+  base.css            Colours, fonts, buttons, header, footer
+  entries.css         Database cards + filters (homepage preview and database page)
+  home.css            Homepage sections
+  form.css            The share form
+  database.css        Database page + locked state
+  legal.css           Privacy + terms pages
+
 js/
-  main.js               Entry point: wires everything together
-  router.js             Hash router (#/database?q=Law → database page)
-  config.js             App settings: privacy threshold, page size, roles
-  lib/                  Pure helpers with no side effects
-    dom.js              $, esc (HTML escaping), options, delegate
-    format.js           Salary bands, "4 months", speed colours, "3 days ago"
-    stats.js            median, summarise, summariseByCourse
-    validate.js         Email + password rules
+  config.js           ← Settings: paste the Google Sheets URL here
+  lib/dom.js          Small helpers (escaping, money format, safe storage)
   data/
-    taxonomy.js         Institutions (with short names like UTS, Macca), courses, answer options
-    sample-data.js      Seeded fake results for the demo
-  services/             The only code that touches data or accounts
-    auth.js             Mock sign-up / log-in / log-out
-    results.js          Query + add results
-  components/           Reusable UI pieces
-    header.js           Log in / Sign up buttons, user menu, active nav
-    auth-modal.js       Sign-up / log-in pop-up
-    result-card.js      One grad's outcome
-    course-card.js      Median outcome for a course
-    chips.js            Pick-one pill buttons
-    uni-picker.js       Searchable institution dropdown (+ "Other / not listed" text box)
-    toast.js            Pop-up confirmation message
-  pages/                One file per page; each exports { title, render(root, params) }
-    home.js  database.js  share.js  how.js  about.js
+    options.js        Option lists: levels, universities, years, answers
+    form-schema.js    Every form question, per path (field names = sheet columns)
+    sample-entries.js Example cards for demo mode
+  services/
+    api.js            The only code that talks to Google Sheets
+    access.js         "Database unlocked" flag
+  components/
+    layout.js         Shared header + footer
+    question.js       Renders and validates each type of question
+    entry-card.js     Expandable graduate card
+    icons.js          SVG icons
+  pages/
+    home.js  share.js  database.js
+
+apps-script/Code.gs   Google Apps Script backend (paste into your sheet)
+docs/google-sheets-setup.md
 ```
 
-**How the pieces talk:** pages read data only through `services/`. Services notify listeners when something changes (`onAuthChange`, `onResultsChange`), and `main.js` re-renders the header and current page.
-
 ### Common changes
+
 | I want to… | Edit |
 |---|---|
-| Change colours or fonts | `css/base.css` (`:root` tokens) |
-| Add a university, short name or course | `js/data/taxonomy.js` |
-| Remove the demo banner (once data is real) | `index.html` (`.demo-banner`) and the `Demo data` pill in `js/components/result-card.js` |
-| Change the privacy threshold or page size | `js/config.js` |
-| Add a new page | Create `js/pages/new.js`, register it in `js/main.js`, add a nav link in `index.html` |
-| Connect a real backend | Replace the function bodies in `js/services/` (see below) |
+| Connect Google Sheets | `js/config.js` → `SHEETS_API_URL` |
+| Change a question or its wording | `js/data/form-schema.js` |
+| Add a university or option | `js/data/options.js` |
+| Change colours or fonts | `css/base.css` (`:root`) |
+| Change homepage copy | `index.html` |
+| Change who appears publicly / privacy threshold | `apps-script/Code.gs` (`SETTINGS`) |
+| Add a contact email to the footer | `js/config.js` → `CONTACT_EMAIL` |
+
+**Keep field names stable** once real data is coming in. They're the column headers in the sheet.
+
+## Privacy rules (from the Share Form Spec)
+
+- **Public:** only Graduated answers, as database cards. Email is never shown or sent to the browser.
+- **Private:** Currently studying and Planning to study answers are stored in their own tabs and never shown.
+- **Small groups stay hidden:** a graduate card only appears once at least 3 grads share the same course + uni (configurable).
 
 ## Run it locally
-The JavaScript uses ES modules, which browsers won't load from a `file://` path, so serve the folder:
+
+Browsers won't load JavaScript modules from a `file://` path, so serve the folder:
 
 ```bash
 python3 -m http.server 8000
-# then open http://localhost:8000
+# open http://localhost:8000
 ```
 
-Or use the VS Code "Live Server" extension.
+## Deploy (GitHub Pages)
 
-## Deploy on GitHub Pages
-Settings → Pages → Build and deployment → Source: **Deploy from a branch**, Branch: **main**, folder **/ (root)** → Save.
-The site goes live at `https://<username>.github.io/<repo-name>/` within a minute or two. No build step needed.
-
-## Next steps: going live
-1. **Supabase project**: create one and run the schema (results table + row-level security + aggregate view).
-2. **Real auth**: swap `js/services/auth.js` for Supabase Auth with 6-digit email codes (OTP). The comments in that file show the matching calls.
-3. **Real data**: swap `js/services/results.js` to read/write Supabase; delete `js/data/sample-data.js`.
-4. **Enforce privacy in the database**: the minimum group size must be applied server-side, not just in the page.
+Settings → Pages → Source: **Deploy from a branch** → Branch **main**, folder **/ (root)** → Save.
+Live at `https://<username>.github.io/<repo-name>/` within a couple of minutes.
