@@ -8,7 +8,7 @@ export const CONFIG = {
    * answers are kept only in this browser.
    * Setup guide: docs/google-sheets-setup.md
    */
-  SHEETS_API_URL: "",
+  SHEETS_API_URL: "https://script.google.com/macros/s/AKfycbwG5_sQXNwmeMupGEUMM1E2usqInOwmn7QarmcM93XRwc6-Z5syv-lR83zgA8lwjOlAeA/exec",
 
   /** Shown as the footer "Contact" link. Leave empty to hide the link. */
   CONTACT_EMAIL: "",
