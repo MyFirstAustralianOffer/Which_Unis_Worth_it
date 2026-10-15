@@ -7,10 +7,10 @@
  * Both are suggestions: people can always keep what they typed (it goes to the
  * review tab in the Google Sheet).
  */
-import { esc } from "../lib/dom.js";
-import { searchCourses, closestCourses, findExact, offeredAt } from "../lib/course-search.js";
-import { shortUni } from "../data/options.js";
-import { loadCourseIndex } from "../services/courses.js";
+import { esc } from "../lib/dom.js?v=5a71cd6c";
+import { searchCourses, closestCourses, findExact, offeredAt } from "../lib/course-search.js?v=145d5596";
+import { shortUni } from "../data/options.js?v=e19dd9c8";
+import { loadCourseIndex } from "../services/courses.js?v=367b7213";
 
 const MAX_SUGGESTIONS = 8;
 

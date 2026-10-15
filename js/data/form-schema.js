@@ -16,7 +16,7 @@
  */
 import {
   LEVELS, UNIVERSITIES, STUDENT_TYPES, GRAD_YEARS, GRADUATING_YEARS, START_YEARS, TIME_TO_JOB, JOB_IN_FIELD,
-} from "./options.js";
+} from "./options.js?v=e19dd9c8";
 
 const SALARY_HELP = "Yearly, in AUD, before tax.";
 

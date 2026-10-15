@@ -8,9 +8,9 @@
  *
  * Demo mode (no URL): example cards, and submissions stay in this browser.
  */
-import { CONFIG, isConnected } from "../config.js";
-import { SAMPLE_ENTRIES } from "../data/sample-entries.js";
-import { store } from "../lib/dom.js";
+import { CONFIG, isConnected } from "../config.js?v=c8c5fba1";
+import { SAMPLE_ENTRIES } from "../data/sample-entries.js?v=9b757df7";
+import { store } from "../lib/dom.js?v=5a71cd6c";
 
 const DEMO_KEY = "rou_demo_entries";
 const CACHE_KEY = "rou_entries_cache";

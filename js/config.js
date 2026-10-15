@@ -16,8 +16,8 @@ export const CONFIG = {
   /** How many cards the database page shows at a time. */
   PAGE_SIZE: 24,
 
-  /** How long (minutes) the database is cached in the browser. */
-  CACHE_MINUTES: 5,
+  /** How long (minutes) the database is cached in the browser. Keep it short so new entries show quickly. */
+  CACHE_MINUTES: 1,
 };
 
 export const isConnected = () => CONFIG.SHEETS_API_URL.trim().length > 0;

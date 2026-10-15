@@ -2,13 +2,13 @@
  * Share page: one question at a time, branching after "Which one are you?".
  * Behaviour follows the Share Form Spec ("How the form behaves").
  */
-import { renderLayout } from "../components/layout.js";
-import { renderQuestion, bindQuestion, validateQuestion, fieldsOf } from "../components/question.js";
-import { icons } from "../components/icons.js";
-import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js";
-import { submitResponse } from "../services/api.js";
-import { unlock } from "../services/access.js";
-import { $, esc } from "../lib/dom.js";
+import { renderLayout } from "../components/layout.js?v=9e490b42";
+import { renderQuestion, bindQuestion, validateQuestion, fieldsOf } from "../components/question.js?v=fb28deae";
+import { icons } from "../components/icons.js?v=ecd0f942";
+import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=6b755735";
+import { submitResponse } from "../services/api.js?v=034a0f94";
+import { unlock } from "../services/access.js?v=6ff55857";
+import { $, esc } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();
 

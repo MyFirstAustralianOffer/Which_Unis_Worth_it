@@ -5,11 +5,11 @@
  *   bindQuestion(root, q, answers, onChange) → keeps `answers` up to date
  *   validateQuestion(q, answers) → "" or the error message to show
  */
-import { esc, options, digitsOnly } from "../lib/dom.js";
-import { LEVELS } from "../data/options.js";
-import { ERRORS } from "../data/form-schema.js";
-import { icons } from "./icons.js";
-import { courseInputHtml, bindCourseInput } from "./course-input.js";
+import { esc, options, digitsOnly } from "../lib/dom.js?v=5a71cd6c";
+import { LEVELS } from "../data/options.js?v=e19dd9c8";
+import { ERRORS } from "../data/form-schema.js?v=6b755735";
+import { icons } from "./icons.js?v=ecd0f942";
+import { courseInputHtml, bindCourseInput } from "./course-input.js?v=f28872ca";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const filled = (v) => v !== undefined && v !== null && String(v).trim() !== "";

@@ -4,9 +4,9 @@
  * Closed: course, uni (year) · student type, "first role → role now".
  * Open:   time to first job, first role, starting salary, role now, salary now.
  */
-import { esc, money } from "../lib/dom.js";
-import { shortUni } from "../data/options.js";
-import { icons } from "./icons.js";
+import { esc, money } from "../lib/dom.js?v=5a71cd6c";
+import { shortUni } from "../data/options.js?v=e19dd9c8";
+import { icons } from "./icons.js?v=ecd0f942";
 
 /** "Bachelor" + "Nursing" → "Bachelor of Nursing"; "Graduate Certificate in Data Science". */
 export function degreeTitle(level, course) {

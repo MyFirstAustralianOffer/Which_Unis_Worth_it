@@ -2,13 +2,13 @@
  * Database page: filters + expandable graduate cards.
  * Locked (blurred, with a call to action) until the person finishes the form.
  */
-import { renderLayout } from "../components/layout.js";
-import { entryCard, bindEntryToggles } from "../components/entry-card.js";
-import { setupFilters, filterEntries, readFilters } from "../components/entry-filters.js";
-import { fetchEntries } from "../services/api.js";
-import { isUnlocked } from "../services/access.js";
-import { CONFIG } from "../config.js";
-import { $ } from "../lib/dom.js";
+import { renderLayout } from "../components/layout.js?v=9e490b42";
+import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=8af50c0b";
+import { setupFilters, filterEntries, readFilters } from "../components/entry-filters.js?v=678b522d";
+import { fetchEntries } from "../services/api.js?v=034a0f94";
+import { isUnlocked } from "../services/access.js?v=6ff55857";
+import { CONFIG } from "../config.js?v=c8c5fba1";
+import { $ } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();
 

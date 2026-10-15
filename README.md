@@ -50,12 +50,14 @@ js/
     entry-filters.js  Course / University / Graduated / Student type filters (homepage + database)
     course-input.js   Course box: real course titles as type-ahead + "Did you mean…?"
     icons.js          SVG icons
+    storage-notice.js "No cookies, no tracking" notice + "Reset this site"
   pages/
     home.js  share.js  database.js
 
 apps-script/Code.gs   Google Apps Script backend (paste into your sheet)
 data/courses.json     7,959 Australian university course titles (from the CRICOS register)
 tools/build-courses.mjs  Rebuilds data/courses.json from a CRICOS export
+tools/release.mjs     Version-stamps CSS/JS/data URLs so browsers load changes immediately
 docs/google-sheets-setup.md
 ```
 
@@ -89,6 +91,16 @@ Browsers won't load JavaScript modules from a `file://` path, so serve the folde
 python3 -m http.server 8000
 # open http://localhost:8000
 ```
+
+## Before every commit
+
+```bash
+node tools/release.mjs
+```
+
+This adds a content fingerprint (`?v=…`) to every CSS, JS and data URL, so visitors' browsers fetch changed files straight away instead of using a cached copy for up to 10 minutes. A normal page reload then always shows the latest version.
+
+**Testing tip:** add `?reset` to any page URL (or click **Reset this site** in the footer) to clear everything the site saved on your device: the unlock, cached data and the notice.
 
 ## Deploy (GitHub Pages)
 

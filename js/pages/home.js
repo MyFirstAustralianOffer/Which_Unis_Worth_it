@@ -3,12 +3,12 @@
  * the filters search the real entries (from Google Sheets once connected)
  * and the cards open and close in place.
  */
-import { renderLayout } from "../components/layout.js";
-import { entryCard, bindEntryToggles } from "../components/entry-card.js";
-import { setupFilters, filterEntries, readFilters } from "../components/entry-filters.js";
-import { fetchEntries } from "../services/api.js";
-import { isUnlocked } from "../services/access.js";
-import { $ } from "../lib/dom.js";
+import { renderLayout } from "../components/layout.js?v=9e490b42";
+import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=8af50c0b";
+import { setupFilters, filterEntries, readFilters } from "../components/entry-filters.js?v=678b522d";
+import { fetchEntries } from "../services/api.js?v=034a0f94";
+import { isUnlocked } from "../services/access.js?v=6ff55857";
+import { $ } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();
 

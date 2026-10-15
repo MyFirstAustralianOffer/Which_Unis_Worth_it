@@ -91,6 +91,19 @@ img, svg { display: block; max-width: 100%; }
 .footer-links { display: flex; gap: 18px; }
 .footer-links a { color: var(--muted); text-underline-offset: 3px; }
 
+.footer-reset { background: none; border: 0; padding: 0; font: inherit; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* "No cookies, no tracking" notice (once per browser) */
+.storage-notice {
+  position: fixed; left: 16px; bottom: 16px; z-index: 50; max-width: 380px;
+  display: flex; gap: 14px; align-items: center;
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 14px 16px; font-size: 13.5px; color: var(--text);
+}
+.storage-notice a { color: var(--navy); font-weight: 600; }
+.storage-notice .btn { flex: none; }
+@media (max-width: 560px) { .storage-notice { left: 12px; right: 12px; bottom: 12px; max-width: none; } }
+
 /* demo-mode notice (only shown while Google Sheets isn't connected) */
 .demo-note { background: #fff7e8; border-bottom: 1px solid #f3dfb8; color: #7a5410; font-size: 13px; text-align: center; padding: 7px 16px; }
 .demo-note[hidden] { display: none; }

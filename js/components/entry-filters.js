@@ -9,8 +9,8 @@
  *                                          onChange(values) on Search / change
  *   filterEntries(entries, values)         the matching entries
  */
-import { UNIVERSITIES, STUDENT_TYPES } from "../data/options.js";
-import { options } from "../lib/dom.js";
+import { UNIVERSITIES, STUDENT_TYPES } from "../data/options.js?v=e19dd9c8";
+import { options } from "../lib/dom.js?v=5a71cd6c";
 
 /** Latest graduation year in the form (see GRAD_YEARS in options.js). */
 const LATEST_YEAR = 2026;
