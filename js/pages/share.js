@@ -42,8 +42,11 @@ function render() {
           <input type="checkbox" id="consent"${consent ? " checked" : ""}>
           <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>. <span class="req" aria-hidden="true">*</span></span>
         </label>` : ""}
-      <!-- spam trap: real people never see or fill this -->
-      <input type="text" name="website" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <!-- Spam trap: hidden from people, only bots fill it. Its name is deliberately
+           meaningless so browser autofill never fills it in for real visitors. -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+        <input type="text" name="rou_trap_7f3" id="hp" tabindex="-1" autocomplete="off" data-lpignore="true" data-1p-ignore>
+      </div>
       <p class="error" id="qError" role="alert"></p>
       <div class="form-actions">
         ${step > 0 ? `<button type="button" class="btn btn-outline" id="backBtn">Back</button>` : ""}
