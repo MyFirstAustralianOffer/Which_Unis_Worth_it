@@ -2,7 +2,7 @@
 
 Real outcomes from real Australian graduates: where people who studied your degree started, and what they're earning now.
 
-- **Homepage**: mission, database preview, independence, why we exist, ASK
+- **Homepage**: mission, a live database preview (working filters + expandable cards), independence, why we exist, ASK
 - **Share your story**: one form, three paths (Graduated · Currently studying · Planning to study), one question at a time
 - **Database**: searchable graduate cards, unlocked after finishing the form
 - **Google Sheets backend**: answers go into a Google Sheet, and the database reads from it
@@ -45,6 +45,7 @@ js/
     layout.js         Shared header + footer
     question.js       Renders and validates each type of question
     entry-card.js     Expandable graduate card
+    entry-filters.js  Course / University / Graduated / Student type filters (homepage + database)
     icons.js          SVG icons
   pages/
     home.js  share.js  database.js

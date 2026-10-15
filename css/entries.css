@@ -45,8 +45,11 @@
 .entry .tag-example { font-size: 9.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #9a6b12; background: #fff4df; border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
 
 /* bottom row of the homepage preview fades out */
-.entries.fade { position: relative; max-height: 400px; overflow: hidden; }
-.entries.fade::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 110px; background: linear-gradient(rgba(255,255,255,0), #fff 92%); pointer-events: none; }
+.entries.fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 90px), rgba(0,0,0,.18));
+          mask-image: linear-gradient(to bottom, #000 calc(100% - 90px), rgba(0,0,0,.18));
+}
+.preview-status { margin: 12px 2px 0; }
 
 .entries-empty { grid-column: 1 / -1; text-align: center; padding: 36px 16px; color: var(--muted); border: 1px dashed var(--line); border-radius: 10px; }
 .entries-status { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
@@ -58,5 +61,4 @@
 }
 @media (max-width: 560px) {
   .entries { grid-template-columns: 1fr; }
-  .entries.fade { max-height: 420px; }
 }

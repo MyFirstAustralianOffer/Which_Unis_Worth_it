@@ -33,17 +33,25 @@
         <h2 id="previewTitle">Search real outcomes</h2>
         <p class="lead">Every card is one real person: where they started, and where they are now.</p>
 
-        <div class="browser" id="preview" role="link" tabindex="0" aria-label="Open the database">
+        <div class="browser" id="preview">
           <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span class="browser-tab">Return on Uni · Database</span></div>
           <div class="browser-body">
-            <div class="filters" aria-hidden="true">
-              <div class="filter"><label>Course</label><select tabindex="-1"><option>Nursing</option></select></div>
-              <div class="filter"><label>University</label><select tabindex="-1"><option>All universities</option></select></div>
-              <div class="filter"><label>Graduated</label><select tabindex="-1"><option>Last 5 years</option></select></div>
-              <div class="filter"><label>Student type</label><select tabindex="-1"><option>All</option></select></div>
-              <span class="btn btn-primary">Search</span>
-            </div>
-            <div class="entries fade" id="previewEntries"></div>
+            <form class="filters" id="previewFilters" role="search" aria-label="Search graduate outcomes">
+              <div class="filter"><label for="pCourse">Course</label><select id="pCourse" data-filter="course"><option value="">All courses</option></select></div>
+              <div class="filter"><label for="pUni">University</label><select id="pUni" data-filter="uni"><option value="">All universities</option></select></div>
+              <div class="filter"><label for="pYears">Graduated</label>
+                <select id="pYears" data-filter="years">
+                    <option value="">Any year</option>
+                    <option value="2">Last 2 years</option>
+                    <option value="5" selected>Last 5 years</option>
+                    <option value="10">Last 10 years</option>
+                </select>
+              </div>
+              <div class="filter"><label for="pType">Student type</label><select id="pType" data-filter="type"><option value="">All</option></select></div>
+              <button class="btn btn-primary" type="submit">Search</button>
+            </form>
+            <div class="entries fade" id="previewEntries" aria-live="polite"></div>
+            <p class="entries-status preview-status" id="previewStatus"></p>
           </div>
         </div>
 

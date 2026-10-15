@@ -23,17 +23,17 @@
 
       <div class="db-panel">
         <form class="filters" id="filters" role="search">
-          <div class="filter"><label for="fCourse">Course</label><select id="fCourse"><option value="">All courses</option></select></div>
-          <div class="filter"><label for="fUni">University</label><select id="fUni"><option value="">All universities</option></select></div>
+          <div class="filter"><label for="fCourse">Course</label><select id="fCourse" data-filter="course"><option value="">All courses</option></select></div>
+          <div class="filter"><label for="fUni">University</label><select id="fUni" data-filter="uni"><option value="">All universities</option></select></div>
           <div class="filter"><label for="fYears">Graduated</label>
-            <select id="fYears">
+            <select id="fYears" data-filter="years">
               <option value="">Any year</option>
               <option value="2">Last 2 years</option>
               <option value="5">Last 5 years</option>
               <option value="10">Last 10 years</option>
             </select>
           </div>
-          <div class="filter"><label for="fType">Student type</label><select id="fType"><option value="">All</option></select></div>
+          <div class="filter"><label for="fType">Student type</label><select id="fType" data-filter="type"><option value="">All</option></select></div>
           <button class="btn btn-primary" type="submit">Search</button>
         </form>
 

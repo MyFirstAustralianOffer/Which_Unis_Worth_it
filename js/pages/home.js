@@ -1,39 +1,64 @@
 /**
- * Homepage: header/footer, and the database preview cards.
- * The whole preview links to the form (or the database once unlocked).
+ * Homepage. The "Search real outcomes" preview is a working mini-database:
+ * the filters search the real entries (from Google Sheets once connected)
+ * and the cards open and close in place.
  */
 import { renderLayout } from "../components/layout.js";
-import { entryCard } from "../components/entry-card.js";
+import { entryCard, bindEntryToggles } from "../components/entry-card.js";
+import { setupFilters, filterEntries, readFilters } from "../components/entry-filters.js";
 import { fetchEntries } from "../services/api.js";
 import { isUnlocked } from "../services/access.js";
 import { $ } from "../lib/dom.js";
 
 renderLayout();
 
+/** Cards shown in the preview: one full row of 4, plus a faded second row. */
 const PREVIEW_COUNT = 6;
-const target = () => (isUnlocked() ? "database.html" : "share.html");
+/** Cards from this index on are in the faded second row. */
+const FADE_FROM = 4;
 
-async function renderPreview() {
-  const grid = $("#previewEntries");
+const grid = $("#previewEntries");
+const form = $("#previewFilters");
+const status = $("#previewStatus");
+let all = [];
+
+bindEntryToggles(grid);
+// The bottom row is faded, as in the design. Opening one of those cards
+// removes the fade so it can be read in full.
+grid.addEventListener("click", () => {
+  const openInFadedRow = [...grid.querySelectorAll(".entry")].some((el, i) => i >= FADE_FROM && el.classList.contains("open"));
+  grid.classList.toggle("fade", !openInFadedRow && grid.querySelectorAll(".entry").length > FADE_FROM);
+});
+
+function render(values) {
+  const list = filterEntries(all, values);
+  if (!list.length) {
+    grid.classList.remove("fade");
+    grid.innerHTML = all.length
+      ? `<p class="entries-empty">No grads match those filters yet. Try “All universities” or “Any year”.</p>`
+      : `<p class="entries-empty">Be one of the first grads to share. Results appear here as people answer.</p>`;
+    status.textContent = "";
+    return;
+  }
+  const shown = list.slice(0, PREVIEW_COUNT);
+  grid.innerHTML = shown.map((e, i) => entryCard(e, { open: i === 0, id: `p${i}` })).join("");
+  grid.classList.toggle("fade", shown.length > FADE_FROM);
+  status.textContent = list.length > PREVIEW_COUNT
+    ? `Showing ${PREVIEW_COUNT} of ${list.length.toLocaleString()} grads.`
+    : `${list.length} ${list.length === 1 ? "grad" : "grads"} found.`;
+}
+
+async function load() {
   try {
-    const { entries } = await fetchEntries();
-    if (!entries.length) {
-      grid.innerHTML = `<p class="entries-empty">Be one of the first grads to share. Results appear here as people answer.</p>`;
-      grid.classList.remove("fade");
-      return;
-    }
-    grid.innerHTML = entries.slice(0, PREVIEW_COUNT).map((e, i) => entryCard(e, { open: i === 0, id: `p${i}` })).join("");
+    ({ entries: all } = await fetchEntries());
+    setupFilters(form, all, render);
+    render(readFilters(form));
   } catch {
     grid.innerHTML = `<p class="entries-empty">The database is taking a moment to load. Try refreshing the page.</p>`;
   }
 }
 
-// Clicking anywhere on the preview goes to the form (or the database once unlocked).
-const preview = $("#preview");
-preview.addEventListener("click", () => { location.href = target(); });
-preview.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); location.href = target(); }
-});
-$("#exploreBtn").href = target();
+// "Explore the database" goes to the full database once unlocked, otherwise to the form.
+$("#exploreBtn").href = isUnlocked() ? "database.html" : "share.html";
 
-renderPreview();
+load();
