@@ -9,6 +9,7 @@ import { esc, options, digitsOnly } from "../lib/dom.js";
 import { LEVELS } from "../data/options.js";
 import { ERRORS } from "../data/form-schema.js";
 import { icons } from "./icons.js";
+import { courseInputHtml, bindCourseInput } from "./course-input.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const filled = (v) => v !== undefined && v !== null && String(v).trim() !== "";
@@ -37,8 +38,7 @@ export function renderQuestion(q, a) {
           <select class="field" id="q-input" data-field="${q.levelField}" aria-label="Level of study">
             <option value="">Choose level</option>${options(LEVELS, a[q.levelField])}
           </select>
-          <input class="field" type="text" maxlength="100" autocomplete="off" aria-label="Course name"
-                 placeholder="${esc(q.placeholder)}" value="${esc(a[q.courseField])}" data-field="${q.courseField}">
+          ${courseInputHtml({ id: "q-course", field: q.courseField, value: a[q.courseField] || "", placeholder: q.placeholder })}
         </div>`;
 
     case "select":
@@ -75,6 +75,7 @@ export function renderQuestion(q, a) {
 }
 
 export function bindQuestion(root, q, a, onChange) {
+  if (q.type === "course") bindCourse(root, q, a, onChange);
   root.querySelectorAll("[data-field]").forEach((el) => {
     if (el.classList.contains("opt")) {
       el.addEventListener("click", () => {
@@ -113,4 +114,15 @@ export function validateQuestion(q, a) {
     default:
       return filled(a[q.field]) ? "" : ERRORS.generic;
   }
+}
+
+/** Course question: type-ahead + "Did you mean…?" on top of the normal inputs. */
+function bindCourse(root, q, a, onChange) {
+  const levelSel = root.querySelector(`[data-field="${q.levelField}"]`);
+  const course = bindCourseInput(root, {
+    setCourse: (name) => { a[q.courseField] = name; onChange(); },
+    getLevel: () => levelSel.value,
+    setLevel: (level) => { levelSel.value = level; a[q.levelField] = level; onChange(); },
+  });
+  levelSel.addEventListener("change", () => course.refreshHint());
 }

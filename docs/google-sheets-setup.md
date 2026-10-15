@@ -63,6 +63,23 @@ Settings at the top of the script:
 | `MAX_ENTRIES` | Most cards sent to the website | 1000 |
 | `CACHE_SECONDS` | How long the public list is cached | 300 (5 min) |
 
+## Course names (automatic clean-up)
+
+People type their course in their own words, so the script tidies every course name before saving it:
+
+- drops degree words typed into the course box: "Masters of Data Science" → **Data Science**
+- fixes capitals, spacing and symbols: "data  science." → **Data Science**, "&" → "and"
+- expands short forms: "Comp Sci" → **Computer Science**, "Mech Engg" → **Mechanical Engineering**, "MBA" → **Business Administration**
+- fixes small typos against the official list: "Data Sceince" → **Data Science**
+
+What they actually typed is kept in the `course_name_as_typed` column.
+
+**The "Course names" tab** lists any course the script didn't recognise. To group it with an existing course, type the right name in **Use this name instead**. That applies to past entries and future ones (the site updates within 5 minutes). Leave it blank if the course is genuinely new and correctly spelled.
+
+**Official list and short forms** are at the top of `Code.gs` (`COURSES`, `COURSE_ALIASES`, `WORD_ABBREVIATIONS`). Add to them freely, then deploy a new version. If you change them, also run `node tools/sync-course-clean.mjs` in the repo so the website's "Did you mean…?" hints use the same rules.
+
+**Clean up rows that are already in the sheet:** in Apps Script choose **cleanExistingCourses** in the function dropdown and click **Run**. It's safe to run any time.
+
 ## Managing the data
 
 - **Hide one card:** in the Graduates tab, change its `show_in_database` cell to `FALSE`.

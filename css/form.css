@@ -64,3 +64,18 @@ select.field { appearance: none; -webkit-appearance: none; padding-right: 40px; 
 
 /* keep Back/Next pinned to the bottom of the card, as in the mockup */
 .form-card > form { display: flex; flex-direction: column; flex: 1; }
+
+/* ---------- course box: type-ahead + "Did you mean…?" ---------- */
+.combo { position: relative; }
+.combo-list {
+  position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 6px);
+  margin: 0; padding: 6px; list-style: none; max-height: 260px; overflow-y: auto;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
+}
+.combo-list[hidden] { display: none; }
+.combo-list [role=option] { padding: 9px 12px; border-radius: 8px; font-size: 14px; color: var(--navy); cursor: pointer; }
+.combo-list [role=option]:hover, .combo-list [role=option][aria-selected="true"] { background: var(--bg-soft); }
+.course-hint { font-size: 13.5px; color: var(--text); margin-top: 2px; }
+.course-hint[hidden] { display: none; }
+.hint-btn { background: var(--peach); border: 0; border-radius: 6px; padding: 2px 8px; font-weight: 700; color: var(--navy); cursor: pointer; font-size: 13.5px; }
+.hint-btn:hover { background: #ffd79a; }
