@@ -73,9 +73,11 @@ select.field { appearance: none; -webkit-appearance: none; padding-right: 40px; 
   background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
 }
 .combo-list[hidden] { display: none; }
-.combo-list [role=option] { padding: 9px 12px; border-radius: 8px; font-size: 14px; color: var(--navy); cursor: pointer; }
+.combo-list [role=option] { padding: 8px 12px; border-radius: 8px; font-size: 14px; color: var(--navy); cursor: pointer; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.combo-list .opt-meta { font-size: 12px; color: var(--muted); white-space: nowrap; flex: none; max-width: 40%; overflow: hidden; text-overflow: ellipsis; }
 .combo-list [role=option]:hover, .combo-list [role=option][aria-selected="true"] { background: var(--bg-soft); }
-.course-hint { font-size: 13.5px; color: var(--text); margin-top: 2px; }
+.course-hint { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13.5px; color: var(--text); margin-top: 2px; }
+.course-hint span { margin-right: 2px; }
 .course-hint[hidden] { display: none; }
-.hint-btn { background: var(--peach); border: 0; border-radius: 6px; padding: 2px 8px; font-weight: 700; color: var(--navy); cursor: pointer; font-size: 13.5px; }
+.hint-btn { background: var(--peach); border: 0; border-radius: 999px; padding: 5px 12px; font-weight: 700; color: var(--navy); cursor: pointer; font-size: 13px; text-align: left; }
 .hint-btn:hover { background: #ffd79a; }

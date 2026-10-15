@@ -16,7 +16,8 @@ const filled = (v) => v !== undefined && v !== null && String(v).trim() !== "";
 const fmtThousands = (digits) => (digits ? Number(digits).toLocaleString("en-AU") : "");
 
 /** Field names a question writes to (used to clear old answers when switching paths). */
-export const fieldsOf = (q) => q.fields || (q.type === "course" ? [q.levelField, q.courseField] : [q.field]);
+export const fieldsOf = (q) => q.fields ||
+  (q.type === "course" ? [q.levelField, q.courseField, "course_from_list", "course_suggestion"] : [q.field]);
 
 export function renderQuestion(q, a) {
   switch (q.type) {
@@ -116,13 +117,14 @@ export function validateQuestion(q, a) {
   }
 }
 
-/** Course question: type-ahead + "Did you mean…?" on top of the normal inputs. */
+/** Course question: real course titles as type-ahead + "Did you mean…?". */
 function bindCourse(root, q, a, onChange) {
   const levelSel = root.querySelector(`[data-field="${q.levelField}"]`);
   const course = bindCourseInput(root, {
-    setCourse: (name) => { a[q.courseField] = name; onChange(); },
+    setCourse: (title, official) => { a[q.courseField] = title; a.course_from_list = official; onChange(); },
     getLevel: () => levelSel.value,
     setLevel: (level) => { levelSel.value = level; a[q.levelField] = level; onChange(); },
+    setSuggestion: (title) => { a.course_suggestion = title; },
   });
-  levelSel.addEventListener("change", () => course.refreshHint());
+  levelSel.addEventListener("change", () => course.levelChanged());
 }

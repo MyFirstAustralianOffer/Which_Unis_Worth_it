@@ -1,23 +1,24 @@
 /**
- * Course name box with:
- *   1. type-ahead: a short list of matching courses while typing
- *   2. "Did you mean …?": a one-tap fix for typos, short forms, and
- *      degree words typed into the course box ("Masters of Data Science")
+ * Course name box, backed by the database of real Australian course titles:
+ *   1. type-ahead: official titles at the chosen level, with where they're offered
+ *   2. "Did you mean …?": up to 3 close official titles when what they typed isn't one
+ *      ("Masters in Politics" → Master of Political Science / Master of Political Economy …)
  *
- * Both are suggestions only: people can always keep what they typed.
- * The same cleaning rules run again in the Google script when saving.
+ * Both are suggestions: people can always keep what they typed (it goes to the
+ * review tab in the Google Sheet).
  */
 import { esc } from "../lib/dom.js";
-import { cleanCourse, tidyCourseText } from "../lib/course-clean.js";
-import { loadCourseData } from "../services/courses.js";
+import { searchCourses, closestCourses, findExact, offeredAt } from "../lib/course-search.js";
+import { shortUni } from "../data/options.js";
+import { loadCourseIndex } from "../services/courses.js";
 
-const MAX_SUGGESTIONS = 6;
+const MAX_SUGGESTIONS = 8;
 
 /** HTML for the input + list + hint. `id` must be unique on the page. */
 export function courseInputHtml({ id, field, value, placeholder }) {
   return `
     <div class="combo" data-course-combo>
-      <input class="field" id="${id}" type="text" maxlength="100" autocomplete="off" spellcheck="true"
+      <input class="field" id="${id}" type="text" maxlength="150" autocomplete="off" spellcheck="true"
              role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-list"
              aria-describedby="${id}-hint" aria-label="Course name"
              placeholder="${esc(placeholder)}" value="${esc(value)}" data-field="${field}">
@@ -28,48 +29,41 @@ export function courseInputHtml({ id, field, value, placeholder }) {
 
 /**
  * Wire up the box.
- *   setCourse(name)  saves the course text
- *   getLevel()       the level dropdown's current value
- *   setLevel(level)  picks a level (used when "Masters of…" was typed and no level chosen)
+ *   setCourse(title, official)  saves the course text (+ whether it's an official title)
+ *   getLevel() / setLevel(l)    the level dropdown
+ *   setSuggestion(title)        the closest official title, saved for the review tab
  */
-export function bindCourseInput(root, { setCourse, getLevel, setLevel }) {
-  const combo = root.querySelector("[data-course-combo]");
-  const input = combo.querySelector("input");
-  const list = combo.querySelector("[role=listbox]");
+export function bindCourseInput(root, { setCourse, getLevel, setLevel, setSuggestion }) {
+  const input = root.querySelector("[data-course-combo] input");
+  const list = root.querySelector("[data-course-combo] [role=listbox]");
   const hint = root.querySelector(".course-hint");
 
-  let data = null;
+  let index = null;
   let matches = [];
   let active = -1;
   let timer = null;
 
-  loadCourseData().then((d) => { data = d; if (document.activeElement === input) update(); else updateHint(); });
+  loadCourseIndex().then((idx) => {
+    index = idx;
+    if (!index) return;
+    report();
+    if (document.activeElement === input) update(); else updateHint();
+  });
 
-  /* ---------- type-ahead ---------- */
-  function rank(q) {
-    const all = [...new Set([...data.courses, ...data.seen])];
-    const lower = q.toLowerCase();
-    const scored = [];
-    for (const name of all) {
-      const n = name.toLowerCase();
-      if (n === lower) continue;
-      let score = null;
-      if (n.startsWith(lower)) score = 0;
-      else if (n.split(/[\s(]+/).some((w) => w.startsWith(lower))) score = 1;
-      else if (lower.length >= 3 && n.includes(lower)) score = 2;
-      if (score !== null) scored.push([score, name.length, name]);
-    }
-    // Short forms: "comp sci" → Computer Science
-    const alias = data.aliases[lower];
-    if (alias) scored.unshift([-1, 0, Array.isArray(alias) ? alias[0] : alias]);
-    scored.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2].localeCompare(b[2]));
-    return [...new Set(scored.map((s) => s[2]))].slice(0, MAX_SUGGESTIONS);
+  /** Tell the form whether the current text is an official title. */
+  function report() {
+    const exact = index && findExact(index, input.value);
+    setCourse(exact ? exact.name : input.value, !!exact);
   }
 
+  /* ---------- type-ahead ---------- */
   function renderList() {
     if (!matches.length) return closeList();
-    list.innerHTML = matches.map((m, i) =>
-      `<li role="option" id="${input.id}-opt-${i}" data-i="${i}" aria-selected="${i === active}">${esc(m)}</li>`).join("");
+    list.innerHTML = matches.map((c, i) => `
+      <li role="option" id="${input.id}-opt-${i}" data-i="${i}" aria-selected="${i === active}">
+        <span class="opt-name">${esc(c.name)}</span>
+        <span class="opt-meta">${esc(offeredAt(c, shortUni))}</span>
+      </li>`).join("");
     list.hidden = false;
     input.setAttribute("aria-expanded", "true");
     if (active >= 0) input.setAttribute("aria-activedescendant", `${input.id}-opt-${active}`);
@@ -85,44 +79,41 @@ export function bindCourseInput(root, { setCourse, getLevel, setLevel }) {
 
   /* ---------- "Did you mean …?" ---------- */
   function updateHint() {
-    const typed = tidyCourseText(input.value);
-    if (!data || typed.length < 2) return hideHint();
-    const r = cleanCourse(typed, { courses: [...data.courses, ...data.seen], aliases: data.aliases });
-    const sameName = r.name.toLowerCase() === typed.toLowerCase();
-    const useful = r.how !== "new" && r.how !== "empty" && (!sameName || r.level);
-    if (!useful) return hideHint();
-
-    const level = getLevel();
-    const showLevel = r.level && !level;
-    // Only the degree words were extra ("Master of Data Science" with "Master" chosen) → just tidy the box.
-    const label = showLevel ? `${r.level} of ${r.name}` : r.name;
-    hint.innerHTML = `Did you mean <button type="button" class="hint-btn">${esc(label)}</button>?`;
+    if (!index || input.value.trim().length < 2) { setSuggestion(""); return hideHint(); }
+    const options = closestCourses(index, input.value, getLevel());
+    setSuggestion(options.map((c) => c.name).join(" | ")); // all close options go to the review tab
+    if (!options.length) return hideHint();
+    hint.innerHTML = `<span>Did you mean${options.length > 1 ? " one of these" : ""}?</span>` +
+      options.map((c, i) => `<button type="button" class="hint-btn" data-i="${i}">${esc(c.name)}</button>`).join("");
     hint.hidden = false;
-    hint.querySelector(".hint-btn").addEventListener("click", () => {
-      if (showLevel) setLevel(r.level);
-      choose(r.name);
-    });
+    hint.querySelectorAll(".hint-btn").forEach((b) => b.addEventListener("click", () => choose(options[+b.dataset.i])));
   }
 
   function hideHint() { hint.hidden = true; hint.innerHTML = ""; }
 
-  /* ---------- shared ---------- */
-  function choose(name) {
-    input.value = name;
-    setCourse(name);
+  /* ---------- picking a title ---------- */
+  function choose(course) {
+    input.value = course.name;
+    // Keep the level consistent with the title they picked.
+    const level = getLevel();
+    if (!course.levels.includes(level)) setLevel(course.levels[0]);
+    setCourse(course.name, true);
+    setSuggestion("");
     closeList();
     hideHint();
     input.focus();
   }
 
   function update() {
-    if (!data) return;
+    report();
+    if (!index) return;
     const q = input.value.trim();
-    matches = q.length >= 2 ? rank(q) : [];
+    matches = q.length >= 2 && !findExact(index, q) ? searchCourses(index, q, getLevel(), MAX_SUGGESTIONS) : [];
     active = -1;
     renderList();
+    hideHint();
     clearTimeout(timer);
-    timer = setTimeout(updateHint, 250);
+    timer = setTimeout(() => { if (list.hidden) updateHint(); }, 400);
   }
 
   input.addEventListener("input", update);
@@ -139,14 +130,14 @@ export function bindCourseInput(root, { setCourse, getLevel, setLevel }) {
       choose(matches[active]);
     } else if (e.key === "Escape") {
       closeList();
+      updateHint();
     }
   });
-  // mousedown fires before the box loses focus
   list.addEventListener("mousedown", (e) => {
     const li = e.target.closest("[role=option]");
     if (li) { e.preventDefault(); choose(matches[+li.dataset.i]); }
   });
 
-  // Picking a level can change the hint ("Masters of…" no longer needs the level part).
-  return { refreshHint: () => updateHint() };
+  // Changing the level changes which titles fit.
+  return { levelChanged: () => { if (document.activeElement === input) update(); else updateHint(); } };
 }

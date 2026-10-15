@@ -10,6 +10,8 @@ import { icons } from "./icons.js";
 
 /** "Bachelor" + "Nursing" → "Bachelor of Nursing"; "Graduate Certificate in Data Science". */
 export function degreeTitle(level, course) {
+  // Official titles already say the level ("Master of Data Science").
+  if (/^(bachelor|master|graduate (certificate|diploma)|(advanced )?diploma|associate degree|doctor|juris|phd)\b/i.test(String(course).trim())) return course;
   if (!level || level === "Other") return course;
   const joiner = /^(Graduate Certificate|Graduate Diploma|PhD)$/.test(level) ? "in" : "of";
   return `${level} ${joiner} ${course}`;

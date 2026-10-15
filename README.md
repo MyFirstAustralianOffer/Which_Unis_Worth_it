@@ -3,7 +3,7 @@
 Real outcomes from real Australian graduates: where people who studied your degree started, and what they're earning now.
 
 - **Homepage**: mission, a live database preview (working filters + expandable cards), independence, why we exist, ASK
-- **Share your story**: one form, three paths (Graduated · Currently studying · Planning to study), one question at a time, with course-name type-ahead and "Did you mean…?" hints
+- **Share your story**: one form, three paths (Graduated · Currently studying · Planning to study), one question at a time, with suggestions from a database of 7,959 real Australian university course titles
 - **Database**: searchable graduate cards, unlocked after finishing the form
 - **Google Sheets backend**: answers go into a Google Sheet, and the database reads from it
 
@@ -34,7 +34,7 @@ css/
 js/
   config.js           ← Settings: paste the Google Sheets URL here
   lib/dom.js          Small helpers (escaping, money format, safe storage)
-  lib/course-clean.js Course-name cleaning rules (GENERATED from apps-script/Code.gs)
+  lib/course-search.js Searching the course database (type-ahead + "Did you mean…?")
   data/
     options.js        Option lists: levels, universities, years, answers
     form-schema.js    Every form question, per path (field names = sheet columns)
@@ -42,19 +42,20 @@ js/
   services/
     api.js            The only code that talks to Google Sheets
     access.js         "Database unlocked" flag
-    courses.js        Course names for the form's suggestions
+    courses.js        Loads data/courses.json
   components/
     layout.js         Shared header + footer
     question.js       Renders and validates each type of question
     entry-card.js     Expandable graduate card
     entry-filters.js  Course / University / Graduated / Student type filters (homepage + database)
-    course-input.js   Course box: type-ahead + "Did you mean…?" 
+    course-input.js   Course box: real course titles as type-ahead + "Did you mean…?"
     icons.js          SVG icons
   pages/
     home.js  share.js  database.js
 
 apps-script/Code.gs   Google Apps Script backend (paste into your sheet)
-tools/sync-course-clean.mjs  Copies the course rules from Code.gs into js/lib/course-clean.js
+data/courses.json     7,959 Australian university course titles (from the CRICOS register)
+tools/build-courses.mjs  Rebuilds data/courses.json from a CRICOS export
 docs/google-sheets-setup.md
 ```
 
@@ -68,8 +69,8 @@ docs/google-sheets-setup.md
 | Change colours or fonts | `css/base.css` (`:root`) |
 | Change homepage copy | `index.html` |
 | Change who appears publicly / privacy threshold | `apps-script/Code.gs` (`SETTINGS`) |
-| Add official course names or short forms | `apps-script/Code.gs` (`COURSES`, `COURSE_ALIASES`), then `node tools/sync-course-clean.mjs` and redeploy the script |
-| Group a misspelled course with the right one | The **Course names** tab in the Google Sheet |
+| Group a misspelled course with the right official title | The **Course names** tab in the Google Sheet |
+| Refresh the course database | `node tools/build-courses.mjs <CRICOS export>` (see the file for the format) |
 | Add a contact email to the footer | `js/config.js` → `CONTACT_EMAIL` |
 
 **Keep field names stable** once real data is coming in. They're the column headers in the sheet.

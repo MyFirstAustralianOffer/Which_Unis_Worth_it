@@ -63,22 +63,17 @@ Settings at the top of the script:
 | `MAX_ENTRIES` | Most cards sent to the website | 1000 |
 | `CACHE_SECONDS` | How long the public list is cached | 300 (5 min) |
 
-## Course names (automatic clean-up)
+## Course names
 
-People type their course in their own words, so the script tidies every course name before saving it:
+The form suggests **real course titles** from `data/courses.json`, a database of 7,959 Australian university courses (Bachelor, Master, Graduate Certificate, Graduate Diploma, PhD and Diploma) built from the government's CRICOS register. While someone types, it lists matching titles for the level they picked, and if what they typed isn't an official title it asks "Did you mean …?" with up to three close matches.
 
-- drops degree words typed into the course box: "Masters of Data Science" → **Data Science**
-- fixes capitals, spacing and symbols: "data  science." → **Data Science**, "&" → "and"
-- expands short forms: "Comp Sci" → **Computer Science**, "Mech Engg" → **Mechanical Engineering**, "MBA" → **Business Administration**
-- fixes small typos against the official list: "Data Sceince" → **Data Science**
+Whatever they submit is saved as they wrote it (only spacing tidied). The `course_from_list` column says whether it was an official title.
 
-What they actually typed is kept in the `course_name_as_typed` column.
+**The "Course names" tab** lists every course name that *wasn't* an official title, with the **Closest official course** the form found. To fix one, copy the right title into **Use this name instead**. That entry and every past and future one with the same name are grouped under it (the site updates within 5 minutes). Leave it blank if the name is fine as it is.
 
-**The "Course names" tab** lists any course the script didn't recognise. To group it with an existing course, type the right name in **Use this name instead**. That applies to past entries and future ones (the site updates within 5 minutes). Leave it blank if the course is genuinely new and correctly spelled.
+**Ran `cleanExistingCourses` from an earlier version?** Choose **restoreTypedCourseNames** → **Run** to put back the names exactly as people typed them.
 
-**Official list and short forms** are at the top of `Code.gs` (`COURSES`, `COURSE_ALIASES`, `WORD_ABBREVIATIONS`). Add to them freely, then deploy a new version. If you change them, also run `node tools/sync-course-clean.mjs` in the repo so the website's "Did you mean…?" hints use the same rules.
-
-**Clean up rows that are already in the sheet:** in Apps Script choose **cleanExistingCourses** in the function dropdown and click **Run**. It's safe to run any time.
+**Updating the course database:** the list comes from the CRICOS register on data.gov.au, which is refreshed monthly. Rebuilding it is a one-off export (see `tools/build-courses.mjs`). New courses don't need to be in the list: people can still type them and they'll show up on the review tab.
 
 ## Managing the data
 
