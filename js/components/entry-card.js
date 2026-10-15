@@ -32,7 +32,7 @@ export function entryCard(e, { open = false, id = "" } = {}) {
         <h3>${esc(degreeTitle(e.study_level, e.course_name))}</h3>
         <button class="entry-toggle" type="button" aria-expanded="${open}" aria-controls="${detailsId}" aria-label="Show full entry">${icons.chevronDown()}</button>
       </div>
-      <p class="entry-sub">${esc(shortUni(e.university))} (${esc(e.graduation_year)}) · ${esc(e.student_type)}${e.example ? `<span class="tag-example">Example</span>` : ""}</p>
+      <p class="entry-sub">${esc(e.university === "Other" && e.university_other ? e.university_other : shortUni(e.university))} (${esc(e.graduation_year)}) · ${esc(e.student_type)}${e.example ? `<span class="tag-example">Example</span>` : ""}</p>
       <span class="entry-path">${e.first_role ? `${esc(e.first_role)} → ${esc(e.current_role)}` : `Still looking · now ${esc(e.current_role)}`}</span>
       <button class="entry-more" type="button" aria-controls="${detailsId}">See full entry ${icons.chevronDown(12)}</button>
       <dl class="entry-details" id="${detailsId}">

@@ -9,7 +9,7 @@
  *   email   – email box
  *   choice  – option buttons            (options)
  *   course  – level dropdown + course text box (fields: levelField, courseField)
- *   select  – dropdown                   (options, placeholder)
+ *   select  – dropdown                   (options, placeholder; otherField: text box shown when "Other" is picked)
  *   text    – text box                   (placeholder)
  *   money   – $ number box               (placeholder)
  *   unis3   – three university dropdowns (fields; only the first is required)
@@ -48,7 +48,7 @@ export const PATHS = {
     label: "Graduated",
     questions: [
       { type: "course", levelField: "study_level", courseField: "course_name", title: "What did you study?", placeholder: "Course name, e.g. Nursing" },
-      { type: "select", field: "university", title: "Where did you study?", options: UNIVERSITIES, placeholder: "Choose your university" },
+      { type: "select", field: "university", title: "Where did you study?", options: UNIVERSITIES, placeholder: "Choose your university", otherField: "university_other" },
       { type: "choice", field: "student_type", title: "Did you study as a domestic or international student?", options: STUDENT_TYPES },
       { type: "select", field: "graduation_year", title: "When did you graduate?", options: GRAD_YEARS, placeholder: "Choose year" },
       { type: "choice", field: "time_to_first_job", title: "How long until your first job in your field?", options: TIME_TO_JOB },
@@ -65,7 +65,7 @@ export const PATHS = {
     label: "Currently studying",
     questions: [
       { type: "course", levelField: "study_level", courseField: "course_name", title: "What are you studying?", placeholder: "Course name, e.g. Nursing" },
-      { type: "select", field: "university", title: "Where are you studying?", options: UNIVERSITIES, placeholder: "Choose your university" },
+      { type: "select", field: "university", title: "Where are you studying?", options: UNIVERSITIES, placeholder: "Choose your university", otherField: "university_other" },
       { type: "choice", field: "student_type", title: "Are you a domestic or international student?", options: STUDENT_TYPES },
       { type: "select", field: "expected_graduation_year", title: "When will you graduate?", options: GRADUATING_YEARS, placeholder: "Choose year" },
       { type: "choice", field: "job_in_field", title: "Do you have a job in your field yet?", options: JOB_IN_FIELD },

@@ -7,7 +7,7 @@
  */
 import { esc, options, digitsOnly } from "../lib/dom.js?v=5a71cd6c";
 import { LEVELS } from "../data/options.js?v=e19dd9c8";
-import { ERRORS } from "../data/form-schema.js?v=52b9726d";
+import { ERRORS } from "../data/form-schema.js?v=fa406929";
 import { icons } from "./icons.js?v=ecd0f942";
 import { courseInputHtml, bindCourseInput } from "./course-input.js?v=f28872ca";
 
@@ -17,7 +17,11 @@ const fmtThousands = (digits) => (digits ? Number(digits).toLocaleString("en-AU"
 
 /** Field names a question writes to (used to clear old answers when switching paths). */
 export const fieldsOf = (q) => q.fields ||
-  (q.type === "course" ? [q.levelField, q.courseField, "course_from_list", "course_suggestion"] : [q.field]);
+  (q.type === "course" ? [q.levelField, q.courseField, "course_from_list", "course_suggestion"] : [q.field, q.otherField].filter(Boolean));
+
+/** Like options(), but "Other" reads "Other / not listed" so it's easy to spot. */
+const selectOptions = (items, selected) => items.map((v) =>
+  `<option value="${esc(v)}"${String(v) === String(selected) ? " selected" : ""}>${esc(v === "Other" ? "Other / not listed" : v)}</option>`).join("");
 
 export function renderQuestion(q, a) {
   switch (q.type) {
@@ -45,8 +49,14 @@ export function renderQuestion(q, a) {
     case "select":
       return `
         <select class="field" id="q-input" data-field="${q.field}" aria-label="${esc(q.title)}">
-          <option value="">${esc(q.placeholder || "Choose one")}</option>${options(q.options, a[q.field])}
-        </select>`;
+          <option value="">${esc(q.placeholder || "Choose one")}</option>${selectOptions(q.options, a[q.field])}
+        </select>
+        ${q.otherField ? `
+        <div class="other-box"${a[q.field] === "Other" ? "" : " hidden"}>
+          <label class="choice-label" for="q-other">Which university?</label>
+          <input class="field" id="q-other" type="text" maxlength="100" autocomplete="off"
+                 placeholder="Type its name" value="${esc(a[q.otherField] || "")}" data-field="${q.otherField}">
+        </div>` : ""}`;
 
     case "text":
       return `<input class="field" id="q-input" type="text" maxlength="100" autocomplete="off"
@@ -66,7 +76,7 @@ export function renderQuestion(q, a) {
         <div>
           <label class="choice-label" for="${i === 0 ? "q-input" : `q-${f}`}">${["1st", "2nd", "3rd"][i]} choice ${i === 0 ? "" : "<small>(optional)</small>"}</label>
           <select class="field" id="${i === 0 ? "q-input" : `q-${f}`}" data-field="${f}">
-            <option value="">${i === 0 ? "Choose your university" : "Optional"}</option>${options(q.options, a[f])}
+            <option value="">${i === 0 ? "Choose your university" : "Optional"}</option>${selectOptions(q.options, a[f])}
           </select>
         </div>`).join("")}</div>`;
 
@@ -77,6 +87,15 @@ export function renderQuestion(q, a) {
 
 export function bindQuestion(root, q, a, onChange) {
   if (q.type === "course") bindCourse(root, q, a, onChange);
+  if (q.otherField) {
+    const select = root.querySelector(`[data-field="${q.field}"]`);
+    const box = root.querySelector(".other-box");
+    select.addEventListener("change", () => {
+      box.hidden = select.value !== "Other";
+      if (box.hidden) delete a[q.otherField];
+      else root.querySelector("#q-other").focus();
+    });
+  }
   root.querySelectorAll("[data-field]").forEach((el) => {
     if (el.classList.contains("opt")) {
       el.addEventListener("click", () => {

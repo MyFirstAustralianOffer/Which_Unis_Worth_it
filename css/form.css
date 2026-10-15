@@ -88,3 +88,7 @@ select.field { appearance: none; -webkit-appearance: none; padding-right: 40px; 
 }
 .combo-list .opt-other:hover, .combo-list .opt-other[aria-selected="true"] { background: var(--bg-soft); }
 .combo-list .opt-other .opt-name { font-weight: 600; }
+
+/* "Other / not listed" university: the text box under the dropdown */
+.other-box { margin-top: 14px; }
+.other-box[hidden] { display: none; }

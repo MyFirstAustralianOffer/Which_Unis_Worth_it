@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/base.css?v=3dcc0430">
-  <link rel="stylesheet" href="css/entries.css?v=c2ebbea7">
+  <link rel="stylesheet" href="css/entries.css?v=01def857">
   <link rel="stylesheet" href="css/database.css?v=b675c8c6">
 </head>
 <body>
@@ -23,6 +23,7 @@
 
       <div class="db-panel">
         <form class="filters" id="filters" role="search">
+          <div class="filter"><label for="fLevel">Degree type</label><select id="fLevel" data-filter="level"><option value="">All degree types</option></select></div>
           <div class="filter"><label for="fCourse">Course</label><select id="fCourse" data-filter="course"><option value="">All courses</option></select></div>
           <div class="filter"><label for="fUni">University</label><select id="fUni" data-filter="uni"><option value="">All universities</option></select></div>
           <div class="filter"><label for="fYears">Graduated</label>
@@ -54,6 +55,6 @@
   </main>
 
   <footer data-layout="footer"></footer>
-  <script type="module" src="js/pages/database.js?v=0391873d"></script>
+  <script type="module" src="js/pages/database.js?v=793b2bdd"></script>
 </body>
 </html>

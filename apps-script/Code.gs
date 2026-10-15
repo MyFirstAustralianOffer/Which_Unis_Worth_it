@@ -31,7 +31,7 @@ var TABS = {
     name: 'Graduates',
     columns: ['submitted_at', 'email', 'study_level', 'course_name', 'university', 'student_type', 'graduation_year',
       'time_to_first_job', 'first_role', 'starting_salary', 'current_role', 'current_salary',
-      'consent_privacy', 'consent_at', 'form_version', 'show_in_database', 'course_from_list'],
+      'consent_privacy', 'consent_at', 'form_version', 'show_in_database', 'course_from_list', 'university_other'],
     required: ['study_level', 'course_name', 'university', 'student_type', 'graduation_year',
       'time_to_first_job', 'first_role', 'starting_salary', 'current_role', 'current_salary'],
   },
@@ -39,7 +39,7 @@ var TABS = {
     name: 'Current students',
     columns: ['submitted_at', 'email', 'study_level', 'course_name', 'university', 'student_type',
       'expected_graduation_year', 'job_in_field', 'current_role', 'hoped_role', 'expected_salary',
-      'consent_privacy', 'consent_at', 'form_version', 'course_from_list'],
+      'consent_privacy', 'consent_at', 'form_version', 'course_from_list', 'university_other'],
     required: ['study_level', 'course_name', 'university', 'student_type', 'expected_graduation_year',
       'job_in_field', 'current_role', 'hoped_role', 'expected_salary'],
   },
@@ -65,7 +65,7 @@ var COURSE_TAB = {
 
 /** Fields the public database may show. Email and consent are never included. */
 var PUBLIC_FIELDS = ['study_level', 'course_name', 'university', 'graduation_year', 'student_type',
-  'time_to_first_job', 'first_role', 'starting_salary', 'current_role', 'current_salary'];
+  'time_to_first_job', 'first_role', 'starting_salary', 'current_role', 'current_salary', 'university_other'];
 
 var MONEY_FIELDS = ['starting_salary', 'current_salary', 'expected_salary'];
 var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;

@@ -3,10 +3,10 @@
  * Behaviour follows the Share Form Spec ("How the form behaves").
  */
 import { renderLayout } from "../components/layout.js?v=98893472";
-import { renderQuestion, bindQuestion, validateQuestion, fieldsOf } from "../components/question.js?v=871abbf2";
+import { renderQuestion, bindQuestion, validateQuestion, fieldsOf } from "../components/question.js?v=e4db04f7";
 import { icons } from "../components/icons.js?v=ecd0f942";
-import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=52b9726d";
-import { submitResponse } from "../services/api.js?v=034a0f94";
+import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=fa406929";
+import { submitResponse } from "../services/api.js?v=87ba30c4";
 import { unlock } from "../services/access.js?v=6ff55857";
 import { $, esc } from "../lib/dom.js?v=5a71cd6c";
 
