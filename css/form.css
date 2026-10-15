@@ -81,3 +81,10 @@ select.field { appearance: none; -webkit-appearance: none; padding-right: 40px; 
 .course-hint[hidden] { display: none; }
 .hint-btn { background: var(--peach); border: 0; border-radius: 999px; padding: 5px 12px; font-weight: 700; color: var(--navy); cursor: pointer; font-size: 13px; text-align: left; }
 .hint-btn:hover { background: #ffd79a; }
+
+.combo-list .opt-other {
+  position: sticky; bottom: -6px; margin: 4px -6px -6px; padding: 10px 18px 12px;
+  background: #fff; border-top: 1px solid var(--line); border-radius: 0 0 12px 12px;
+}
+.combo-list .opt-other:hover, .combo-list .opt-other[aria-selected="true"] { background: var(--bg-soft); }
+.combo-list .opt-other .opt-name { font-weight: 600; }

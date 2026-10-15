@@ -5,7 +5,7 @@ Takes about 10 minutes. You need a Google account. No coding beyond copy and pas
 When it's done:
 
 - every form answer becomes a new row in your sheet, in one of three tabs: **Graduates**, **Current students** or **Future students**
-- the database page reads graduate cards back from the sheet, **without emails**, and only for course + uni groups with at least 3 graduates
+- the database page reads graduate cards back from the sheet, **without emails** (every graduate is shown by default; see `MIN_GROUP_SIZE`)
 
 ## 1. Create the sheet
 
@@ -49,7 +49,7 @@ The yellow "Demo mode" bar disappears and the example cards are replaced by real
 
 1. Open the live site, fill in the form as a graduate, and finish.
 2. Check the **Graduates** tab: your row should be there.
-3. The database page will still look empty until **3 graduates share the same course and uni**. That's the "small groups stay hidden" rule. To test with fewer, temporarily set `MIN_GROUP_SIZE: 1` in the script (step 6).
+3. Your card appears on the homepage and database within about 5 minutes (the list is cached).
 
 ## 6. Changing the script later
 
@@ -59,7 +59,7 @@ Settings at the top of the script:
 
 | Setting | What it does | Default |
 |---|---|---|
-| `MIN_GROUP_SIZE` | Grads needed with the same course + uni before their cards appear | 3 |
+| `MIN_GROUP_SIZE` | Grads needed with the same course + uni before their cards appear (raise to 3 later to hide small groups) | 1 |
 | `MAX_ENTRIES` | Most cards sent to the website | 1000 |
 | `CACHE_SECONDS` | How long the public list is cached | 300 (5 min) |
 

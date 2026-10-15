@@ -14,8 +14,11 @@
  */
 
 var SETTINGS = {
-  /** A card only appears once at least this many grads share the same course + uni. */
-  MIN_GROUP_SIZE: 3,
+  /**
+   * A card only appears once at least this many grads share the same course + uni.
+   * 1 = show every graduate. Raise it (e.g. to 3) to hide small groups once responses grow.
+   */
+  MIN_GROUP_SIZE: 1,
   /** Most cards returned to the website at once. */
   MAX_ENTRIES: 1000,
   /** Seconds the public lists are cached (keeps the site fast and quota low). */

@@ -40,8 +40,10 @@ export function bindCourseInput(root, { setCourse, getLevel, setLevel, setSugges
 
   let index = null;
   let matches = [];
-  let active = -1;
+  let active = -1;          // highlighted row; matches.length = the "Other" row
   let timer = null;
+  let keptAsTyped = "";     // text the person chose to keep via "Other" (no more hints for it)
+  const OTHER = -1;
 
   loadCourseIndex().then((idx) => {
     index = idx;
@@ -58,12 +60,17 @@ export function bindCourseInput(root, { setCourse, getLevel, setLevel, setSugges
 
   /* ---------- type-ahead ---------- */
   function renderList() {
-    if (!matches.length) return closeList();
+    if (!listWanted()) return closeList();
+    const other = matches.length;
     list.innerHTML = matches.map((c, i) => `
       <li role="option" id="${input.id}-opt-${i}" data-i="${i}" aria-selected="${i === active}">
         <span class="opt-name">${esc(c.name)}</span>
         <span class="opt-meta">${esc(offeredAt(c, shortUni))}</span>
-      </li>`).join("");
+      </li>`).join("") + `
+      <li role="option" class="opt-other" id="${input.id}-opt-${other}" data-i="${OTHER}" aria-selected="${active === other}">
+        <span class="opt-name">Other: my course isn't listed</span>
+        <span class="opt-meta">keep “${esc(input.value.trim())}”</span>
+      </li>`;
     list.hidden = false;
     input.setAttribute("aria-expanded", "true");
     if (active >= 0) input.setAttribute("aria-activedescendant", `${input.id}-opt-${active}`);
@@ -78,8 +85,15 @@ export function bindCourseInput(root, { setCourse, getLevel, setLevel, setSugges
   }
 
   /* ---------- "Did you mean …?" ---------- */
+  /** The list shows while they type 2+ characters that aren't already an official title. */
+  function listWanted() {
+    const q = input.value.trim();
+    return q.length >= 2 && !(index && findExact(index, q)) && q !== keptAsTyped;
+  }
+
   function updateHint() {
     if (!index || input.value.trim().length < 2) { setSuggestion(""); return hideHint(); }
+    if (input.value.trim() === keptAsTyped) return hideHint();
     const options = closestCourses(index, input.value, getLevel());
     setSuggestion(options.map((c) => c.name).join(" | ")); // all close options go to the review tab
     if (!options.length) return hideHint();
@@ -91,8 +105,20 @@ export function bindCourseInput(root, { setCourse, getLevel, setLevel, setSugges
 
   function hideHint() { hint.hidden = true; hint.innerHTML = ""; }
 
+  /** "Other": keep exactly what they typed (it goes to the review tab in the sheet). */
+  function keepTyped() {
+    keptAsTyped = input.value.trim();
+    report();
+    const options = index ? closestCourses(index, input.value, getLevel()) : [];
+    setSuggestion(options.map((c) => c.name).join(" | ")); // still help the reviewer
+    closeList();
+    hideHint();
+    input.focus();
+  }
+
   /* ---------- picking a title ---------- */
   function choose(course) {
+    keptAsTyped = "";
     input.value = course.name;
     // Keep the level consistent with the title they picked.
     const level = getLevel();
@@ -108,7 +134,8 @@ export function bindCourseInput(root, { setCourse, getLevel, setLevel, setSugges
     report();
     if (!index) return;
     const q = input.value.trim();
-    matches = q.length >= 2 && !findExact(index, q) ? searchCourses(index, q, getLevel(), MAX_SUGGESTIONS) : [];
+    if (q !== keptAsTyped) keptAsTyped = "";
+    matches = listWanted() ? searchCourses(index, q, getLevel(), MAX_SUGGESTIONS) : [];
     active = -1;
     renderList();
     hideHint();
@@ -120,14 +147,15 @@ export function bindCourseInput(root, { setCourse, getLevel, setLevel, setSugges
   input.addEventListener("focus", () => { if (input.value.trim().length >= 2) update(); });
   input.addEventListener("blur", () => setTimeout(() => { closeList(); updateHint(); }, 150));
   input.addEventListener("keydown", (e) => {
-    if (list.hidden || !matches.length) return;
+    if (list.hidden) return;
+    const rows = matches.length + 1; // + "Other"
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
-      active = (active + (e.key === "ArrowDown" ? 1 : -1) + matches.length) % matches.length;
+      active = active < 0 && e.key === "ArrowUp" ? rows - 1 : (active + (e.key === "ArrowDown" ? 1 : -1) + rows) % rows;
       renderList();
     } else if (e.key === "Enter" && active >= 0) {
       e.preventDefault(); // pick the suggestion instead of submitting the question
-      choose(matches[active]);
+      if (active === matches.length) keepTyped(); else choose(matches[active]);
     } else if (e.key === "Escape") {
       closeList();
       updateHint();
@@ -135,7 +163,9 @@ export function bindCourseInput(root, { setCourse, getLevel, setLevel, setSugges
   });
   list.addEventListener("mousedown", (e) => {
     const li = e.target.closest("[role=option]");
-    if (li) { e.preventDefault(); choose(matches[+li.dataset.i]); }
+    if (!li) return;
+    e.preventDefault();
+    if (+li.dataset.i === OTHER) keepTyped(); else choose(matches[+li.dataset.i]);
   });
 
   // Changing the level changes which titles fit.

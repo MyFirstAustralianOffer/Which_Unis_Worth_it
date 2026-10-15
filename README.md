@@ -79,7 +79,7 @@ docs/google-sheets-setup.md
 
 - **Public:** only Graduated answers, as database cards. Email is never shown or sent to the browser.
 - **Private:** Currently studying and Planning to study answers are stored in their own tabs and never shown.
-- **Small groups stay hidden:** a graduate card only appears once at least 3 grads share the same course + uni (configurable).
+- **Small groups:** every graduate card is shown for now (`MIN_GROUP_SIZE: 1`); raise it to 3 in the script to hide course + uni groups smaller than that.
 
 ## Run it locally
 
