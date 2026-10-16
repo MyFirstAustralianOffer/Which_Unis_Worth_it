@@ -56,5 +56,7 @@ export const GRADUATING_YEARS = range(2026, 2031);
 export const START_YEARS = [...range(2026, 2029), "Not sure yet"];
 
 export const TIME_TO_JOB = ["Before graduating", "Under 3 months", "3–6 months", "6–12 months", "Over 12 months", "Still looking"];
+/** "How long have you been looking?": the time spans from TIME_TO_JOB. */
+export const TIME_LOOKING = TIME_TO_JOB.filter((t) => t !== "Before graduating" && t !== "Still looking");
 
 export const JOB_IN_FIELD = ["Yes", "Internship", "Job outside my field", "Not yet"];

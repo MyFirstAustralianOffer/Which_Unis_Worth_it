@@ -5,7 +5,7 @@
  * Open:   time to first job, first role, starting salary, role now, salary now.
  */
 import { esc, money } from "../lib/dom.js?v=5a71cd6c";
-import { shortUni } from "../data/options.js?v=e19dd9c8";
+import { shortUni } from "../data/options.js?v=8ca2f27d";
 import { icons } from "./icons.js?v=ecd0f942";
 
 /** "Bachelor" + "Nursing" → "Bachelor of Nursing"; "Graduate Certificate in Data Science". */
@@ -19,7 +19,11 @@ export function degreeTitle(level, course) {
 
 export function entryCard(e, { open = false, id = "" } = {}) {
   const detailsId = `entry-${id}`;
-  const rows = [
+  const looking = !e.first_role && e.time_to_first_job === "Still looking";
+  const rows = looking ? [
+    ["Time to first job in field", "Still looking"],
+    ["Looking for", e.time_looking || "–"],
+  ] : [
     ["Time to first job in field", e.time_to_first_job],
     ["First role after degree", e.first_role || "–"],
     ["Starting salary", e.starting_salary ? money(e.starting_salary) : "–"],
@@ -33,7 +37,7 @@ export function entryCard(e, { open = false, id = "" } = {}) {
         <button class="entry-toggle" type="button" aria-expanded="${open}" aria-controls="${detailsId}" aria-label="Show full entry">${icons.chevronDown()}</button>
       </div>
       <p class="entry-sub">${esc(e.university === "Other" && e.university_other ? e.university_other : shortUni(e.university))} (${esc(e.graduation_year)}) · ${esc(e.student_type)}${e.example ? `<span class="tag-example">Example</span>` : ""}</p>
-      <span class="entry-path">${e.first_role ? `${esc(e.first_role)} → ${esc(e.current_role)}` : `Still looking · now ${esc(e.current_role)}`}</span>
+      <span class="entry-path">${e.first_role ? `${esc(e.first_role)} → ${esc(e.current_role)}` : `Still looking${e.time_looking ? ` · ${esc(e.time_looking)}` : ""}`}</span>
       <button class="entry-more" type="button" aria-controls="${detailsId}">See full entry ${icons.chevronDown(12)}</button>
       <dl class="entry-details" id="${detailsId}">
         ${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}

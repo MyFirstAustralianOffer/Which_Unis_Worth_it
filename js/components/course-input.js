@@ -9,7 +9,7 @@
  */
 import { esc } from "../lib/dom.js?v=5a71cd6c";
 import { searchCourses, closestCourses, findExact, offeredAt } from "../lib/course-search.js?v=145d5596";
-import { shortUni } from "../data/options.js?v=e19dd9c8";
+import { shortUni } from "../data/options.js?v=8ca2f27d";
 import { loadCourseIndex } from "../services/courses.js?v=367b7213";
 
 const MAX_SUGGESTIONS = 8;

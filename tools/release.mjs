@@ -32,8 +32,8 @@ function walk(dir, ext) {
 const rel = (p) => relative(root, p).split("\\").join("/");
 const versions = new Map(); // repo-relative path → fingerprint
 
-// Plain assets: CSS and data files are fingerprinted by their own contents.
-for (const f of [...walk(join(root, "css"), ".css"), ...walk(join(root, "data"), ".json")]) {
+// Plain assets: CSS, data files and images are fingerprinted by their own contents.
+for (const f of [...walk(join(root, "css"), ".css"), ...walk(join(root, "data"), ".json"), ...walk(join(root, "assets"), ".png")]) {
   versions.set(rel(f), hash(readFileSync(f)));
 }
 

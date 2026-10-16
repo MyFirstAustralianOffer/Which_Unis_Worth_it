@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/base.css?v=3dcc0430">
   <link rel="stylesheet" href="css/entries.css?v=01def857">
-  <link rel="stylesheet" href="css/home.css?v=248b2a7a">
+  <link rel="stylesheet" href="css/home.css?v=47a93999">
 </head>
 <body>
   <header data-layout="header"></header>
@@ -23,7 +23,6 @@
         <h1>Join 35k+ to discover what Australian universities and degrees <span class="hl">actually pay off</span>.</h1>
         <p class="lead">See where people who studied your degree started, and what they're earning now.</p>
         <a class="btn btn-primary btn-lg" href="share.html">Join the movement</a>
-        <p class="hero-proof">100% independent</p>
       </div>
     </section>
 
@@ -33,30 +32,15 @@
         <h2 id="previewTitle">Search real outcomes</h2>
         <p class="lead">Every card is one real person: where they started, and where they are now.</p>
 
-        <div class="browser" id="preview">
+        <!-- A picture of the database, not the live filters (search isn't open yet).
+             Regenerate with: python3 tools/preview-shot.py (see the file). -->
+        <div class="browser preview-shot">
           <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span class="browser-tab">Return on Uni · Database</span></div>
-          <div class="browser-body">
-            <form class="filters" id="previewFilters" role="search" aria-label="Search graduate outcomes">
-              <div class="filter"><label for="pLevel">Degree type</label><select id="pLevel" data-filter="level"><option value="">All degree types</option></select></div>
-              <div class="filter"><label for="pCourse">Course</label><select id="pCourse" data-filter="course"><option value="">All courses</option></select></div>
-              <div class="filter"><label for="pUni">University</label><select id="pUni" data-filter="uni"><option value="">All universities</option></select></div>
-              <div class="filter"><label for="pYears">Graduated</label>
-                <select id="pYears" data-filter="years">
-                    <option value="">Any year</option>
-                    <option value="2">Last 2 years</option>
-                    <option value="5" selected>Last 5 years</option>
-                    <option value="10">Last 10 years</option>
-                </select>
-              </div>
-              <div class="filter"><label for="pType">Student type</label><select id="pType" data-filter="type"><option value="">All</option></select></div>
-              <button class="btn btn-primary" type="submit">Search</button>
-            </form>
-            <div class="entries fade" id="previewEntries" aria-live="polite"></div>
-            <p class="entries-status preview-status" id="previewStatus"></p>
-          </div>
+          <img src="assets/preview.png?v=0ffced6f" width="1020" height="421" loading="lazy"
+               alt="Preview of the Return on Uni database: filters for degree type, course, university, graduation year and student type, above graduate cards showing each person's first role, starting salary, current role and current salary.">
         </div>
 
-        <div class="preview-cta"><a class="btn btn-primary btn-lg" id="exploreBtn" href="share.html">Explore the database →</a></div>
+        <div class="preview-cta"><a class="btn btn-primary btn-lg" href="share.html">Share your story</a></div>
       </div>
     </section>
 
@@ -161,6 +145,6 @@
   </main>
 
   <footer data-layout="footer"></footer>
-  <script type="module" src="js/pages/home.js?v=cc709fbf"></script>
+  <script type="module" src="js/pages/home.js?v=e176a282"></script>
 </body>
 </html>

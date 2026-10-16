@@ -17,8 +17,8 @@
  * A question with `showIf(answers)` is only asked when that returns true.
  */
 import {
-  LEVELS, UNIVERSITIES, STUDENT_TYPES, GRAD_YEARS, GRADUATING_YEARS, START_YEARS, TIME_TO_JOB, JOB_IN_FIELD,
-} from "./options.js?v=e19dd9c8";
+  LEVELS, UNIVERSITIES, STUDENT_TYPES, GRAD_YEARS, GRADUATING_YEARS, START_YEARS, TIME_TO_JOB, TIME_LOOKING, JOB_IN_FIELD,
+} from "./options.js?v=8ca2f27d";
 
 const SALARY_HELP = "Yearly, in AUD, before tax.";
 
@@ -38,9 +38,13 @@ export const START = [
   },
 ];
 
-/** Graduates who answered "Still looking" haven't had a first job in their field yet. */
+/**
+ * Graduates who answered "Still looking" haven't had a job in their field yet:
+ * they're asked how long they've been looking, and that's the end of their form.
+ */
 export const STILL_LOOKING = "Still looking";
-const hasFirstJob = (a) => a.time_to_first_job !== STILL_LOOKING;
+const stillLooking = (a) => a.time_to_first_job === STILL_LOOKING;
+const hasFirstJob = (a) => !stillLooking(a);
 
 export const PATHS = {
   /* Form A: public. Each graduate becomes one database card. */
@@ -52,11 +56,13 @@ export const PATHS = {
       { type: "choice", field: "student_type", title: "Did you study as a domestic or international student?", options: STUDENT_TYPES },
       { type: "select", field: "graduation_year", title: "When did you graduate?", options: GRAD_YEARS, placeholder: "Choose year" },
       { type: "choice", field: "time_to_first_job", title: "How long until your first job in your field?", options: TIME_TO_JOB },
-      // Skipped for grads still looking for a job in their field: there's no first role or starting salary yet.
+      // Still looking: one more question, then the form ends.
+      { type: "choice", field: "time_looking", title: "How long have you been looking?", options: TIME_LOOKING, showIf: stillLooking },
+      // Everyone else: their first job and where they are now.
       { type: "text", field: "first_role", title: "What was your first role after your degree?", placeholder: "e.g. Graduate Nurse", showIf: hasFirstJob },
       { type: "money", field: "starting_salary", title: "What was your starting salary?", placeholder: "e.g. 72,000", helper: SALARY_HELP, showIf: hasFirstJob },
-      { type: "text", field: "current_role", title: "What’s your role now?", placeholder: "e.g. Registered Nurse" },
-      { type: "money", field: "current_salary", title: "What do you earn now?", placeholder: "e.g. 88,000", helper: SALARY_HELP },
+      { type: "text", field: "current_role", title: "What’s your role now?", placeholder: "e.g. Registered Nurse", showIf: hasFirstJob },
+      { type: "money", field: "current_salary", title: "What do you earn now?", placeholder: "e.g. 88,000", helper: SALARY_HELP, showIf: hasFirstJob },
     ],
   },
 

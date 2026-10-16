@@ -31,7 +31,8 @@ var TABS = {
     name: 'Graduates',
     columns: ['submitted_at', 'email', 'study_level', 'course_name', 'university', 'student_type', 'graduation_year',
       'time_to_first_job', 'first_role', 'starting_salary', 'current_role', 'current_salary',
-      'consent_privacy', 'consent_at', 'form_version', 'show_in_database', 'course_from_list', 'university_other'],
+      'consent_privacy', 'consent_at', 'form_version', 'show_in_database', 'course_from_list', 'university_other',
+      'time_looking'],
     required: ['study_level', 'course_name', 'university', 'student_type', 'graduation_year',
       'time_to_first_job', 'first_role', 'starting_salary', 'current_role', 'current_salary'],
   },
@@ -65,7 +66,8 @@ var COURSE_TAB = {
 
 /** Fields the public database may show. Email and consent are never included. */
 var PUBLIC_FIELDS = ['study_level', 'course_name', 'university', 'graduation_year', 'student_type',
-  'time_to_first_job', 'first_role', 'starting_salary', 'current_role', 'current_salary', 'university_other'];
+  'time_to_first_job', 'first_role', 'starting_salary', 'current_role', 'current_salary', 'university_other',
+  'time_looking'];
 
 var MONEY_FIELDS = ['starting_salary', 'current_salary', 'expected_salary'];
 var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -91,9 +93,10 @@ function doPost(e) {
     if (!EMAIL_RE.test(String(data.email || '').trim())) return json({ ok: false, error: 'Please enter a valid email.' });
     if (data.consent_privacy !== true) return json({ ok: false, error: 'Please agree to the Privacy policy.' });
 
-    // Grads still looking for a job in their field skip first role + starting salary.
     var stillLooking = data.path === 'graduated' && data.time_to_first_job === 'Still looking';
-    var optional = stillLooking ? ['first_role', 'starting_salary'] : [];
+    // Still looking: they answer time_looking instead of the four job questions.
+    var optional = stillLooking ? ['first_role', 'starting_salary', 'current_role', 'current_salary'] : [];
+    if (stillLooking && !String(data.time_looking || '').trim()) return json({ ok: false, error: 'Some answers are missing. Please go back and check.' });
     for (var i = 0; i < tab.required.length; i++) {
       var key = tab.required[i];
       if (optional.indexOf(key) !== -1) continue;

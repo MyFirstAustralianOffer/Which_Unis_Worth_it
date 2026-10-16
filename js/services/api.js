@@ -18,7 +18,7 @@ const CACHE_KEY = "rou_entries_cache";
 /** Public fields of a graduate answer (what a database card shows). */
 const PUBLIC_FIELDS = [
   "study_level", "course_name", "university", "graduation_year", "student_type",
-  "time_to_first_job", "first_role", "starting_salary", "current_role", "current_salary", "university_other",
+  "time_to_first_job", "first_role", "starting_salary", "current_role", "current_salary", "university_other", "time_looking",
 ];
 const toPublic = (row) => Object.fromEntries(PUBLIC_FIELDS.map((k) => [k, row[k] ?? ""]));
 

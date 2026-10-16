@@ -13,7 +13,7 @@
  *                                          onChange(values) on Search / change
  *   filterEntries(entries, values)         the matching entries
  */
-import { UNIVERSITIES, STUDENT_TYPES, LEVELS } from "../data/options.js?v=e19dd9c8";
+import { UNIVERSITIES, STUDENT_TYPES, LEVELS } from "../data/options.js?v=8ca2f27d";
 import { options, esc } from "../lib/dom.js?v=5a71cd6c";
 
 /** Latest graduation year in the form (see GRAD_YEARS in options.js). */

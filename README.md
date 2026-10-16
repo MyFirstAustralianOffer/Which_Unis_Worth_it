@@ -57,6 +57,7 @@ js/
 apps-script/Code.gs   Google Apps Script backend (paste into your sheet)
 data/courses.json     7,959 Australian university course titles (from the CRICOS register)
 tools/build-courses.mjs  Rebuilds data/courses.json from a CRICOS export
+tools/preview-shot.py Re-takes the homepage picture of the database (assets/preview.png)
 tools/release.mjs     Version-stamps CSS/JS/data URLs so browsers load changes immediately
 docs/google-sheets-setup.md
 ```
