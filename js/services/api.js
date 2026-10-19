@@ -19,6 +19,7 @@ const CACHE_KEY = "rou_entries_cache";
 const PUBLIC_FIELDS = [
   "study_level", "course_name", "university", "graduation_year", "student_type",
   "time_to_first_job", "first_role", "starting_salary", "current_role", "current_salary", "university_other", "time_looking",
+  "submitted", // time submitted (ms), to the minute
 ];
 const toPublic = (row) => Object.fromEntries(PUBLIC_FIELDS.map((k) => [k, row[k] ?? ""]));
 
@@ -29,7 +30,7 @@ const toPublic = (row) => Object.fromEntries(PUBLIC_FIELDS.map((k) => [k, row[k]
 export async function submitResponse(payload) {
   if (!isConnected()) {
     if (payload.path === "graduated") {
-      store.set(DEMO_KEY, [{ ...toPublic(payload), mine: true }, ...store.get(DEMO_KEY, [])]);
+      store.set(DEMO_KEY, [{ ...toPublic(payload), submitted: Date.parse(payload.submitted_at) || Date.now(), mine: true }, ...store.get(DEMO_KEY, [])]);
     }
     await new Promise((r) => setTimeout(r, 300));
     return { ok: true, demo: true };

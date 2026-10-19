@@ -6,7 +6,7 @@ import { renderLayout } from "../components/layout.js?v=fa899a6c";
 import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=23121b94";
 import { icons } from "../components/icons.js?v=ecd0f942";
 import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=fe2118e7";
-import { submitResponse } from "../services/api.js?v=9fdbfac4";
+import { submitResponse } from "../services/api.js?v=49fde917";
 import { unlock } from "../services/access.js?v=6ff55857";
 import { $, esc } from "../lib/dom.js?v=5a71cd6c";
 

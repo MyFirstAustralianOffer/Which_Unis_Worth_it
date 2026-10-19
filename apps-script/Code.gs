@@ -171,7 +171,12 @@ function publicEntries() {
   rows = rows.filter(function (o) { return counts[groupKey(o)] >= SETTINGS.MIN_GROUP_SIZE; });
 
   rows.sort(function (a, b) { return b._at - a._at; });
-  return rows.slice(0, SETTINGS.MAX_ENTRIES).map(function (o) { delete o._at; return o; });
+  return rows.slice(0, SETTINGS.MAX_ENTRIES).map(function (o) {
+    // When it was submitted, to the minute (cards show "Submitted 5 minutes ago").
+    o.submitted = o._at ? Math.floor(o._at / 60000) * 60000 : '';
+    delete o._at;
+    return o;
+  });
 }
 
 function groupKey(o) {

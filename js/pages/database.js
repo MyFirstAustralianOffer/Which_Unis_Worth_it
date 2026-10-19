@@ -3,11 +3,12 @@
  * Locked (blurred, with a call to action) until the person finishes the form.
  */
 import { renderLayout } from "../components/layout.js?v=fa899a6c";
-import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=ec43d2e2";
+import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=f47178d6";
 import { setupFilters, filterEntries, readFilters } from "../components/entry-filters.js?v=860b0bbf";
-import { fetchEntries } from "../services/api.js?v=9fdbfac4";
+import { fetchEntries } from "../services/api.js?v=49fde917";
 import { isUnlocked } from "../services/access.js?v=6ff55857";
 import { CONFIG } from "../config.js?v=c8c5fba1";
+import { keepTimesFresh } from "../lib/time.js?v=7bec7af8";
 import { $ } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();
@@ -19,6 +20,7 @@ let all = [];
 let shown = CONFIG.PAGE_SIZE;
 
 bindEntryToggles(grid);
+keepTimesFresh(grid);
 
 function render(values, { resetPaging = true } = {}) {
   if (resetPaging) shown = CONFIG.PAGE_SIZE;
@@ -26,7 +28,7 @@ function render(values, { resetPaging = true } = {}) {
 
   if (!isUnlocked()) {
     $("#dbArea").classList.add("locked");
-    grid.innerHTML = list.slice(0, 8).map((e, i) => entryCard(e, { id: `l${i}` })).join("");
+    grid.innerHTML = list.slice(0, 8).map((e, i) => entryCard(e, { id: `l${i}`, showAge: true })).join("");
     $("#more").innerHTML = "";
     status.textContent = "";
     return;
@@ -34,7 +36,7 @@ function render(values, { resetPaging = true } = {}) {
 
   status.textContent = `${list.length.toLocaleString()} ${list.length === 1 ? "graduate" : "graduates"} found`;
   grid.innerHTML = list.length
-    ? list.slice(0, shown).map((e, i) => entryCard(e, { id: `d${i}` })).join("")
+    ? list.slice(0, shown).map((e, i) => entryCard(e, { id: `d${i}`, showAge: true })).join("")
     : `<p class="entries-empty">No graduates match yet. Try a broader search, or <a class="text-link" href="share.html">share your own story</a>.</p>`;
   $("#more").innerHTML = list.length > shown
     ? `<button class="btn btn-outline" type="button" id="moreBtn">Show more</button>` : "";

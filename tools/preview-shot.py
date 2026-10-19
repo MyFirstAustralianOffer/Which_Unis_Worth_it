@@ -53,7 +53,7 @@ async def main(entries):
             localStorage.setItem('rou_unlocked', 'true'); localStorage.setItem('rou_notice_ok', '1'); } catch (e) {}""")
         await page.goto(base + "database.html")
         await page.wait_for_selector("#entries .entry")
-        await page.add_style_tag(content="#status, #more { display: none !important; } .db-panel { border: 0 !important; box-shadow: none !important; }")
+        await page.add_style_tag(content="#status, #more, .entry-age { display: none !important; } .db-panel { border: 0 !important; box-shadow: none !important; }")
         first = page.locator("#entries .entry").first
         await first.locator(".entry-toggle").click()
         await page.wait_for_timeout(300)

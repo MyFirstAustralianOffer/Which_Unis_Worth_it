@@ -27,6 +27,7 @@
 .entries { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: start; }
 .entry { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 13px 13px 11px; }
 .entry.open { border: 1.5px solid var(--navy); }
+.entry-age { font-size: 11px; color: var(--muted); margin: 0 0 4px; }
 .entry-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
 .entry h3 { font-size: 13.5px; font-weight: 700; line-height: 1.35; letter-spacing: -.005em; }
 .entry-sub { font-size: 11.5px; color: var(--muted); margin: 3px 0 8px; }

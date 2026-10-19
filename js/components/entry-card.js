@@ -4,6 +4,7 @@
  * Closed: course, uni (year) · student type, "first role → role now".
  * Open:   time to first job, first role, starting salary, role now, salary now.
  */
+import { timeAgo } from "../lib/time.js?v=7bec7af8";
 import { esc, money } from "../lib/dom.js?v=5a71cd6c";
 import { shortUni } from "../data/options.js?v=8ca2f27d";
 import { icons } from "./icons.js?v=ecd0f942";
@@ -17,7 +18,8 @@ export function degreeTitle(level, course) {
   return `${level} ${joiner} ${course}`;
 }
 
-export function entryCard(e, { open = false, id = "" } = {}) {
+export function entryCard(e, { open = false, id = "", showAge = false } = {}) {
+  const ago = showAge ? timeAgo(e.submitted) : "";
   const detailsId = `entry-${id}`;
   const looking = !e.first_role && e.time_to_first_job === "Still looking";
   const rows = looking ? [
@@ -32,6 +34,7 @@ export function entryCard(e, { open = false, id = "" } = {}) {
   ];
   return `
     <article class="entry${open ? " open" : ""}">
+      ${ago ? `<p class="entry-age" data-submitted="${esc(e.submitted)}">Submitted ${ago}</p>` : ""}
       <div class="entry-head">
         <h3>${esc(degreeTitle(e.study_level, e.course_name))}</h3>
         <button class="entry-toggle" type="button" aria-expanded="${open}" aria-controls="${detailsId}" aria-label="Show full entry">${icons.chevronDown()}</button>
