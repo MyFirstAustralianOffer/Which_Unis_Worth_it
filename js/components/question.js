@@ -7,7 +7,7 @@
  */
 import { esc, options, digitsOnly } from "../lib/dom.js?v=5a71cd6c";
 import { LEVELS } from "../data/options.js?v=8ca2f27d";
-import { ERRORS } from "../data/form-schema.js?v=c27634fa";
+import { ERRORS } from "../data/form-schema.js?v=fe2118e7";
 import { icons } from "./icons.js?v=ecd0f942";
 import { courseInputHtml, bindCourseInput } from "./course-input.js?v=af05581f";
 
@@ -17,7 +17,18 @@ const fmtThousands = (digits) => (digits ? Number(digits).toLocaleString("en-AU"
 
 /** Field names a question writes to (used to clear old answers when switching paths). */
 export const fieldsOf = (q) => q.fields ||
-  (q.type === "course" ? [q.levelField, q.courseField, "course_from_list", "course_suggestion"] : [q.field, q.otherField].filter(Boolean));
+  (q.type === "course" ? [q.levelField, q.courseField, "course_from_list", "course_suggestion"] : [q.field, q.otherField, q.sameAs?.flag].filter(Boolean));
+
+/** Text box for the name of a university that isn't in the list ("Other / not listed"). */
+const otherBox = (q, a, show) => `
+        <div class="other-box"${show ? "" : " hidden"}>
+          <label class="choice-label" for="q-other">Name of your university or college</label>
+          <input class="field" id="q-other" type="text" maxlength="100" autocomplete="off"
+                 placeholder="Type its name" value="${esc(a[q.otherField] || "")}" data-field="${q.otherField}">
+        </div>`;
+
+/** Hint shown under the question title (any question type). */
+export const hintHtml = (q) => (q.hint ? `<p class="q-hint">${esc(q.hint)}</p>` : "");
 
 /** Like options(), but "Other" reads "Other / not listed" so it's easy to spot. */
 const selectOptions = (items, selected) => items.map((v) =>
@@ -51,25 +62,27 @@ export function renderQuestion(q, a) {
         <select class="field" id="q-input" data-field="${q.field}" aria-label="${esc(q.title)}">
           <option value="">${esc(q.placeholder || "Choose one")}</option>${selectOptions(q.options, a[q.field])}
         </select>
-        ${q.otherField ? `
-        <div class="other-box"${a[q.field] === "Other" ? "" : " hidden"}>
-          <label class="choice-label" for="q-other">Which university?</label>
-          <input class="field" id="q-other" type="text" maxlength="100" autocomplete="off"
-                 placeholder="Type its name" value="${esc(a[q.otherField] || "")}" data-field="${q.otherField}">
-        </div>` : ""}`;
+        ${q.otherField ? otherBox(q, a, a[q.field] === "Other") : ""}`;
 
     case "text":
       return `<input class="field" id="q-input" type="text" maxlength="100" autocomplete="off"
                      placeholder="${esc(q.placeholder)}" value="${esc(a[q.field])}" data-field="${q.field}" aria-label="${esc(q.title)}">`;
 
-    case "money":
+    case "money": {
+      const same = q.sameAs && a[q.sameAs.flag] === "Yes";
+      if (same) a[q.field] = a[q.sameAs.field]; // keep in step if they went back and changed it
       return `
         <div class="money">
           <span aria-hidden="true">$</span>
-          <input class="field" id="q-input" type="text" inputmode="numeric" autocomplete="off" maxlength="11"
+          <input class="field" id="q-input" type="text" inputmode="numeric" autocomplete="off" maxlength="11"${same ? " disabled" : ""}
                  placeholder="${esc(q.placeholder)}" value="${fmtThousands(a[q.field])}" data-field="${q.field}" data-money aria-label="${esc(q.title)} in Australian dollars">
         </div>
+        ${q.sameAs ? `
+        <label class="same-as">
+          <input type="checkbox" id="q-same"${same ? " checked" : ""}> <span>${esc(q.sameAs.label)}</span>
+        </label>` : ""}
         <p class="helper" style="margin-top:8px">${esc(q.helper)}</p>`;
+    }
 
     case "unis3":
       return `<div class="stack">${q.fields.map((f, i) => `
@@ -78,7 +91,8 @@ export function renderQuestion(q, a) {
           <select class="field" id="${i === 0 ? "q-input" : `q-${f}`}" data-field="${f}">
             <option value="">${i === 0 ? "Choose your university" : "Optional"}</option>${selectOptions(q.options, a[f])}
           </select>
-        </div>`).join("")}</div>`;
+        </div>`).join("")}</div>
+        ${q.otherField ? otherBox(q, a, q.fields.some((f) => a[f] === "Other")) : ""}`;
 
     default:
       return "";
@@ -88,12 +102,32 @@ export function renderQuestion(q, a) {
 export function bindQuestion(root, q, a, onChange) {
   if (q.type === "course") bindCourse(root, q, a, onChange);
   if (q.otherField) {
-    const select = root.querySelector(`[data-field="${q.field}"]`);
+    // Show the name box while any of this question's dropdowns is on "Other".
+    const selects = (q.fields || [q.field]).map((f) => root.querySelector(`[data-field="${f}"]`));
     const box = root.querySelector(".other-box");
-    select.addEventListener("change", () => {
-      box.hidden = select.value !== "Other";
+    selects.forEach((select) => select.addEventListener("change", () => {
+      const wasHidden = box.hidden;
+      box.hidden = !selects.some((s) => s.value === "Other");
       if (box.hidden) delete a[q.otherField];
-      else root.querySelector("#q-other").focus();
+      else if (wasHidden) root.querySelector("#q-other").focus();
+    }));
+  }
+  if (q.sameAs) {
+    // "Same as my first salary": copy that answer and lock the box.
+    const tick = root.querySelector("#q-same");
+    const input = root.querySelector("#q-input");
+    tick.addEventListener("change", () => {
+      if (tick.checked) {
+        a[q.sameAs.flag] = "Yes";
+        a[q.field] = a[q.sameAs.field];
+      } else {
+        delete a[q.sameAs.flag];
+        a[q.field] = "";
+      }
+      input.value = fmtThousands(a[q.field]);
+      input.disabled = tick.checked;
+      input.classList.remove("invalid");
+      onChange();
     });
   }
   root.querySelectorAll("[data-field]").forEach((el) => {

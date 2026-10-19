@@ -3,9 +3,9 @@
  * Behaviour follows the Share Form Spec ("How the form behaves").
  */
 import { renderLayout } from "../components/layout.js?v=fa899a6c";
-import { renderQuestion, bindQuestion, validateQuestion, fieldsOf } from "../components/question.js?v=d60e8989";
+import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=23121b94";
 import { icons } from "../components/icons.js?v=ecd0f942";
-import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=c27634fa";
+import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=fe2118e7";
 import { submitResponse } from "../services/api.js?v=9fdbfac4";
 import { unlock } from "../services/access.js?v=6ff55857";
 import { $, esc } from "../lib/dom.js?v=5a71cd6c";
@@ -36,6 +36,7 @@ function render() {
 
     <form id="qForm" novalidate>
       <h2 class="q-title" id="qTitle">${esc(q.title)} <span class="req" aria-hidden="true">*</span></h2>
+      ${hintHtml(q)}
       <div id="qBody">${renderQuestion(q, answers)}</div>
       ${isLast() ? `
         <label class="consent">
@@ -50,7 +51,7 @@ function render() {
       <p class="error" id="qError" role="alert"></p>
       <div class="form-actions">
         ${step > 0 ? `<button type="button" class="btn btn-outline" id="backBtn">Back</button>` : ""}
-        <button type="submit" class="btn btn-primary" id="nextBtn">${isLast() ? "Unlock the database" : "Next"}</button>
+        <button type="submit" class="btn btn-primary" id="nextBtn">${isLast() ? "Submit" : "Next"}</button>
       </div>
     </form>`;
 
@@ -123,7 +124,7 @@ async function submit() {
   } catch (err) {
     $("#qError", card).textContent = err.message;
     btn.disabled = false;
-    btn.textContent = "Unlock the database";
+    btn.textContent = "Submit";
   } finally {
     submitting = false;
   }

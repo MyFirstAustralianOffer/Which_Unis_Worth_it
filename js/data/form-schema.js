@@ -12,7 +12,10 @@
  *   select  – dropdown                   (options, placeholder; otherField: text box shown when "Other" is picked)
  *   text    – text box                   (placeholder)
  *   money   – $ number box               (placeholder)
- *   unis3   – three university dropdowns (fields; only the first is required)
+ *   unis3   – three university dropdowns (fields; only the first is required; otherField: text box when any is "Other")
+ *
+ * Any question can have a `hint` (shown under the title). A money question can have
+ * `sameAs: { field, flag, label }`: a tick box that copies another salary answer.
  *
  * A question with `showIf(answers)` is only asked when that returns true.
  */
@@ -20,7 +23,7 @@ import {
   LEVELS, UNIVERSITIES, STUDENT_TYPES, GRAD_YEARS, GRADUATING_YEARS, START_YEARS, TIME_TO_JOB, TIME_LOOKING, JOB_IN_FIELD,
 } from "./options.js?v=8ca2f27d";
 
-const SALARY_HELP = "Yearly, in AUD, before tax.";
+const SALARY_HELP = "Annual income before tax, in AUD, including super and bonuses.";
 
 export const START = [
   {
@@ -51,18 +54,19 @@ export const PATHS = {
   graduated: {
     label: "Graduated",
     questions: [
-      { type: "course", levelField: "study_level", courseField: "course_name", title: "What did you study?", placeholder: "Course name, e.g. Nursing" },
+      { type: "course", levelField: "study_level", courseField: "course_name", title: "What did you study?", hint: "Have more than one degree? Choose your latest one.", placeholder: "Course name, e.g. Nursing" },
       { type: "select", field: "university", title: "Where did you study?", options: UNIVERSITIES, placeholder: "Choose your university", otherField: "university_other" },
       { type: "choice", field: "student_type", title: "Did you study as a domestic or international student?", options: STUDENT_TYPES },
       { type: "select", field: "graduation_year", title: "When did you graduate?", options: GRAD_YEARS, placeholder: "Choose year" },
-      { type: "choice", field: "time_to_first_job", title: "How long until your first job in your field?", options: TIME_TO_JOB },
+      { type: "choice", field: "time_to_first_job", title: "After uni, how long did it take you to land your first job in your field?", options: TIME_TO_JOB },
       // Still looking: one more question, then the form ends.
       { type: "choice", field: "time_looking", title: "How long have you been looking?", options: TIME_LOOKING, showIf: stillLooking },
       // Everyone else: their first job and where they are now.
-      { type: "text", field: "first_role", title: "What was your first role after your degree?", placeholder: "e.g. Graduate Nurse", showIf: hasFirstJob },
-      { type: "money", field: "starting_salary", title: "What was your starting salary?", placeholder: "e.g. 72,000", helper: SALARY_HELP, showIf: hasFirstJob },
-      { type: "text", field: "current_role", title: "What’s your role now?", placeholder: "e.g. Registered Nurse", showIf: hasFirstJob },
-      { type: "money", field: "current_salary", title: "What do you earn now?", placeholder: "e.g. 88,000", helper: SALARY_HELP, showIf: hasFirstJob },
+      { type: "text", field: "first_role", title: "What was your role?", placeholder: "e.g. Graduate Nurse", showIf: hasFirstJob },
+      { type: "money", field: "starting_salary", title: "How much did you make in that role?", placeholder: "e.g. 72,000", helper: SALARY_HELP, showIf: hasFirstJob },
+      { type: "text", field: "current_role", title: "What’s your role now?", hint: "E.g. type ‘Same’ if you’re still in your first role.", placeholder: "e.g. Registered Nurse", showIf: hasFirstJob },
+      { type: "money", field: "current_salary", title: "How much do you make now?", placeholder: "e.g. 88,000", helper: SALARY_HELP, showIf: hasFirstJob,
+        sameAs: { field: "starting_salary", flag: "current_salary_same", label: "Same as my first salary" } },
     ],
   },
 
@@ -86,7 +90,7 @@ export const PATHS = {
     label: "Planning to study",
     questions: [
       { type: "course", levelField: "study_level", courseField: "course_name", title: "What do you plan to study?", placeholder: "Course name, e.g. Nursing" },
-      { type: "unis3", fields: ["university_choice_1", "university_choice_2", "university_choice_3"], title: "Which unis are you considering?", options: UNIVERSITIES },
+      { type: "unis3", fields: ["university_choice_1", "university_choice_2", "university_choice_3"], title: "Which unis are you considering?", options: UNIVERSITIES, otherField: "university_other" },
       { type: "choice", field: "student_type", title: "Will you study as a domestic or international student?", options: STUDENT_TYPES },
       { type: "select", field: "planned_start_year", title: "When do you plan to start?", options: START_YEARS, placeholder: "Choose year" },
       { type: "text", field: "hoped_role", title: "What job do you hope to get after?", placeholder: "e.g. Software Engineer" },
