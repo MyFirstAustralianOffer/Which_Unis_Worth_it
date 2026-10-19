@@ -12,15 +12,19 @@ them from  <SHEETS_API_URL>?action=entries  (the "entries" array), e.g.
       "university": "UNSW Sydney", "graduation_year": 2021, "student_type": "Domestic",
       "time_to_first_job": "Under 3 months", "first_role": "Graduate Nurse",
       "starting_salary": 72000, "current_role": "Registered Nurse", "current_salary": 88000}]
-The first 4 are shown, the first one opened up. Run node tools/release.mjs afterwards.
+The first 4 are shown, the first one opened up, each with a fresh-looking
+"Submitted … ago" label (see AGO_MINUTES). Run node tools/release.mjs afterwards.
 """
-import asyncio, functools, http.server, json, pathlib, re, sys, threading
+import asyncio, time, functools, http.server, json, pathlib, re, sys, threading
 from playwright.async_api import async_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "assets" / "preview.png"
 FAKE_API = "https://preview.invalid/exec"
 CARDS = 4
+# The picture is frozen, so its "Submitted … ago" labels are too. Entries without a
+# "submitted" time (ms) get these, in minutes before now: 2 min, 18 min, 1 hour, 3 hours.
+AGO_MINUTES = [2, 18, 60, 180]
 
 
 def serve():
@@ -34,6 +38,9 @@ def serve():
 
 
 async def main(entries):
+    now = int(time.time() * 1000)
+    entries = [dict(e, submitted=e.get("submitted") or now - AGO_MINUTES[i % len(AGO_MINUTES)] * 60_000)
+               for i, e in enumerate(entries[:CARDS])]
     srv = serve()
     base = f"http://127.0.0.1:{srv.server_port}/"
     async with async_playwright() as p:
@@ -53,7 +60,7 @@ async def main(entries):
             localStorage.setItem('rou_unlocked', 'true'); localStorage.setItem('rou_notice_ok', '1'); } catch (e) {}""")
         await page.goto(base + "database.html")
         await page.wait_for_selector("#entries .entry")
-        await page.add_style_tag(content="#status, #more, .entry-age { display: none !important; } .db-panel { border: 0 !important; box-shadow: none !important; }")
+        await page.add_style_tag(content="#status, #more { display: none !important; } .db-panel { border: 0 !important; box-shadow: none !important; }")
         first = page.locator("#entries .entry").first
         await first.locator(".entry-toggle").click()
         await page.wait_for_timeout(300)
