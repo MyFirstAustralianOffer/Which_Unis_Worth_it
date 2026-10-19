@@ -10,7 +10,29 @@
 /* ---------- database preview ---------- */
 .preview h2 { font-size: clamp(30px, 4vw, 44px); margin-bottom: 10px; }
 .preview .lead { margin-bottom: 30px; }
-.preview-shot img { display: block; width: 100%; height: auto; }
+/* The picture fades in over shimmering placeholder cards. Its width/height
+   attributes reserve the space, so nothing below it moves. */
+.shot-frame { position: relative; }
+.shot-frame img { display: block; width: 100%; height: auto; opacity: 0; transform: translateY(8px) scale(.995);
+  transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); }
+.shot-frame.loaded img { opacity: 1; transform: none; }
+.skeleton { position: absolute; inset: 0; padding: 1.8%; display: flex; flex-direction: column; gap: 3.5%;
+  transition: opacity .5s ease; }
+.shot-frame.loaded .skeleton { opacity: 0; pointer-events: none; }
+.sk-filters { display: grid; grid-template-columns: repeat(5, 1fr) .75fr; gap: 1.7%; height: 15%; }
+.sk-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4%; align-items: start; flex: 1; }
+.sk-filters span, .sk-card { display: block; border-radius: 8px; background: var(--line-2);
+  background-image: linear-gradient(90deg, transparent 0, rgba(255,255,255,.75) 50%, transparent 100%);
+  background-size: 200% 100%; background-repeat: no-repeat; animation: shimmer 1.4s ease-in-out infinite; }
+.sk-filters span { height: 100%; }
+.sk-filters .sk-btn { background-color: #dfe3ea; }
+.sk-card { height: 50%; border-radius: 12px; }
+.sk-card.sk-open { height: 96%; }
+@keyframes shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .sk-filters span, .sk-card { animation: none; }
+  .shot-frame img { transition: opacity .3s ease; transform: none; }
+}
 .preview-cta { display: flex; justify-content: center; margin-top: 26px; }
 
 /* ---------- independence ---------- */
