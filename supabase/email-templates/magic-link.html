@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<title>Here's your sign-in link</title>
+</head>
+<body style="margin:0;padding:0;background:#f6f7f9;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f6f7f9;">Tap the button to sign in. The link works once and expires in an hour.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f6f7f9;">
+  <tr><td align="center" style="padding:32px 16px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;">
+      <tr><td style="padding:0 4px 18px;font-family:'Manrope', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:800;color:#15213b;letter-spacing:-0.01em;">
+        Return on <span style="background:#ffe2b8;border-radius:5px;padding:1px 6px;">Uni</span>
+      </td></tr>
+      <tr><td style="background:#ffffff;border:1px solid #e4e7ec;border-radius:16px;padding:32px 30px;font-family:'Manrope', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+        <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;font-weight:800;color:#15213b;letter-spacing:-0.02em;">Here's your sign-in link</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#2b3445;">Tap the button below to sign in to Return on Uni. It works once and expires in an hour.</p>
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="border-radius:999px;background:#15213b;">
+            <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 28px;font-family:'Manrope', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:999px;">Sign in to Return on Uni</a>
+          </td>
+        </tr></table>
+        <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#667085;">Didn't ask for this? You can safely ignore this email. Nobody can sign in without this link.</p>
+        <p style="margin:20px 0 0;padding-top:18px;border-top:1px solid #e4e7ec;font-size:12px;line-height:1.6;color:#667085;">
+          Button not working? Copy this link into your browser:<br>
+          <a href="{{ .ConfirmationURL }}" style="color:#15213b;word-break:break-all;">{{ .ConfirmationURL }}</a>
+        </p>
+      </td></tr>
+      <tr><td style="padding:18px 4px 0;font-family:'Manrope', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:1.6;color:#667085;">
+        Sent to {{ .Email }} because someone asked to sign in to
+        <a href="https://returnonuni.com.au" style="color:#667085;">Return on Uni</a> with this email.
+        No passwords, ever. We never share or sell your email.
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

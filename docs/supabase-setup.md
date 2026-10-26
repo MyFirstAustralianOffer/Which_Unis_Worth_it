@@ -30,6 +30,15 @@ For real users, use [Resend](https://resend.com) (free):
    sender `noreply@returnonuni.com.au`, name `Return on Uni`, host `smtp.resend.com`,
    port `465`, username `resend`, password = the Resend API key.
 
+## 4. Branded sign-in emails
+
+Supabase → **Authentication → Emails → Templates**. Paste these (built by `python3 tools/build-emails.py`):
+
+| Template | Subject | Body |
+|---|---|---|
+| Magic link | Your Return on Uni sign-in link | `supabase/email-templates/magic-link.html` |
+| Confirm signup | Welcome to Return on Uni: confirm your email | `supabase/email-templates/confirm-signup.html` |
+
 ## Day to day
 
 - **See answers**: Table editor → `graduates`, `current_students`, `future_students`.
