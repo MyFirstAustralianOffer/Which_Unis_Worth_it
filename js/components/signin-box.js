@@ -6,7 +6,7 @@
  *   bindSignInBox(root, { next })      makes the buttons work
  */
 import { esc, $ } from "../lib/dom.js?v=5a71cd6c";
-import { signInWithGoogle, sendEmailLink } from "../services/auth.js?v=88211d4e";
+import { signInWithGoogle, sendEmailLink } from "../services/auth.js?v=6428cedd";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 

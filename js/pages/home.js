@@ -4,7 +4,7 @@
  * filters: search opens once there's enough data. Placeholder cards shimmer
  * until the picture has loaded, then it fades in over them.
  */
-import { renderLayout } from "../components/layout.js?v=b6b22fdc";
+import { renderLayout } from "../components/layout.js?v=019eb342";
 import { $ } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();

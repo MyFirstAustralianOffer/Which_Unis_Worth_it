@@ -122,3 +122,14 @@ img, svg { display: block; max-width: 100%; }
   .btn-lg { padding: 12px 22px; font-size: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+/* message after signing in (and other short notices) */
+.toast { position: fixed; top: 76px; left: 50%; z-index: 60; transform: translate(-50%, -12px); opacity: 0;
+  display: flex; align-items: center; gap: 10px; max-width: calc(100% - 32px); width: max-content;
+  background: #fff; border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow);
+  padding: 10px 12px 10px 14px; font-size: 14px; color: var(--text); transition: opacity .3s ease, transform .3s ease; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast p { margin: 0; overflow-wrap: anywhere; }
+.toast b { color: var(--navy); }
+.toast-icon { flex: none; width: 24px; height: 24px; border-radius: 50%; background: #e7f6ee; color: var(--green); display: grid; place-items: center; }
+.toast-close { flex: none; border: 0; background: none; font-size: 20px; line-height: 1; color: var(--muted); cursor: pointer; padding: 0 4px; }

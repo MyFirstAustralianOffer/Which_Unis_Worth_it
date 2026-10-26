@@ -10,7 +10,8 @@
  */
 import { CONFIG } from "../config.js?v=b884ae18";
 import { esc } from "../lib/dom.js?v=5a71cd6c";
-import { initAuth, currentUser, signOut } from "../services/auth.js?v=88211d4e";
+import { initAuth, currentUser, signOut } from "../services/auth.js?v=6428cedd";
+import { showWelcome } from "./toast.js?v=c367aba3";
 import { showStorageNotice, resetSiteData } from "./storage-notice.js?v=8bce1efe";
 
 const logo = `<a class="logo" href="index.html" aria-label="Return on Uni home">Return on <span class="hl">Uni</span></a>`;
@@ -84,7 +85,7 @@ export function renderLayout() {
   document.querySelectorAll('[data-layout="footer"]').forEach(footer);
   showStorageNotice();
   renderAccount();
-  initAuth().then(renderAccount);
+  initAuth().then(() => { renderAccount(); showWelcome(currentUser()); });
   // Add ?reset to any page URL to clear everything the site saved on this device.
   if (new URLSearchParams(location.search).has("reset")) {
     history.replaceState(null, "", location.pathname + location.hash);

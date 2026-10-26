@@ -76,6 +76,8 @@ export const currentUser = () => readSession()?.user || null;
 
 /** Error text from a sign-in that came back with a problem (e.g. an expired link). */
 export let authError = "";
+/** "email" or "google" when this page load just finished a sign-in. */
+export let justSignedIn = "";
 
 let initPromise = null;
 export function initAuth() {
@@ -90,6 +92,8 @@ export function initAuth() {
       } else {
         const token = hash.get("access_token");
         try {
+          // Email links come back with a type (magiclink / signup); Google doesn't.
+          justSignedIn = hash.get("type") ? "email" : "google";
           saveSession({
             access_token: token,
             refresh_token: hash.get("refresh_token"),

@@ -4,12 +4,12 @@
  * story can see it; the database itself enforces this (see public_entries in
  * supabase/schema.sql), the page just explains what to do.
  */
-import { renderLayout } from "../components/layout.js?v=b6b22fdc";
+import { renderLayout } from "../components/layout.js?v=019eb342";
 import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=f47178d6";
 import { setupFilters, readFilters } from "../components/entry-filters.js?v=5d23b99f";
-import { signInBox, bindSignInBox } from "../components/signin-box.js?v=a435149c";
-import { fetchEntries, fetchFilterOptions, myProfile } from "../services/api.js?v=ad58d49e";
-import { initAuth, currentUser, authError } from "../services/auth.js?v=88211d4e";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=9f5d0c46";
+import { fetchEntries, fetchFilterOptions, myProfile } from "../services/api.js?v=38036227";
+import { initAuth, currentUser, authError } from "../services/auth.js?v=6428cedd";
 import { keepTimesFresh } from "../lib/time.js?v=7bec7af8";
 import { CONFIG } from "../config.js?v=b884ae18";
 import { $ } from "../lib/dom.js?v=5a71cd6c";
