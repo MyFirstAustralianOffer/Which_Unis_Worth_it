@@ -116,3 +116,5 @@ select.field { appearance: none; -webkit-appearance: none; padding-right: 40px; 
 .signed-in-as { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); margin: -4px 0 14px; overflow-wrap: anywhere; }
 .signed-in-as button { background: none; border: 0; padding: 0; color: var(--navy); font: 600 13px inherit; cursor: pointer; text-decoration: underline; flex: none; }
 #signinCard { max-width: 440px; margin: 0 auto; min-height: 0; }
+.google-slot { display: flex; justify-content: center; min-height: 44px; }
+.btn-google[hidden] { display: none; }

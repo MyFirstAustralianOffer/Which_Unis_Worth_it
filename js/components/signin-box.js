@@ -6,7 +6,8 @@
  *   bindSignInBox(root, { next })      makes the buttons work
  */
 import { esc, $ } from "../lib/dom.js?v=5a71cd6c";
-import { signInWithGoogle, sendEmailLink } from "../services/auth.js?v=6428cedd";
+import { signInWithGoogle, sendEmailLink, googleButton, safeNext } from "../services/auth.js?v=690171de";
+import { setWelcome } from "./toast.js?v=c367aba3";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -16,7 +17,8 @@ export function signInBox({ title = "Sign in", lead = "", error = "" } = {}) {
       <h2>${esc(title)}</h2>
       ${lead ? `<p class="signin-lead">${esc(lead)}</p>` : ""}
       <p class="error signin-error" role="alert">${esc(error)}</p>
-      <button type="button" class="btn btn-outline btn-google" data-google>Continue with Google</button>
+      <div class="google-slot" data-google-slot></div>
+      <button type="button" class="btn btn-outline btn-google" data-google hidden>Continue with Google</button>
       <div class="signin-or"><span>or</span></div>
       <form class="signin-email" novalidate>
         <label class="choice-label" for="signinEmail">Email</label>
@@ -29,7 +31,13 @@ export function signInBox({ title = "Sign in", lead = "", error = "" } = {}) {
 
 export function bindSignInBox(root, { next }) {
   const error = $(".signin-error", root);
-  $("[data-google]", root).addEventListener("click", () => signInWithGoogle(next));
+  const fallback = $("[data-google]", root);
+  fallback.addEventListener("click", () => signInWithGoogle(next));
+  // Google's own button where possible (Google's screen then names our site, not supabase.co).
+  googleButton($("[data-google-slot]", root), {
+    onDone: () => { setWelcome("google"); location.href = safeNext(next); },
+    onError: (message) => { error.textContent = message; },
+  }).then((shown) => { fallback.hidden = shown; if (!shown) $("[data-google-slot]", root).remove(); });
   $(".signin-email", root).addEventListener("submit", async (e) => {
     e.preventDefault();
     const input = $("#signinEmail", root);

@@ -5,7 +5,9 @@
  *                         came back from Google or an email link, and returns
  *                         the session (or null)
  *   currentUser()         { id, email, name } or null
- *   signInWithGoogle(next)   goes to Google; comes back to signin.html, then `next`
+ *   googleButton(el, onDone)   Google's own sign-in button (when GOOGLE_CLIENT_ID is set);
+ *                         resolves false if it can't be shown, so callers can fall back
+ *   signInWithGoogle(next)   fallback: goes to Google, comes back to signin.html, then `next`
  *   sendEmailLink(email, next)   emails a sign-in link
  *   signOut()
  *   accessToken()         a valid token for database calls (refreshed when needed)
@@ -13,7 +15,7 @@
  * No passwords: Google and email links only. The session (tokens, not a
  * password) is kept in this browser's local storage under "rou_session".
  */
-import { CONFIG } from "../config.js?v=b884ae18";
+import { CONFIG } from "../config.js?v=90dd3cea";
 
 const SESSION_KEY = "rou_session";
 const AUTH = `${CONFIG.SUPABASE_URL}/auth/v1`;
@@ -107,6 +109,68 @@ export function initAuth() {
     return readSession();
   })();
   return initPromise;
+}
+
+/* ---------- Google's own button (Google Identity Services) ---------- */
+
+let gisPromise = null;
+function loadGoogleScript() {
+  gisPromise ||= new Promise((resolve, reject) => {
+    if (window.google?.accounts?.id) return resolve();
+    const s = document.createElement("script");
+    s.src = "https://accounts.google.com/gsi/client";
+    s.async = true;
+    s.onload = () => (window.google?.accounts?.id ? resolve() : reject(new Error("no gis")));
+    s.onerror = reject;
+    document.head.appendChild(s);
+    setTimeout(() => reject(new Error("timeout")), 8000);
+  });
+  return gisPromise;
+}
+
+async function sha256Hex(text) {
+  const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(bytes)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/** Exchanges Google's sign-in token for a session on our database. */
+async function signInWithIdToken(idToken, nonce) {
+  const res = await fetch(`${AUTH}/token?grant_type=id_token`, {
+    method: "POST", headers: baseHeaders,
+    body: JSON.stringify({ provider: "google", id_token: idToken, nonce }),
+  }).catch(() => null);
+  if (!res?.ok) throw new Error("Google sign-in didn't work. Please try again.");
+  const t = await res.json();
+  saveSession({
+    access_token: t.access_token,
+    refresh_token: t.refresh_token,
+    expires_at: t.expires_at || Math.floor(Date.now() / 1000) + (t.expires_in || 3600),
+    user: toUser(t.user),
+  });
+}
+
+/**
+ * Renders Google's button into `el`. onDone() runs once signed in; onError(message) on failure.
+ * Resolves true if the button is showing, false if it can't be (no Client ID, blocked script).
+ */
+export async function googleButton(el, { onDone, onError }) {
+  if (!CONFIG.GOOGLE_CLIENT_ID) return false;
+  try { await loadGoogleScript(); } catch { return false; }
+  // A fresh random nonce ties Google's token to this sign-in, so it can't be replayed.
+  const nonce = crypto.randomUUID();
+  window.google.accounts.id.initialize({
+    client_id: CONFIG.GOOGLE_CLIENT_ID,
+    nonce: await sha256Hex(nonce),
+    use_fedcm_for_prompt: true,
+    callback: async ({ credential }) => {
+      try { await signInWithIdToken(credential, nonce); onDone(); } catch (e) { onError(e.message); }
+    },
+  });
+  window.google.accounts.id.renderButton(el, {
+    type: "standard", theme: "outline", size: "large", shape: "pill",
+    text: "continue_with", logo_alignment: "center", width: Math.min(400, el.clientWidth || 360),
+  });
+  return true;
 }
 
 export function signInWithGoogle(next) {

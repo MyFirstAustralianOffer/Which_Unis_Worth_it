@@ -10,6 +10,14 @@ export const CONFIG = {
   SUPABASE_URL: "https://rgzostyfhlpvgoguithw.supabase.co",
   SUPABASE_KEY: "sb_publishable_xHzWlblGRdd6O5Of6muRTQ_JC4dFbxn",
 
+  /**
+   * Google sign-in "Client ID" (Google Cloud → Clients; ends in .apps.googleusercontent.com).
+   * Public by design. With it, Google's own button signs people in right on
+   * this site, and Google's screen names returnonuni.com.au. Empty = the
+   * older redirect sign-in, where Google's screen names supabase.co.
+   */
+  GOOGLE_CLIENT_ID: "",
+
   /** Shown as the footer "Contact" link. Leave empty to hide the link. */
   CONTACT_EMAIL: "",
 

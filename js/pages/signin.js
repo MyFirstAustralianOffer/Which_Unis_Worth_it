@@ -2,9 +2,9 @@
  * Sign-in page. Google and email links come back here; once signed in,
  * people go on to the page they came from (?next=share.html etc.).
  */
-import { renderLayout } from "../components/layout.js?v=019eb342";
-import { signInBox, bindSignInBox } from "../components/signin-box.js?v=9f5d0c46";
-import { initAuth, currentUser, authError, justSignedIn, safeNext } from "../services/auth.js?v=6428cedd";
+import { renderLayout } from "../components/layout.js?v=cb1ff16d";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=4c456da5";
+import { initAuth, currentUser, authError, justSignedIn, safeNext } from "../services/auth.js?v=690171de";
 import { setWelcome } from "../components/toast.js?v=c367aba3";
 import { $ } from "../lib/dom.js?v=5a71cd6c";
 
