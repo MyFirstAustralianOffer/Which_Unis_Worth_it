@@ -6,13 +6,13 @@
  * email, so the form doesn't ask for one, and their contribution is saved on
  * the account (the database unlocks on any device they sign in on).
  */
-import { renderLayout } from "../components/layout.js?v=cb1ff16d";
+import { renderLayout } from "../components/layout.js?v=a0d2a55b";
 import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=a77ab9c7";
 import { icons } from "../components/icons.js?v=ecd0f942";
 import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=57f3ef3c";
-import { submitResponse, myProfile } from "../services/api.js?v=05ab9222";
-import { initAuth, currentUser, signOut, authError } from "../services/auth.js?v=690171de";
-import { signInBox, bindSignInBox } from "../components/signin-box.js?v=4c456da5";
+import { submitResponse, myProfile } from "../services/api.js?v=a5f65edc";
+import { initAuth, currentUser, signOut, authError } from "../services/auth.js?v=8c753193";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=0b7ce0f2";
 import { $, esc } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();

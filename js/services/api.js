@@ -8,8 +8,8 @@
  *   fetchEntries(filters, offset)    { total, entries } (contributors only, no emails)
  *   fetchFilterOptions()             [{ level, course }]
  */
-import { CONFIG } from "../config.js?v=90dd3cea";
-import { accessToken } from "./auth.js?v=690171de";
+import { CONFIG } from "../config.js?v=2c2f6b73";
+import { accessToken } from "./auth.js?v=8c753193";
 
 /** Calls a database function. Errors carry the database's message (written for people). */
 async function rpc(name, args = {}) {

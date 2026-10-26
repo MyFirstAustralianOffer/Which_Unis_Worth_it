@@ -16,7 +16,7 @@ export const CONFIG = {
    * this site, and Google's screen names returnonuni.com.au. Empty = the
    * older redirect sign-in, where Google's screen names supabase.co.
    */
-  GOOGLE_CLIENT_ID: "",
+  GOOGLE_CLIENT_ID: "713612965288-8tjo83srmtv3577sc0fhjt364hl4qpqo.apps.googleusercontent.com",
 
   /** Shown as the footer "Contact" link. Leave empty to hide the link. */
   CONTACT_EMAIL: "",

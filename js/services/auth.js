@@ -15,7 +15,7 @@
  * No passwords: Google and email links only. The session (tokens, not a
  * password) is kept in this browser's local storage under "rou_session".
  */
-import { CONFIG } from "../config.js?v=90dd3cea";
+import { CONFIG } from "../config.js?v=2c2f6b73";
 
 const SESSION_KEY = "rou_session";
 const AUTH = `${CONFIG.SUPABASE_URL}/auth/v1`;

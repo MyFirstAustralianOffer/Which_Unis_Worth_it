@@ -4,14 +4,14 @@
  * story can see it; the database itself enforces this (see public_entries in
  * supabase/schema.sql), the page just explains what to do.
  */
-import { renderLayout } from "../components/layout.js?v=cb1ff16d";
+import { renderLayout } from "../components/layout.js?v=a0d2a55b";
 import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=f47178d6";
 import { setupFilters, readFilters } from "../components/entry-filters.js?v=5d23b99f";
-import { signInBox, bindSignInBox } from "../components/signin-box.js?v=4c456da5";
-import { fetchEntries, fetchFilterOptions, myProfile } from "../services/api.js?v=05ab9222";
-import { initAuth, currentUser, authError } from "../services/auth.js?v=690171de";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=0b7ce0f2";
+import { fetchEntries, fetchFilterOptions, myProfile } from "../services/api.js?v=a5f65edc";
+import { initAuth, currentUser, authError } from "../services/auth.js?v=8c753193";
 import { keepTimesFresh } from "../lib/time.js?v=7bec7af8";
-import { CONFIG } from "../config.js?v=90dd3cea";
+import { CONFIG } from "../config.js?v=2c2f6b73";
 import { $ } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();

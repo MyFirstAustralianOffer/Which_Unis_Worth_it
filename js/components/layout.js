@@ -8,9 +8,9 @@
  * The header shows "Sign in", or the signed-in person's initial with a
  * menu (their email + Sign out).
  */
-import { CONFIG } from "../config.js?v=90dd3cea";
+import { CONFIG } from "../config.js?v=2c2f6b73";
 import { esc } from "../lib/dom.js?v=5a71cd6c";
-import { initAuth, currentUser, signOut } from "../services/auth.js?v=690171de";
+import { initAuth, currentUser, signOut } from "../services/auth.js?v=8c753193";
 import { showWelcome } from "./toast.js?v=c367aba3";
 import { showStorageNotice, resetSiteData } from "./storage-notice.js?v=8bce1efe";
 
