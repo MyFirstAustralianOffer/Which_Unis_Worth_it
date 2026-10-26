@@ -100,3 +100,19 @@ select.field { appearance: none; -webkit-appearance: none; padding-right: 40px; 
 .same-as { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 14px; color: var(--text); cursor: pointer; }
 .same-as input { width: 18px; height: 18px; accent-color: var(--navy); }
 .money .field:disabled { background: var(--bg-soft, #f4f5f7); color: var(--muted); }
+
+/* sign-in box (signin.html, share form, locked database) */
+.signin { text-align: left; }
+.signin h2 { font-size: 22px; margin-bottom: 8px; }
+.signin-lead { color: var(--muted); margin: 0 0 16px; font-size: 15px; }
+.signin-error { margin: 0 0 12px; }
+.signin-error:empty { display: none; }
+.signin .btn { width: 100%; justify-content: center; }
+.signin-or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; margin: 16px 0; }
+.signin-or::before, .signin-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.signin-email { display: grid; gap: 10px; }
+.signin-note { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+.signin .text-link { background: none; border: 0; padding: 0; font: 600 14px inherit; cursor: pointer; text-decoration: underline; }
+.signed-in-as { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); margin: -4px 0 14px; overflow-wrap: anywhere; }
+.signed-in-as button { background: none; border: 0; padding: 0; color: var(--navy); font: 600 13px inherit; cursor: pointer; text-decoration: underline; flex: none; }
+#signinCard { max-width: 440px; margin: 0 auto; min-height: 0; }

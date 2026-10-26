@@ -4,10 +4,14 @@
  *   <header data-layout="header"></header>
  *   <header data-layout="header" data-variant="form"></header>   (logo + back link)
  *   <footer data-layout="footer"></footer>
+ *
+ * The header shows "Sign in", or the signed-in person's initial with a
+ * menu (their email + Sign out).
  */
-import { CONFIG, isConnected } from "../config.js?v=c8c5fba1";
+import { CONFIG } from "../config.js?v=b884ae18";
 import { esc } from "../lib/dom.js?v=5a71cd6c";
-import { showStorageNotice, resetSiteData } from "./storage-notice.js?v=69534ca8";
+import { initAuth, currentUser, signOut } from "../services/auth.js?v=88211d4e";
+import { showStorageNotice, resetSiteData } from "./storage-notice.js?v=8bce1efe";
 
 const logo = `<a class="logo" href="index.html" aria-label="Return on Uni home">Return on <span class="hl">Uni</span></a>`;
 
@@ -17,16 +21,47 @@ function header(el) {
     : `<nav class="nav" aria-label="Main">
          <a href="index.html#about">About</a>
          <a href="index.html#how">How it works</a>
+         <span class="account-slot" data-account></span>
          <a class="btn btn-primary btn-sm" href="share.html">Join the movement</a>
        </nav>`;
 
   el.classList.add("site-header");
   el.innerHTML = `<div class="wrap">${logo}${right}</div>`;
 
-  if (!isConnected()) {
-    el.insertAdjacentHTML("beforebegin",
-      `<div class="demo-note" role="note">Demo mode: the database shows example entries, not real graduates. Connect Google Sheets in <code>js/config.js</code> to go live.</div>`);
-  }
+}
+
+/** "Sign in" link, or the person's initial with a small menu. */
+function renderAccount() {
+  document.querySelectorAll("[data-account]").forEach((slot) => {
+    const user = currentUser();
+    if (!user) {
+      const page = location.pathname.split("/").pop() || "index.html";
+      slot.innerHTML = page === "signin.html" ? "" : `<a href="signin.html?next=${encodeURIComponent(page)}">Sign in</a>`;
+      return;
+    }
+    const label = user.name || user.email;
+    slot.innerHTML = `
+      <div class="account">
+        <button type="button" class="account-btn" aria-haspopup="true" aria-expanded="false" title="${esc(label)}">
+          ${esc(label.trim()[0]?.toUpperCase() || "?")}
+          <span class="sr-only">Account menu</span>
+        </button>
+        <div class="account-menu" hidden>
+          <p>Signed in as<br><b>${esc(user.email)}</b></p>
+          <button type="button" class="text-link" data-signout>Sign out</button>
+        </div>
+      </div>`;
+    const btn = slot.querySelector(".account-btn");
+    const menu = slot.querySelector(".account-menu");
+    const toggle = (open) => { menu.hidden = !open; btn.setAttribute("aria-expanded", String(open)); };
+    btn.addEventListener("click", (e) => { e.stopPropagation(); toggle(menu.hidden); });
+    document.addEventListener("click", (e) => { if (!slot.contains(e.target)) toggle(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") toggle(false); });
+    slot.querySelector("[data-signout]").addEventListener("click", async () => {
+      await signOut();
+      location.href = "index.html";
+    });
+  });
 }
 
 function footer(el) {
@@ -48,6 +83,8 @@ export function renderLayout() {
   document.querySelectorAll('[data-layout="header"]').forEach(header);
   document.querySelectorAll('[data-layout="footer"]').forEach(footer);
   showStorageNotice();
+  renderAccount();
+  initAuth().then(renderAccount);
   // Add ?reset to any page URL to clear everything the site saved on this device.
   if (new URLSearchParams(location.search).has("reset")) {
     history.replaceState(null, "", location.pathname + location.hash);

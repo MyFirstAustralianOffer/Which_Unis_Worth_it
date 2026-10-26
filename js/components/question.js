@@ -7,7 +7,7 @@
  */
 import { esc, options, digitsOnly } from "../lib/dom.js?v=5a71cd6c";
 import { LEVELS } from "../data/options.js?v=8ca2f27d";
-import { ERRORS } from "../data/form-schema.js?v=fe2118e7";
+import { ERRORS } from "../data/form-schema.js?v=57f3ef3c";
 import { icons } from "./icons.js?v=ecd0f942";
 import { courseInputHtml, bindCourseInput } from "./course-input.js?v=af05581f";
 

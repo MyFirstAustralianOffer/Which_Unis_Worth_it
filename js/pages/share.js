@@ -1,13 +1,18 @@
 /**
  * Share page: one question at a time, branching after "Which one are you?".
  * Behaviour follows the Share Form Spec ("How the form behaves").
+ *
+ * People sign in first (Google or email link): the account gives us a verified
+ * email, so the form doesn't ask for one, and their contribution is saved on
+ * the account (the database unlocks on any device they sign in on).
  */
-import { renderLayout } from "../components/layout.js?v=fa899a6c";
-import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=23121b94";
+import { renderLayout } from "../components/layout.js?v=b6b22fdc";
+import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=a77ab9c7";
 import { icons } from "../components/icons.js?v=ecd0f942";
-import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=fe2118e7";
-import { submitResponse } from "../services/api.js?v=49fde917";
-import { unlock } from "../services/access.js?v=6ff55857";
+import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=57f3ef3c";
+import { submitResponse, myProfile } from "../services/api.js?v=ad58d49e";
+import { initAuth, currentUser, signOut, authError } from "../services/auth.js?v=88211d4e";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=a435149c";
 import { $, esc } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();
@@ -28,6 +33,7 @@ function render() {
   const pathLabel = answers.path ? PATHS[answers.path].label : "";
 
   card.innerHTML = `
+    <div class="signed-in-as"><span>Signed in as <b>${esc(currentUser().email)}</b></span><button type="button" id="signOutBtn">Sign out</button></div>
     <div class="progress-meta">
       <span>Question ${step + 1} of ${total}</span>
       <span class="path">${esc(pathLabel)}</span>
@@ -43,11 +49,6 @@ function render() {
           <input type="checkbox" id="consent"${consent ? " checked" : ""}>
           <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>. <span class="req" aria-hidden="true">*</span></span>
         </label>` : ""}
-      <!-- Spam trap: hidden from people, only bots fill it. Its name is deliberately
-           meaningless so browser autofill never fills it in for real visitors. -->
-      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
-        <input type="text" name="rou_trap_7f3" id="hp" tabindex="-1" autocomplete="off" data-lpignore="true" data-1p-ignore>
-      </div>
       <p class="error" id="qError" role="alert"></p>
       <div class="form-actions">
         ${step > 0 ? `<button type="button" class="btn btn-outline" id="backBtn">Back</button>` : ""}
@@ -60,6 +61,7 @@ function render() {
   bindQuestion($("#qBody", card), q, answers, clearError);
   $("#consent", card)?.addEventListener("change", (e) => { consent = e.target.checked; clearError(); });
   $("#backBtn", card)?.addEventListener("click", back);
+  $("#signOutBtn", card).addEventListener("click", async () => { await signOut(); location.reload(); });
   form.addEventListener("submit", (e) => { e.preventDefault(); next(); });
 
   // Move focus to the first input (not on first load, to avoid jumping the page).
@@ -106,22 +108,12 @@ async function submit() {
   btn.disabled = true;
   btn.textContent = "Saving…";
 
-  const now = new Date().toISOString();
-  const payload = {
-    ...answers,
-    email: String(answers.email).trim().toLowerCase(),
-    consent_privacy: true,
-    consent_at: now,
-    submitted_at: now,
-    form_version: 1,
-    website: $("#hp", card).value, // spam trap
-  };
-
+  const { path, ...rest } = answers;
   try {
-    await submitResponse(payload);
-    unlock();
+    await submitResponse(path, { ...rest, consent_privacy: true, form_version: 2 });
     renderDone();
   } catch (err) {
+    if (/already shared/i.test(err.message)) return renderDone({ already: true });
     $("#qError", card).textContent = err.message;
     btn.disabled = false;
     btn.textContent = "Submit";
@@ -130,18 +122,31 @@ async function submit() {
   }
 }
 
-function renderDone() {
+function renderDone({ already = false } = {}) {
   card.innerHTML = `
     <div class="done">
       <div class="done-icon">${icons.check()}</div>
-      <h2>You're in!</h2>
-      <p>Thanks for sharing. The full database is now unlocked for you.</p>
+      <h2>${already ? "You've already shared your story" : "You're in!"}</h2>
+      <p>${already ? "Thank you! The full database is unlocked whenever you're signed in." : "Thanks for sharing. The full database is now unlocked whenever you're signed in."}</p>
       <a class="btn btn-primary" href="database.html">Explore the database →</a>
-      <button class="text-link" type="button" id="againBtn">Start again</button>
     </div>`;
-  $("#againBtn", card).addEventListener("click", () => {
-    answers = {}; step = 0; consent = false; render();
-  });
 }
 
-render();
+async function start() {
+  card.innerHTML = `<p class="entries-status">Loading…</p>`;
+  await initAuth();
+  if (!currentUser()) {
+    card.innerHTML = signInBox({
+      title: "First, sign in",
+      lead: "So your story is saved to you, and the database unlocks on any device. It takes a few seconds.",
+      error: authError,
+    });
+    bindSignInBox(card, { next: "share.html" });
+    return;
+  }
+  const profile = await myProfile();
+  if (profile.contributed) return renderDone({ already: true });
+  render();
+}
+
+start();

@@ -9,9 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=3dcc0430">
+  <link rel="stylesheet" href="css/base.css?v=ee461cc0">
   <link rel="stylesheet" href="css/entries.css?v=6e0287be">
-  <link rel="stylesheet" href="css/database.css?v=b675c8c6">
+  <link rel="stylesheet" href="css/form.css?v=852231e6">
+  <link rel="stylesheet" href="css/database.css?v=a06f8988">
 </head>
 <body>
   <header data-layout="header" data-active="database"></header>
@@ -41,13 +42,8 @@
         <p class="entries-status" id="status" aria-live="polite"></p>
         <div id="dbArea">
           <div class="entries" id="entries"></div>
-          <div class="lock-card">
-            <div>
-              <h2>Share your story to unlock the database</h2>
-              <p>It takes about two minutes. Every answer makes the picture clearer for the next student.</p>
-              <a class="btn btn-primary" href="share.html">Join the movement</a>
-            </div>
-          </div>
+          <!-- Filled in by js/pages/database.js: sign in, or share your story to unlock. -->
+          <div class="lock-card"><div id="lockBox"></div></div>
         </div>
         <div class="db-more" id="more"></div>
       </div>
@@ -55,6 +51,6 @@
   </main>
 
   <footer data-layout="footer"></footer>
-  <script type="module" src="js/pages/database.js?v=6f4dda4a"></script>
+  <script type="module" src="js/pages/database.js?v=005a5ad8"></script>
 </body>
 </html>

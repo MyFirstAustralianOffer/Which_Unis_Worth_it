@@ -6,8 +6,8 @@ captured as an image, so nobody can use the filters yet.
     pip install playwright        (once; it needs a Chromium browser)
     python3 tools/preview-shot.py entries.json
 
-entries.json is a list of graduate entries, exactly as the Google script returns
-them from  <SHEETS_API_URL>?action=entries  (the "entries" array), e.g.
+entries.json is a list of graduate entries in the shape the database function
+public_entries() returns (its "entries" array), e.g.
     [{"study_level": "Bachelor", "course_name": "Bachelor of Nursing",
       "university": "UNSW Sydney", "graduation_year": 2021, "student_type": "Domestic",
       "time_to_first_job": "Under 3 months", "first_role": "Graduate Nurse",
@@ -20,7 +20,6 @@ from playwright.async_api import async_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "assets" / "preview.png"
-FAKE_API = "https://preview.invalid/exec"
 CARDS = 4
 # The picture is frozen, so its "Submitted … ago" labels are too. Entries without a
 # "submitted" time (ms) get these, in minutes before now: 2 min, 18 min, 1 hour, 3 hours.
@@ -47,20 +46,25 @@ async def main(entries):
         browser = await p.chromium.launch()
         page = await browser.new_page(viewport={"width": 1240, "height": 900}, device_scale_factor=2)
 
-        async def config(route):  # point the site at the fake API below
-            r = await route.fetch()
-            body = re.sub(r'SHEETS_API_URL:\s*"[^"]*"', f'SHEETS_API_URL: "{FAKE_API}"', await r.text())
-            await route.fulfill(response=r, body=body)
-        await page.route("**/js/config.js*", config)
-        await page.route(FAKE_API + "*", lambda route: route.fulfill(
-            status=200, content_type="application/json", body=json.dumps({"ok": True, "entries": entries[:CARDS]})))
+        # Stand-in database: a signed-in contributor, and these entries.
+        answers = {
+            "my_profile": {"signed_in": True, "contributed": True, "email": "preview@example.com"},
+            "filter_options": [{"level": e["study_level"], "course": e["course_name"]} for e in entries],
+            "public_entries": {"total": len(entries), "entries": entries},
+        }
+        async def rpc(route):
+            name = route.request.url.rsplit("/", 1)[-1]
+            await route.fulfill(status=200, content_type="application/json", body=json.dumps(answers.get(name)))
+        await page.route("**/rest/v1/rpc/*", rpc)
 
-        # Unlocked, notice already seen, nothing cached.
-        await page.add_init_script("""try { sessionStorage.clear();
-            localStorage.setItem('rou_unlocked', 'true'); localStorage.setItem('rou_notice_ok', '1'); } catch (e) {}""")
+        # Signed in (a fake session that never expires), notice already seen.
+        session = json.dumps({"access_token": "preview", "refresh_token": "preview", "expires_at": 9_999_999_999,
+                              "user": {"id": "preview", "email": "preview@example.com", "name": "Preview"}})
+        await page.add_init_script(f"""try {{ localStorage.setItem('rou_session', {json.dumps(session)});
+            localStorage.setItem('rou_notice_ok', '1'); }} catch (e) {{}}""")
         await page.goto(base + "database.html")
         await page.wait_for_selector("#entries .entry")
-        await page.add_style_tag(content="#status, #more { display: none !important; } .db-panel { border: 0 !important; box-shadow: none !important; }")
+        await page.add_style_tag(content=".site-header, #status, #more { display: none !important; } .db-panel { border: 0 !important; box-shadow: none !important; }")
         first = page.locator("#entries .entry").first
         await first.locator(".entry-toggle").click()
         await page.wait_for_timeout(300)

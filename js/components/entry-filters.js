@@ -1,17 +1,13 @@
 /**
- * Database filters, shared by the homepage preview and the full database page:
- *
- *   Degree type → Course → University → Graduated → Student type
- *
- * "Course" only lists courses at the chosen degree type (e.g. Bachelor →
- * every Bachelor course in the database).
+ * Database filters: Degree type → Course → University → Graduated → Student type.
+ * Filtering happens in the database; this file only fills and reads the dropdowns.
  *
  * Markup: a <form> containing <select data-filter="level|course|uni|years|type">
  * and a submit button.
  *
- *   setupFilters(form, entries, onChange)  fills the dropdowns and calls
- *                                          onChange(values) on Search / change
- *   filterEntries(entries, values)         the matching entries
+ *   setupFilters(form, pairs, onChange)   pairs: [{ level, course }] from the database.
+ *                                         Calls onChange(values) on Search / change.
+ *   readFilters(form)                      { level, course, uni, minYear, type }
  */
 import { UNIVERSITIES, STUDENT_TYPES, LEVELS } from "../data/options.js?v=8ca2f27d";
 import { options, esc } from "../lib/dom.js?v=5a71cd6c";
@@ -19,48 +15,25 @@ import { options, esc } from "../lib/dom.js?v=5a71cd6c";
 /** Latest graduation year in the form (see GRAD_YEARS in options.js). */
 const LATEST_YEAR = 2026;
 
-const norm = (s) => String(s ?? "").trim().toLowerCase();
-
 export function readFilters(form) {
   const get = (name) => form.querySelector(`[data-filter="${name}"]`)?.value ?? "";
-  return { level: get("level"), course: get("course"), uni: get("uni"), years: get("years"), type: get("type") };
+  const years = Number(get("years"));
+  return { level: get("level"), course: get("course"), uni: get("uni"), minYear: years ? LATEST_YEAR - years : null, type: get("type") };
 }
 
-export function filterEntries(entries, v) {
-  const years = Number(v.years);
-  return entries.filter((e) => {
-    const y = Number(e.graduation_year); // "Before 2016" → NaN, so it's excluded from "Last N years"
-    return (!v.level || e.study_level === v.level) &&
-      (!v.course || norm(e.course_name) === norm(v.course)) &&
-      (!v.uni || e.university === v.uni) &&
-      (!v.type || e.student_type === v.type) &&
-      (!years || (y && y >= LATEST_YEAR - years));
-  });
-}
-
-/** Distinct course names (as entered) for one degree type, or for all of them. */
-function coursesFor(entries, level) {
-  const seen = new Map();
-  entries.forEach((e) => {
-    if (level && e.study_level !== level) return;
-    const k = norm(e.course_name);
-    if (k && !seen.has(k)) seen.set(k, String(e.course_name).trim());
-  });
-  return [...seen.values()].sort((a, b) => a.localeCompare(b));
-}
-
-export function setupFilters(form, entries, onChange) {
+export function setupFilters(form, pairs, onChange) {
   const sel = (name) => form.querySelector(`[data-filter="${name}"]`);
 
   // Degree types that actually have entries, in the form's order.
-  const levels = LEVELS.filter((l) => entries.some((e) => e.study_level === l));
+  const levels = LEVELS.filter((l) => pairs.some((p) => p.level === l));
   sel("level").innerHTML = `<option value="">All degree types</option>${options(levels)}`;
 
   // Course list follows the degree type; a course that no longer fits is cleared.
   const fillCourses = () => {
     const level = sel("level").value;
     const current = sel("course").value;
-    const list = coursesFor(entries, level);
+    const list = [...new Set(pairs.filter((p) => !level || p.level === level).map((p) => p.course))]
+      .sort((a, b) => a.localeCompare(b));
     const all = level ? `All ${esc(level)} courses` : "All courses";
     sel("course").innerHTML = `<option value="">${all}</option>${options(list, list.includes(current) ? current : "")}`;
   };

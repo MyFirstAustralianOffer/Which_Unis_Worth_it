@@ -102,13 +102,23 @@ img, svg { display: block; max-width: 100%; }
 .storage-notice .btn { flex: none; }
 @media (max-width: 560px) { .storage-notice { left: 12px; right: 12px; bottom: 12px; max-width: none; } }
 
-/* demo-mode notice (only shown while Google Sheets isn't connected) */
-.demo-note { background: #fff7e8; border-bottom: 1px solid #f3dfb8; color: #7a5410; font-size: 13px; text-align: center; padding: 7px 16px; }
-.demo-note[hidden] { display: none; }
+/* account: "Sign in" link, or initial + menu */
+.account-slot:empty { display: none; }
+.account { position: relative; }
+.account-btn { width: 34px; height: 34px; border-radius: 50%; border: 0; background: #0061ff; color: #fff;
+  font: 700 14px/1 inherit; cursor: pointer; display: grid; place-items: center; }
+.account-btn:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.account-menu { position: absolute; right: 0; top: calc(100% + 8px); min-width: 220px; background: #fff;
+  border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px 16px; z-index: 40; }
+.account-menu[hidden] { display: none; }
+.account-menu p { font-size: 13px; color: var(--muted); margin: 0 0 10px; overflow-wrap: anywhere; }
+.account-menu b { color: var(--navy); }
+.account-menu .text-link { background: none; border: 0; padding: 0; font: 600 14px inherit; cursor: pointer; text-decoration: underline; }
 
 @media (max-width: 760px) {
   .section { padding: 64px 0; }
-  .nav a:not(.btn) { display: none; }
+  .nav > a:not(.btn) { display: none; }
+  .nav { gap: 14px; }
   .btn-lg { padding: 12px 22px; font-size: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }

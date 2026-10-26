@@ -1,14 +1,17 @@
 /**
- * Database page: filters + expandable graduate cards.
- * Locked (blurred, with a call to action) until the person finishes the form.
+ * Database page: filters + expandable graduate cards, loaded from the
+ * database 24 at a time. Only people who are signed in and have shared their
+ * story can see it; the database itself enforces this (see public_entries in
+ * supabase/schema.sql), the page just explains what to do.
  */
-import { renderLayout } from "../components/layout.js?v=fa899a6c";
+import { renderLayout } from "../components/layout.js?v=b6b22fdc";
 import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=f47178d6";
-import { setupFilters, filterEntries, readFilters } from "../components/entry-filters.js?v=860b0bbf";
-import { fetchEntries } from "../services/api.js?v=49fde917";
-import { isUnlocked } from "../services/access.js?v=6ff55857";
-import { CONFIG } from "../config.js?v=c8c5fba1";
+import { setupFilters, readFilters } from "../components/entry-filters.js?v=5d23b99f";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=a435149c";
+import { fetchEntries, fetchFilterOptions, myProfile } from "../services/api.js?v=ad58d49e";
+import { initAuth, currentUser, authError } from "../services/auth.js?v=88211d4e";
 import { keepTimesFresh } from "../lib/time.js?v=7bec7af8";
+import { CONFIG } from "../config.js?v=b884ae18";
 import { $ } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();
@@ -16,43 +19,69 @@ renderLayout();
 const grid = $("#entries");
 const status = $("#status");
 const form = $("#filters");
-let all = [];
-let shown = CONFIG.PAGE_SIZE;
+const more = $("#more");
+let filters = {};
+let loaded = 0;
+let total = 0;
 
 bindEntryToggles(grid);
 keepTimesFresh(grid);
 
-function render(values, { resetPaging = true } = {}) {
-  if (resetPaging) shown = CONFIG.PAGE_SIZE;
-  const list = filterEntries(all, values);
+/** Blurred placeholder cards behind the lock (no real data is loaded). */
+function lock(html) {
+  $("#dbArea").classList.add("locked");
+  form.querySelectorAll("select, button").forEach((el) => { el.disabled = true; });
+  grid.innerHTML = Array.from({ length: 8 }, () => `<article class="entry entry-ghost" aria-hidden="true"><i></i><i></i><i></i></article>`).join("");
+  $("#lockBox").innerHTML = html;
+  status.textContent = "";
+}
 
-  if (!isUnlocked()) {
-    $("#dbArea").classList.add("locked");
-    grid.innerHTML = list.slice(0, 8).map((e, i) => entryCard(e, { id: `l${i}`, showAge: true })).join("");
-    $("#more").innerHTML = "";
+async function loadPage({ append = false } = {}) {
+  const btn = $("#moreBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "Loading…"; }
+  if (!append) { status.textContent = "Loading…"; loaded = 0; }
+  try {
+    const page = await fetchEntries(filters, loaded);
+    total = page.total;
+    const html = page.entries.map((e, i) => entryCard(e, { id: `d${loaded + i}`, showAge: true })).join("");
+    if (append) grid.insertAdjacentHTML("beforeend", html);
+    else grid.innerHTML = html || `<p class="entries-empty">No graduates match yet. Try a broader search, or <a class="text-link" href="share.html">share your own story</a>.</p>`;
+    loaded += page.entries.length;
+    status.textContent = `${total.toLocaleString()} ${total === 1 ? "graduate" : "graduates"} found`;
+    more.innerHTML = loaded < total ? `<button class="btn btn-outline" type="button" id="moreBtn">Show more</button>` : "";
+    $("#moreBtn")?.addEventListener("click", () => loadPage({ append: true }));
+  } catch (err) {
     status.textContent = "";
+    if (!append) grid.innerHTML = `<p class="entries-empty">${err.message}</p>`;
+    if (btn) { btn.disabled = false; btn.textContent = "Show more"; }
+  }
+}
+
+async function start() {
+  status.textContent = "Loading…";
+  await initAuth();
+  if (!currentUser()) {
+    lock(signInBox({
+      title: "Sign in to explore the database",
+      lead: "Already shared your story? Sign in with the same email to see every entry.",
+      error: authError,
+    }));
+    bindSignInBox($("#lockBox"), { next: "database.html" });
     return;
   }
-
-  status.textContent = `${list.length.toLocaleString()} ${list.length === 1 ? "graduate" : "graduates"} found`;
-  grid.innerHTML = list.length
-    ? list.slice(0, shown).map((e, i) => entryCard(e, { id: `d${i}`, showAge: true })).join("")
-    : `<p class="entries-empty">No graduates match yet. Try a broader search, or <a class="text-link" href="share.html">share your own story</a>.</p>`;
-  $("#more").innerHTML = list.length > shown
-    ? `<button class="btn btn-outline" type="button" id="moreBtn">Show more</button>` : "";
-  $("#moreBtn")?.addEventListener("click", () => { shown += CONFIG.PAGE_SIZE; render(readFilters(form), { resetPaging: false }); });
-}
-
-async function load() {
-  status.textContent = "Loading…";
-  try {
-    ({ entries: all } = await fetchEntries());
-    setupFilters(form, all, render);
-    render(readFilters(form));
-  } catch {
-    status.textContent = "";
-    grid.innerHTML = `<p class="entries-empty">We couldn't load the database right now. Please refresh the page.</p>`;
+  const profile = await myProfile();
+  if (!profile.contributed) {
+    lock(`
+      <h2>Share your story to unlock the database</h2>
+      <p>It takes about two minutes. Every answer makes the picture clearer for the next student.</p>
+      <a class="btn btn-primary" href="share.html">Join the movement</a>`);
+    return;
   }
+  try {
+    setupFilters(form, await fetchFilterOptions(), (values) => { filters = values; loadPage(); });
+  } catch { /* filters stay at "All"; the cards can still load */ }
+  filters = readFilters(form);
+  await loadPage();
 }
 
-load();
+start();

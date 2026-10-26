@@ -26,11 +26,7 @@ import {
 const SALARY_HELP = "Annual income before tax, in AUD, including super and bonuses.";
 
 export const START = [
-  {
-    type: "email", field: "email", title: "What’s your email?",
-    placeholder: "you@email.com",
-    helper: "We never share or sell your email or personal details. Ever.",
-  },
+  // No email question: it comes from the person's account (they sign in first).
   {
     type: "choice", field: "path", title: "Which one are you?",
     options: [
