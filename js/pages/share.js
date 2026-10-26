@@ -6,13 +6,14 @@
  * email, so the form doesn't ask for one, and their contribution is saved on
  * the account (the database unlocks on any device they sign in on).
  */
-import { renderLayout } from "../components/layout.js?v=a0d2a55b";
+import { renderLayout } from "../components/layout.js?v=9475431f";
 import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=a77ab9c7";
 import { icons } from "../components/icons.js?v=ecd0f942";
 import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=57f3ef3c";
 import { submitResponse, myProfile } from "../services/api.js?v=a5f65edc";
 import { initAuth, currentUser, signOut, authError } from "../services/auth.js?v=8c753193";
-import { signInBox, bindSignInBox } from "../components/signin-box.js?v=0b7ce0f2";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=9a52838c";
+import { setWelcome } from "../components/toast.js?v=8a66a045";
 import { $, esc } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();
@@ -61,7 +62,7 @@ function render() {
   bindQuestion($("#qBody", card), q, answers, clearError);
   $("#consent", card)?.addEventListener("change", (e) => { consent = e.target.checked; clearError(); });
   $("#backBtn", card)?.addEventListener("click", back);
-  $("#signOutBtn", card).addEventListener("click", async () => { await signOut(); location.reload(); });
+  $("#signOutBtn", card).addEventListener("click", async () => { await signOut(); setWelcome("signedout"); location.reload(); });
   form.addEventListener("submit", (e) => { e.preventDefault(); next(); });
 
   // Move focus to the first input (not on first load, to avoid jumping the page).

@@ -11,7 +11,7 @@
 import { CONFIG } from "../config.js?v=2c2f6b73";
 import { esc } from "../lib/dom.js?v=5a71cd6c";
 import { initAuth, currentUser, signOut } from "../services/auth.js?v=8c753193";
-import { showWelcome } from "./toast.js?v=c367aba3";
+import { showWelcome, setWelcome } from "./toast.js?v=8a66a045";
 import { showStorageNotice, resetSiteData } from "./storage-notice.js?v=8bce1efe";
 
 const logo = `<a class="logo" href="index.html" aria-label="Return on Uni home">Return on <span class="hl">Uni</span></a>`;
@@ -60,6 +60,7 @@ function renderAccount() {
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") toggle(false); });
     slot.querySelector("[data-signout]").addEventListener("click", async () => {
       await signOut();
+      setWelcome("signedout");
       location.href = "index.html";
     });
   });

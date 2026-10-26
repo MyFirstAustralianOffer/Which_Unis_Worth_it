@@ -4,10 +4,10 @@
  * story can see it; the database itself enforces this (see public_entries in
  * supabase/schema.sql), the page just explains what to do.
  */
-import { renderLayout } from "../components/layout.js?v=a0d2a55b";
+import { renderLayout } from "../components/layout.js?v=9475431f";
 import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=f47178d6";
 import { setupFilters, readFilters } from "../components/entry-filters.js?v=5d23b99f";
-import { signInBox, bindSignInBox } from "../components/signin-box.js?v=0b7ce0f2";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=9a52838c";
 import { fetchEntries, fetchFilterOptions, myProfile } from "../services/api.js?v=a5f65edc";
 import { initAuth, currentUser, authError } from "../services/auth.js?v=8c753193";
 import { keepTimesFresh } from "../lib/time.js?v=7bec7af8";

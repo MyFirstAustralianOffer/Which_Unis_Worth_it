@@ -3,7 +3,7 @@
  * "Email verified. You're signed in as jane@example.com".
  *
  *   showToast(html)        show one now
- *   setWelcome(method)     remember to greet on the next page ("email" | "google")
+ *   setWelcome(kind)       remember a message for the next page ("email" | "google" | "signedout")
  *   showWelcome(user)      shows it (once) if one was set; called by the layout
  */
 import { esc } from "../lib/dom.js?v=5a71cd6c";
@@ -31,6 +31,7 @@ export function setWelcome(method) {
 export function showWelcome(user) {
   let method = "";
   try { method = sessionStorage.getItem(KEY) || ""; sessionStorage.removeItem(KEY); } catch { return; }
+  if (method === "signedout") return showToast("<b>Signed out.</b> See you next time.");
   if (!method || !user) return;
   showToast(method === "email"
     ? `<b>Email verified.</b> You're signed in as ${esc(user.email)}.`
