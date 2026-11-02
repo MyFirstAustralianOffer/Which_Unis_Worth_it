@@ -330,6 +330,9 @@ end $$;
 
 -- Database cards (newest first), only for people who have contributed.
 -- Filters are optional. Never returns emails.
+-- Graduates who are still looking for a job in their field are not shown: the
+-- database is about where degrees lead. Their answers stay stored for analysis
+-- (and they still unlock the database by contributing).
 create or replace function public.public_entries(
   p_level text default null, p_course text default null, p_uni text default null,
   p_min_year int default null, p_type text default null,
@@ -346,6 +349,7 @@ begin
     select g.*, public.course_display(g.course_name) as course
       from public.graduates g
      where g.show_in_database
+       and coalesce(g.time_to_first_job, '') <> 'Still looking'
   ), matched as (
     select * from cards c
      where (p_level  is null or c.study_level = p_level)
@@ -383,7 +387,8 @@ begin
   return coalesce((
     select jsonb_agg(jsonb_build_object('level', level, 'course', course) order by level, course)
       from (select distinct g.study_level as level, public.course_display(g.course_name) as course
-              from public.graduates g where g.show_in_database) o
+              from public.graduates g
+             where g.show_in_database and coalesce(g.time_to_first_job, '') <> 'Still looking') o
   ), '[]'::jsonb);
 end $$;
 
