@@ -19,7 +19,7 @@ export const CONFIG = {
   GOOGLE_CLIENT_ID: "713612965288-8tjo83srmtv3577sc0fhjt364hl4qpqo.apps.googleusercontent.com",
 
   /** Shown as the footer "Contact" link. Leave empty to hide the link. */
-  CONTACT_EMAIL: "",
+  CONTACT_EMAIL: "returnonuni@gmail.com",
 
   /** How many cards the database page loads at a time. */
   PAGE_SIZE: 24,

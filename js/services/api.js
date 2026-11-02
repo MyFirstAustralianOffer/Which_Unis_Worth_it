@@ -7,9 +7,10 @@
  *   submitResponse(path, answers)    saves one form
  *   fetchEntries(filters, offset)    { total, entries } (contributors only, no emails)
  *   fetchFilterOptions()             [{ level, course }]
+ *   fetchFeatured(limit)             a few top cards for the homepage (anyone)
  */
-import { CONFIG } from "../config.js?v=2c2f6b73";
-import { accessToken } from "./auth.js?v=8c753193";
+import { CONFIG } from "../config.js?v=cd936dce";
+import { accessToken } from "./auth.js?v=6b776e12";
 
 /** Calls a database function. Errors carry the database's message (written for people). */
 async function rpc(name, args = {}) {
@@ -65,3 +66,6 @@ export function fetchEntries(filters = {}, offset = 0) {
 }
 
 export const fetchFilterOptions = () => rpc("filter_options");
+
+/** Homepage top cards: open to everyone, never job seekers (see featured_entries). */
+export const fetchFeatured = (limit = 6) => rpc("featured_entries", { p_limit: limit });

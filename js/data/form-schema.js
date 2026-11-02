@@ -107,5 +107,5 @@ export const ERRORS = {
   email: "Please enter a valid email to continue.",
   course: "Please choose a level and type your course to continue.",
   generic: "Please answer this question to continue.",
-  consent: "Please agree to the Privacy policy to continue.",
+  consent: "Please agree to the Privacy policy and Terms of use to continue.",
 };

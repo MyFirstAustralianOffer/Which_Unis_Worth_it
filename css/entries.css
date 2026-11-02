@@ -65,3 +65,29 @@
 @media (max-width: 560px) {
   .entries { grid-template-columns: 1fr; }
 }
+
+/* placeholder cards while loading / behind the lock (no real data) */
+.entry-ghost { min-height: 150px; display: grid; align-content: start; gap: 10px; }
+.entry-ghost i { display: block; height: 12px; border-radius: 6px; background: var(--line-2);
+  background-image: linear-gradient(90deg, transparent 0, rgba(255,255,255,.75) 50%, transparent 100%);
+  background-size: 200% 100%; background-repeat: no-repeat; animation: shimmer 1.4s ease-in-out infinite; }
+.entry-ghost i:nth-child(1) { width: 70%; height: 14px; }
+.entry-ghost i:nth-child(2) { width: 50%; }
+.entry-ghost i:nth-child(3) { width: 85%; height: 28px; border-radius: 8px; }
+.locked .entry-ghost i { animation: none; }
+@keyframes shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+
+/* homepage: the filters are only a picture of the search */
+.filters-static { pointer-events: none; user-select: none; }
+.filters-static select:disabled, .filters-static .btn:disabled { opacity: 1; color: inherit; }
+.filters-static .btn:disabled { color: #fff; }
+
+/* cards arrive with a gentle fade */
+.entries.appear .entry { animation: card-in .5s ease both; }
+.entries.appear .entry:nth-child(2) { animation-delay: .05s; }
+.entries.appear .entry:nth-child(3) { animation-delay: .1s; }
+.entries.appear .entry:nth-child(4) { animation-delay: .15s; }
+.entries.appear .entry:nth-child(n+5) { animation-delay: .2s; }
+@keyframes card-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.preview-img { display: block; width: 100%; height: auto; }
+@media (prefers-reduced-motion: reduce) { .entry-ghost i, .entries.appear .entry { animation: none; } }

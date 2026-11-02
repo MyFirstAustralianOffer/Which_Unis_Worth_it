@@ -6,13 +6,13 @@
  * email, so the form doesn't ask for one, and their contribution is saved on
  * the account (the database unlocks on any device they sign in on).
  */
-import { renderLayout } from "../components/layout.js?v=9475431f";
-import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=a77ab9c7";
+import { renderLayout } from "../components/layout.js?v=22ec4f9f";
+import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=34363dbe";
 import { icons } from "../components/icons.js?v=ecd0f942";
-import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=57f3ef3c";
-import { submitResponse, myProfile } from "../services/api.js?v=a5f65edc";
-import { initAuth, currentUser, signOut, authError } from "../services/auth.js?v=8c753193";
-import { signInBox, bindSignInBox } from "../components/signin-box.js?v=9a52838c";
+import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=1a168b75";
+import { submitResponse, myProfile } from "../services/api.js?v=2cb01d59";
+import { initAuth, currentUser, signOut, authError } from "../services/auth.js?v=6b776e12";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=53d4f03e";
 import { setWelcome } from "../components/toast.js?v=8a66a045";
 import { $, esc } from "../lib/dom.js?v=5a71cd6c";
 
@@ -48,7 +48,7 @@ function render() {
       ${isLast() ? `
         <label class="consent">
           <input type="checkbox" id="consent"${consent ? " checked" : ""}>
-          <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>. <span class="req" aria-hidden="true">*</span></span>
+          <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a> and <a href="terms.html" target="_blank" rel="noopener">Terms of use</a>. <span class="req" aria-hidden="true">*</span></span>
         </label>` : ""}
       <p class="error" id="qError" role="alert"></p>
       <div class="form-actions">

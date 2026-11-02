@@ -12,6 +12,7 @@
 --              submit_response()  save one form (checks every answer)
 --              public_entries()   database cards, for contributors only, no emails
 --              filter_options()   degree types + courses for the filters
+--              featured_entries() a few top cards for the homepage (no sign-in needed)
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
@@ -386,9 +387,59 @@ begin
   ), '[]'::jsonb);
 end $$;
 
--- Only signed-in people can call the website functions; helpers stay internal.
+-- Homepage "top cards": a few of the strongest graduate stories, for everyone
+-- (no sign-in needed). Never job seekers ("Still looking"); never emails.
+--
+-- Score (higher = shown first):
+--   * recent:       newer entries score higher (half-life about 3 weeks)
+--   * complete:     first role, role now and both salaries filled in
+--   * strong story: salary growth since the first job, and landing a job quickly
+--   * believable:   salaries between $30k and $400k, an official course title
+-- Then at most one card per university and per course, so the mix stays varied.
+create or replace function public.featured_entries(p_limit int default 6)
+returns jsonb language sql stable security definer set search_path = public as $$
+  with scored as (
+    select g.*, public.course_display(g.course_name) as course,
+      (  exp(-extract(epoch from (now() - g.submitted_at)) / 86400.0 / 30.0) * 3      -- recent
+       + case when g.course_from_list then 1 else 0 end                                 -- official course title
+       + least(greatest(g.current_salary::numeric / nullif(g.starting_salary, 0) - 1, 0), 1.5)  -- salary growth
+       + case g.time_to_first_job when 'Before graduating' then 1 when 'Under 3 months' then 0.8
+                                  when '3–6 months' then 0.5 when '6–12 months' then 0.2 else 0 end
+       + case when g.university <> 'Other' then 0.5 else 0 end
+      ) as score
+    from public.graduates g
+    where g.show_in_database
+      and coalesce(g.time_to_first_job, '') <> 'Still looking'
+      and nullif(btrim(g.first_role), '') is not null
+      and nullif(btrim(g."current_role"), '') is not null
+      and g.starting_salary between 30000 and 400000
+      and g.current_salary between 30000 and 400000
+  ), varied as (
+    select s.*,
+           row_number() over (partition by s.university order by s.score desc) as per_uni,
+           row_number() over (partition by lower(s.course) order by s.score desc) as per_course
+      from scored s
+  ), picked as (
+    select * from varied where per_uni = 1 and per_course = 1
+    order by score desc
+    limit least(greatest(coalesce(p_limit, 6), 1), 12)
+  )
+  select coalesce(jsonb_agg(jsonb_build_object(
+      'study_level', p.study_level, 'course_name', p.course, 'university', p.university,
+      'university_other', p.university_other, 'graduation_year', p.graduation_year,
+      'student_type', p.student_type, 'time_to_first_job', p.time_to_first_job,
+      'time_looking', p.time_looking, 'first_role', p.first_role,
+      'starting_salary', p.starting_salary, 'current_role', p."current_role",
+      'current_salary', p.current_salary,
+      'submitted', (extract(epoch from date_trunc('minute', p.submitted_at)) * 1000)::bigint)
+    order by p.score desc), '[]'::jsonb)
+  from picked p
+$$;
+
+
 revoke execute on all functions in schema public from public, anon, authenticated;
 grant execute on function public.my_profile()                       to anon, authenticated;
 grant execute on function public.submit_response(text, jsonb)       to authenticated;
 grant execute on function public.public_entries(text, text, text, int, text, int, int) to authenticated;
 grant execute on function public.filter_options()                   to authenticated;
+grant execute on function public.featured_entries(int)              to anon, authenticated;

@@ -19,10 +19,4 @@
 #dbArea:not(.locked) .lock-card { display: none; }
 .locked { min-height: 540px; }
 
-/* placeholder cards behind the lock (no real data) */
-.entry-ghost { min-height: 150px; display: grid; align-content: start; gap: 10px; }
-.entry-ghost i { display: block; height: 12px; border-radius: 6px; background: var(--line-2); }
-.entry-ghost i:nth-child(1) { width: 70%; height: 14px; }
-.entry-ghost i:nth-child(2) { width: 50%; }
-.entry-ghost i:nth-child(3) { width: 85%; height: 28px; border-radius: 8px; }
 .lock-card .signin { text-align: left; }
