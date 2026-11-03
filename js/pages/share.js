@@ -25,6 +25,24 @@ let consent = false;
 let submitting = false;
 
 const questions = () => questionsFor(answers.path, answers);
+
+/**
+ * Salary sense-check: a yearly salary outside this range is usually a typo
+ * (a weekly or monthly amount, or an extra zero). People are asked to check,
+ * and can carry on if it's right. Nothing is blocked.
+ */
+const SALARY_CHECK = { min: 20000, max: 500000 };
+const salaryConfirmed = {}; // field → the value they confirmed
+
+function salaryWarning(q) {
+  if (q.type !== "money" || q.sameAs && answers[q.sameAs.flag] === "Yes") return "";
+  const v = Number(answers[q.field]);
+  if (!v || salaryConfirmed[q.field] === v) return "";
+  const amount = `$${v.toLocaleString("en-AU")}`;
+  if (v < SALARY_CHECK.min) return `That looks low for a yearly salary. Did you enter a weekly or monthly amount? If ${amount} a year is right, press Next again.`;
+  if (v > SALARY_CHECK.max) return `That looks high for a yearly salary. Please check for an extra zero. If ${amount} a year is right, press Next again.`;
+  return "";
+}
 const isLast = () => step === questions().length - 1;
 
 function render() {
@@ -51,6 +69,7 @@ function render() {
           <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a> and <a href="terms.html" target="_blank" rel="noopener">Terms of use</a>. <span class="req" aria-hidden="true">*</span></span>
         </label>` : ""}
       <p class="error" id="qError" role="alert"></p>
+      <p class="notice" id="qNotice" role="status"></p>
       <div class="form-actions">
         ${step > 0 ? `<button type="button" class="btn btn-outline" id="backBtn">Back</button>` : ""}
         <button type="submit" class="btn btn-primary" id="nextBtn">${isLast() ? "Submit" : "Next"}</button>
@@ -58,7 +77,7 @@ function render() {
     </form>`;
 
   const form = $("#qForm", card);
-  const clearError = () => { $("#qError", card).textContent = ""; };
+  const clearError = () => { $("#qError", card).textContent = ""; $("#qNotice", card).textContent = ""; };
   bindQuestion($("#qBody", card), q, answers, clearError);
   $("#consent", card)?.addEventListener("change", (e) => { consent = e.target.checked; clearError(); });
   $("#backBtn", card)?.addEventListener("click", back);
@@ -85,6 +104,13 @@ async function next() {
 
   const error = validateQuestion(q, answers);
   if (error) return showError(error, q);
+
+  const warning = salaryWarning(q);
+  if (warning) {
+    salaryConfirmed[q.field] = Number(answers[q.field]); // pressing Next again carries on
+    $("#qNotice", card).textContent = warning;
+    return;
+  }
   if (isLast() && !consent) return showError(ERRORS.consent, q);
 
   // Changing "Which one are you?" drops answers from the other paths.

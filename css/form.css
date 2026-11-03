@@ -118,3 +118,7 @@ select.field { appearance: none; -webkit-appearance: none; padding-right: 40px; 
 #signinCard { max-width: 440px; margin: 0 auto; min-height: 0; }
 .google-slot { display: flex; justify-content: center; min-height: 44px; }
 .btn-google[hidden] { display: none; }
+
+/* salary sense-check ("That looks low for a yearly salary…") */
+.notice { background: #fff7e8; border: 1px solid #f3dfb8; color: #7a5410; border-radius: 10px; padding: 10px 12px; font-size: 13.5px; margin: 12px 0 0; }
+.notice:empty { display: none; }

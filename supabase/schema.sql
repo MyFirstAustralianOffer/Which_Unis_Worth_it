@@ -442,6 +442,37 @@ returns jsonb language sql stable security definer set search_path = public as $
 $$;
 
 
+-- ---------------------------------------------------------------------
+-- Review: entries for the admin to check (nothing is hidden automatically)
+-- ---------------------------------------------------------------------
+
+-- Why a graduate entry might need a look, or null if nothing stands out.
+create or replace function public.review_flags(g public.graduates)
+returns text language sql stable set search_path = public as $$
+  select nullif(concat_ws(', ',
+    case when g.university = 'Other' then 'university not in our list' || coalesce(' (' || g.university_other || ')', '') end,
+    case when g.starting_salary < 20000 or g.current_salary < 20000 then 'salary under $20k' end,
+    case when g.starting_salary > 500000 or g.current_salary > 500000 then 'salary over $500k' end,
+    case when g.current_salary < g.starting_salary * 0.5 then 'pay dropped by more than half' end,
+    case when g.current_salary > g.starting_salary * 6 then 'pay rose more than 6x' end,
+    case when g."current_role" ~* '(^n/?a$|^none$|^nil$|^test|asdf|xxx|^[.]+$)'
+           or g.first_role ~* '(^n/?a$|^none$|^nil$|^test|asdf|xxx|^[.]+$)' then 'role looks like a placeholder' end,
+    case when g.course_name ~* '^(test|other|asdf|xxx)$' or length(g.course_name) < 6 then 'course looks like a placeholder' end
+  ), '')
+$$;
+
+-- Supabase → Table editor → entries_to_review: every graduate entry with a reason to check it.
+-- To take one off the site: open the graduates table, find its id, untick show_in_database.
+create or replace view public.entries_to_review with (security_invoker = true) as
+  select g.id, g.submitted_at, g.show_in_database as on_site, public.review_flags(g) as reasons,
+         g.course_name, g.university, g.university_other, g.student_type, g.graduation_year,
+         g.time_to_first_job, g.first_role, g.starting_salary, g."current_role", g.current_salary
+    from public.graduates g
+   where public.review_flags(g) is not null
+   order by g.submitted_at desc;
+revoke all on public.entries_to_review from anon, authenticated;
+
+-- Only signed-in people can call the website functions; helpers stay internal.
 revoke execute on all functions in schema public from public, anon, authenticated;
 grant execute on function public.my_profile()                       to anon, authenticated;
 grant execute on function public.submit_response(text, jsonb)       to authenticated;

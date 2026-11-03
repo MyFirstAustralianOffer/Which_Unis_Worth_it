@@ -39,10 +39,18 @@ Supabase → **Authentication → Emails → Templates**. Paste these (built by 
 | Magic link | Your Return on Uni sign-in link | `supabase/email-templates/magic-link.html` |
 | Confirm signup | Welcome to Return on Uni: confirm your email | `supabase/email-templates/confirm-signup.html` |
 
+## 5. Weekly review email (admin)
+
+`supabase/weekly-review.sql` emails the admin every Monday morning with the past week's
+graduate entries that have something worth checking (university "Other", salaries that look
+mistyped, placeholder text). Nothing is hidden automatically. Setup steps are at the top of the file
+(Resend key in Vault as `resend_api_key`). Anytime, Table editor → `entries_to_review` lists every
+flagged entry.
+
 ## Day to day
 
 - **See answers**: Table editor → `graduates`, `current_students`, `future_students`.
-- **Hide a card**: untick `show_in_database` on that row.
+- **Hide a card**: untick `show_in_database` on that row (e.g. after the weekly review email).
 - **Fix a course name**: `course_names` → type the right title in `use_instead`.
   Every matching card, past and future, shows the fixed name.
 - **Accounts**: `profiles` (who has contributed) and Authentication → Users.
