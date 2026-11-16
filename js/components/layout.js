@@ -10,7 +10,7 @@
  */
 import { CONFIG } from "../config.js?v=cd936dce";
 import { esc } from "../lib/dom.js?v=5a71cd6c";
-import { initAuth, currentUser, signOut } from "../services/auth.js?v=6b776e12";
+import { initAuth, currentUser, signOut } from "../services/auth.js?v=8ebe4f88";
 import { showWelcome, setWelcome } from "./toast.js?v=8a66a045";
 import { showStorageNotice, resetSiteData } from "./storage-notice.js?v=8bce1efe";
 
@@ -49,6 +49,7 @@ function renderAccount() {
         </button>
         <div class="account-menu" hidden>
           <p>Signed in as<br><b>${esc(user.email)}</b></p>
+          <a class="account-link" href="account.html">My account</a>
           <button type="button" class="text-link" data-signout>Sign out</button>
         </div>
       </div>`;

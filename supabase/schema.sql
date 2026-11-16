@@ -107,6 +107,21 @@ create table if not exists public.course_names (
   closest_official text
 );
 
+-- Updates: people can change their answers later (a new job, a fixed typo).
+alter table public.graduates        add column if not exists updated_at timestamptz;
+alter table public.current_students add column if not exists updated_at timestamptz;
+alter table public.future_students  add column if not exists updated_at timestamptz;
+
+-- Every earlier version of an answer that was later changed, for analysis
+-- (e.g. how careers move on). Never shown on the site.
+create table if not exists public.response_history (
+  id          bigint generated always as identity primary key,
+  user_id     uuid references auth.users (id) on delete set null,
+  path        text not null,              -- graduated | studying | planning
+  previous    jsonb not null,             -- the whole row as it was before the change
+  changed_at  timestamptz not null default now()
+);
+
 create index if not exists graduates_submitted_idx on public.graduates (submitted_at desc);
 create index if not exists graduates_email_idx on public.graduates (lower(email));
 create index if not exists current_students_email_idx on public.current_students (lower(email));
@@ -122,9 +137,10 @@ alter table public.graduates        enable row level security;
 alter table public.current_students enable row level security;
 alter table public.future_students  enable row level security;
 alter table public.course_names     enable row level security;
+alter table public.response_history enable row level security;
 
 revoke all on public.profiles, public.graduates, public.current_students,
-              public.future_students, public.course_names from anon, authenticated;
+              public.future_students, public.course_names, public.response_history from anon, authenticated;
 
 -- ---------------------------------------------------------------------
 -- Helpers
@@ -209,7 +225,8 @@ begin
     'email', p.email,
     'name', p.full_name,
     'contributed', p.contributed_at is not null,
-    'path', p.contributed_path);
+    'path', p.contributed_path,
+    'joined', p.created_at);
 end $$;
 
 -- Saves one form. p_path: graduated | studying | planning. p_answers: the form answers.
@@ -227,6 +244,7 @@ declare
   typed text;
   course text;
   from_list boolean;
+  previous jsonb;
 begin
   if uid is null then raise exception 'Please sign in to share your story.'; end if;
   select lower(email) into user_email from auth.users where id = uid;
@@ -279,6 +297,19 @@ begin
     on conflict (name_as_saved) do update set times_seen = public.course_names.times_seen + 1;
   end if;
 
+  -- Already shared on this path? This is an update: keep the old version first.
+  if p_path = 'graduated' then
+    select to_jsonb(t) into previous from public.graduates t where t.user_id = uid;
+  elsif p_path = 'studying' then
+    select to_jsonb(t) into previous from public.current_students t where t.user_id = uid;
+  else
+    select to_jsonb(t) into previous from public.future_students t where t.user_id = uid;
+  end if;
+  if previous is not null then
+    insert into public.response_history (user_id, path, previous) values (uid, p_path, previous);
+  end if;
+
+  -- Insert, or update their existing answer (show_in_database and submitted_at are kept).
   begin
     if p_path = 'graduated' then
       insert into public.graduates (user_id, email, study_level, course_name, course_from_list, university,
@@ -293,8 +324,16 @@ begin
         case when still_looking then null else (a ->> 'starting_salary')::integer end,
         case when still_looking then null else public.tidy_text(a ->> 'current_role') end,
         case when still_looking then null else (a ->> 'current_salary')::integer end,
-        case when still_looking then null else a ->> 'current_salary_same' = 'Yes' end,
-        true, nullif(a ->> 'form_version', '')::integer);
+        case when still_looking then null else coalesce(a ->> 'current_salary_same' = 'Yes', false) end,
+        true, nullif(a ->> 'form_version', '')::integer)
+      on conflict (user_id) do update set
+        (email, study_level, course_name, course_from_list, university, university_other, student_type,
+         graduation_year, time_to_first_job, time_looking, first_role, starting_salary, "current_role",
+         current_salary, current_salary_same, consent_privacy, form_version, updated_at)
+      = (excluded.email, excluded.study_level, excluded.course_name, excluded.course_from_list, excluded.university,
+         excluded.university_other, excluded.student_type, excluded.graduation_year, excluded.time_to_first_job,
+         excluded.time_looking, excluded.first_role, excluded.starting_salary, excluded."current_role",
+         excluded.current_salary, excluded.current_salary_same, excluded.consent_privacy, excluded.form_version, now());
     elsif p_path = 'studying' then
       insert into public.current_students (user_id, email, study_level, course_name, course_from_list, university,
         university_other, student_type, expected_graduation_year, job_in_field, "current_role", hoped_role,
@@ -304,7 +343,15 @@ begin
         public.tidy_text(a ->> 'student_type'), public.tidy_text(a ->> 'expected_graduation_year'),
         public.tidy_text(a ->> 'job_in_field'), public.tidy_text(a ->> 'current_role'),
         public.tidy_text(a ->> 'hoped_role'), (a ->> 'expected_salary')::integer,
-        true, nullif(a ->> 'form_version', '')::integer);
+        true, nullif(a ->> 'form_version', '')::integer)
+      on conflict (user_id) do update set
+        (email, study_level, course_name, course_from_list, university, university_other, student_type,
+         expected_graduation_year, job_in_field, "current_role", hoped_role, expected_salary,
+         consent_privacy, form_version, updated_at)
+      = (excluded.email, excluded.study_level, excluded.course_name, excluded.course_from_list, excluded.university,
+         excluded.university_other, excluded.student_type, excluded.expected_graduation_year, excluded.job_in_field,
+         excluded."current_role", excluded.hoped_role, excluded.expected_salary,
+         excluded.consent_privacy, excluded.form_version, now());
     else
       insert into public.future_students (user_id, email, study_level, course_name, course_from_list,
         university_choice_1, university_choice_2, university_choice_3, university_other, student_type,
@@ -314,7 +361,15 @@ begin
         public.tidy_text(a ->> 'university_choice_3'), public.tidy_text(a ->> 'university_other'),
         public.tidy_text(a ->> 'student_type'), public.tidy_text(a ->> 'planned_start_year'),
         public.tidy_text(a ->> 'hoped_role'), (a ->> 'expected_salary')::integer,
-        true, nullif(a ->> 'form_version', '')::integer);
+        true, nullif(a ->> 'form_version', '')::integer)
+      on conflict (user_id) do update set
+        (email, study_level, course_name, course_from_list, university_choice_1, university_choice_2,
+         university_choice_3, university_other, student_type, planned_start_year, hoped_role, expected_salary,
+         consent_privacy, form_version, updated_at)
+      = (excluded.email, excluded.study_level, excluded.course_name, excluded.course_from_list,
+         excluded.university_choice_1, excluded.university_choice_2, excluded.university_choice_3,
+         excluded.university_other, excluded.student_type, excluded.planned_start_year, excluded.hoped_role,
+         excluded.expected_salary, excluded.consent_privacy, excluded.form_version, now());
     end if;
   exception when unique_violation then
     raise exception 'You''ve already shared this story. Thank you!';
@@ -325,7 +380,7 @@ begin
          contributed_path = coalesce(contributed_path, p_path)
    where id = uid;
 
-  return jsonb_build_object('ok', true);
+  return jsonb_build_object('ok', true, 'updated', previous is not null);
 end $$;
 
 -- Database cards (newest first), only for people who have contributed.
@@ -442,6 +497,34 @@ returns jsonb language sql stable security definer set search_path = public as $
 $$;
 
 
+-- The signed-in person's own answers, per path: { graduated: {…}, studying: {…}, planning: {…} }.
+-- Used by "My account" and to fill in the form when they update their story.
+create or replace function public.my_story()
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare
+  hidden text[] := array['id', 'user_id', 'email', 'show_in_database', 'consent_privacy', 'form_version'];
+  out jsonb := '{}'::jsonb;
+  r jsonb;
+begin
+  if auth.uid() is null then raise exception 'Please sign in.'; end if;
+  select to_jsonb(t) - hidden into r from public.graduates t where t.user_id = auth.uid();
+  if r is not null then out := out || jsonb_build_object('graduated', r); end if;
+  select to_jsonb(t) - hidden into r from public.current_students t where t.user_id = auth.uid();
+  if r is not null then out := out || jsonb_build_object('studying', r); end if;
+  select to_jsonb(t) - hidden into r from public.future_students t where t.user_id = auth.uid();
+  if r is not null then out := out || jsonb_build_object('planning', r); end if;
+  return out;
+end $$;
+
+-- Lets people change the name on their account.
+create or replace function public.update_my_name(p_name text)
+returns jsonb language plpgsql volatile security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'Please sign in.'; end if;
+  update public.profiles set full_name = public.tidy_text(p_name, 80) where id = auth.uid();
+  return jsonb_build_object('ok', true);
+end $$;
+
 -- ---------------------------------------------------------------------
 -- Review: entries for the admin to check (nothing is hidden automatically)
 -- ---------------------------------------------------------------------
@@ -464,12 +547,12 @@ $$;
 -- Supabase → Table editor → entries_to_review: every graduate entry with a reason to check it.
 -- To take one off the site: open the graduates table, find its id, untick show_in_database.
 create or replace view public.entries_to_review with (security_invoker = true) as
-  select g.id, g.submitted_at, g.show_in_database as on_site, public.review_flags(g) as reasons,
+  select g.id, g.submitted_at, g.updated_at, g.show_in_database as on_site, public.review_flags(g) as reasons,
          g.course_name, g.university, g.university_other, g.student_type, g.graduation_year,
          g.time_to_first_job, g.first_role, g.starting_salary, g."current_role", g.current_salary
     from public.graduates g
    where public.review_flags(g) is not null
-   order by g.submitted_at desc;
+   order by coalesce(g.updated_at, g.submitted_at) desc;
 revoke all on public.entries_to_review from anon, authenticated;
 
 -- Only signed-in people can call the website functions; helpers stay internal.
@@ -479,3 +562,5 @@ grant execute on function public.submit_response(text, jsonb)       to authentic
 grant execute on function public.public_entries(text, text, text, int, text, int, int) to authenticated;
 grant execute on function public.filter_options()                   to authenticated;
 grant execute on function public.featured_entries(int)              to anon, authenticated;
+grant execute on function public.my_story()                         to authenticated;
+grant execute on function public.update_my_name(text)               to authenticated;

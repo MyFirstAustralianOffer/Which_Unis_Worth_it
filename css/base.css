@@ -113,6 +113,7 @@ img, svg { display: block; max-width: 100%; }
 .account-menu[hidden] { display: none; }
 .account-menu p { font-size: 13px; color: var(--muted); margin: 0 0 10px; overflow-wrap: anywhere; }
 .account-menu b { color: var(--navy); }
+.account-menu .account-link { display: block; font-weight: 600; font-size: 14px; color: var(--navy); margin: 0 0 10px; }
 .account-menu .text-link { background: none; border: 0; padding: 0; font: 600 14px inherit; cursor: pointer; text-decoration: underline; }
 
 @media (max-width: 760px) {

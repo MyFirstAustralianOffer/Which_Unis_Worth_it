@@ -5,14 +5,18 @@
  * People sign in first (Google or email link): the account gives us a verified
  * email, so the form doesn't ask for one, and their contribution is saved on
  * the account (the database unlocks on any device they sign in on).
+ *
+ * share.html?edit=graduated (or studying / planning) opens their saved answers
+ * to change, e.g. after a new job. Saving keeps the old version in the
+ * database's history.
  */
-import { renderLayout } from "../components/layout.js?v=22ec4f9f";
+import { renderLayout } from "../components/layout.js?v=e611bad7";
 import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=34363dbe";
 import { icons } from "../components/icons.js?v=ecd0f942";
 import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=1a168b75";
-import { submitResponse, myProfile } from "../services/api.js?v=2cb01d59";
-import { initAuth, currentUser, signOut, authError } from "../services/auth.js?v=6b776e12";
-import { signInBox, bindSignInBox } from "../components/signin-box.js?v=53d4f03e";
+import { submitResponse, myProfile, myStory } from "../services/api.js?v=61030f35";
+import { initAuth, currentUser, signOut, authError } from "../services/auth.js?v=8ebe4f88";
+import { signInBox, bindSignInBox } from "../components/signin-box.js?v=bc107f7e";
 import { setWelcome } from "../components/toast.js?v=8a66a045";
 import { $, esc } from "../lib/dom.js?v=5a71cd6c";
 
@@ -23,6 +27,8 @@ let answers = {};
 let step = 0;
 let consent = false;
 let submitting = false;
+/** The path being updated (share.html?edit=…), or "" for a new story. */
+let editing = "";
 
 const questions = () => questionsFor(answers.path, answers);
 
@@ -54,7 +60,7 @@ function render() {
   card.innerHTML = `
     <div class="signed-in-as"><span>Signed in as <b>${esc(currentUser().email)}</b></span><button type="button" id="signOutBtn">Sign out</button></div>
     <div class="progress-meta">
-      <span>Question ${step + 1} of ${total}</span>
+      <span>${editing ? "Updating your story · " : ""}Question ${step + 1} of ${total}</span>
       <span class="path">${esc(pathLabel)}</span>
     </div>
     <div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="${total}" aria-valuenow="${step + 1}" aria-label="Form progress"><i style="width:${((step + 1) / total) * 100}%"></i></div>
@@ -71,8 +77,8 @@ function render() {
       <p class="error" id="qError" role="alert"></p>
       <p class="notice" id="qNotice" role="status"></p>
       <div class="form-actions">
-        ${step > 0 ? `<button type="button" class="btn btn-outline" id="backBtn">Back</button>` : ""}
-        <button type="submit" class="btn btn-primary" id="nextBtn">${isLast() ? "Submit" : "Next"}</button>
+        ${step > (editing ? 1 : 0) ? `<button type="button" class="btn btn-outline" id="backBtn">Back</button>` : ""}
+        <button type="submit" class="btn btn-primary" id="nextBtn">${isLast() ? (editing ? "Save changes" : "Submit") : "Next"}</button>
       </div>
     </form>`;
 
@@ -95,7 +101,7 @@ function showError(message, q) {
 }
 
 function back() {
-  if (step > 0) { step--; render(); }
+  if (step > (editing ? 1 : 0)) { step--; render(); }
 }
 
 async function next() {
@@ -137,26 +143,49 @@ async function submit() {
 
   const { path, ...rest } = answers;
   try {
-    await submitResponse(path, { ...rest, consent_privacy: true, form_version: 2 });
-    renderDone();
+    const result = await submitResponse(path, { ...rest, consent_privacy: true, form_version: 2 });
+    renderDone({ updated: result?.updated });
   } catch (err) {
-    if (/already shared/i.test(err.message)) return renderDone({ already: true });
     $("#qError", card).textContent = err.message;
     btn.disabled = false;
-    btn.textContent = "Submit";
+    btn.textContent = editing ? "Save changes" : "Submit";
   } finally {
     submitting = false;
   }
 }
 
-function renderDone({ already = false } = {}) {
+function renderDone({ updated = false } = {}) {
   card.innerHTML = `
     <div class="done">
       <div class="done-icon">${icons.check()}</div>
-      <h2>${already ? "You've already shared your story" : "You're in!"}</h2>
-      <p>${already ? "Thank you! The full database is unlocked whenever you're signed in." : "Thanks for sharing. The full database is now unlocked whenever you're signed in."}</p>
+      <h2>${updated ? "Your story is updated" : "You're in!"}</h2>
+      <p>${updated ? "Thanks for keeping it current. It helps the next student see where degrees really lead." : "Thanks for sharing. The full database is now unlocked whenever you're signed in."}</p>
       <a class="btn btn-primary" href="database.html">Explore the database →</a>
+      <a class="text-link" href="account.html">Go to my account</a>
     </div>`;
+}
+
+/** Already shared: offer to update it instead of a second story. */
+function renderAlreadyShared(path) {
+  card.innerHTML = `
+    <div class="done">
+      <div class="done-icon">${icons.check()}</div>
+      <h2>You've already shared your story</h2>
+      <p>Thank you! The full database is unlocked whenever you're signed in. Got a new job, or spotted a mistake? You can update your answers any time.</p>
+      <a class="btn btn-primary" href="database.html">Explore the database →</a>
+      <a class="btn btn-outline" href="share.html?edit=${encodeURIComponent(path)}">Update my story</a>
+    </div>`;
+}
+
+/** Saved answers (from the database) → the form's answers. */
+function toAnswers(path, saved) {
+  const a = { path };
+  for (const [k, v] of Object.entries(saved)) {
+    if (v === null || v === "" || ["submitted_at", "updated_at"].includes(k)) continue;
+    a[k] = k === "current_salary_same" ? (v ? "Yes" : undefined) : v;
+    if (a[k] === undefined) delete a[k];
+  }
+  return a;
 }
 
 async function start() {
@@ -171,8 +200,20 @@ async function start() {
     bindSignInBox(card, { next: "share.html" });
     return;
   }
+  const wanted = new URLSearchParams(location.search).get("edit");
+  if (wanted && PATHS[wanted]) {
+    let story = {};
+    try { story = await myStory(); } catch { /* falls through to a new story */ }
+    if (story[wanted]) {
+      editing = wanted;
+      answers = toAnswers(wanted, story[wanted]);
+      consent = true; // they agreed when they first shared
+      step = 1;       // which path they're on doesn't change when updating
+      return render();
+    }
+  }
   const profile = await myProfile();
-  if (profile.contributed) return renderDone({ already: true });
+  if (profile.contributed) return renderAlreadyShared(profile.path || "graduated");
   render();
 }
 

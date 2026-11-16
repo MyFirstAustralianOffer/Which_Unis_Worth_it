@@ -38,6 +38,8 @@ const toUser = (u) => u && ({
   id: u.id,
   email: u.email,
   name: u.user_metadata?.full_name || u.user_metadata?.name || "",
+  avatar: u.user_metadata?.avatar_url || u.user_metadata?.picture || "",
+  providers: u.app_metadata?.providers || (u.app_metadata?.provider ? [u.app_metadata.provider] : []),
 });
 
 async function fetchUser(token) {
