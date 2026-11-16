@@ -546,7 +546,8 @@ $$;
 
 -- Supabase → Table editor → entries_to_review: every graduate entry with a reason to check it.
 -- To take one off the site: open the graduates table, find its id, untick show_in_database.
-create or replace view public.entries_to_review with (security_invoker = true) as
+drop view if exists public.entries_to_review;  -- recreated below (its columns changed)
+create view public.entries_to_review with (security_invoker = true) as
   select g.id, g.submitted_at, g.updated_at, g.show_in_database as on_site, public.review_flags(g) as reasons,
          g.course_name, g.university, g.university_other, g.student_type, g.graduation_year,
          g.time_to_first_job, g.first_role, g.starting_salary, g."current_role", g.current_salary
