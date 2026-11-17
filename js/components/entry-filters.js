@@ -9,7 +9,7 @@
  *                                         Calls onChange(values) on Search / change.
  *   readFilters(form)                      { level, course, uni, minYear, type }
  */
-import { UNIVERSITIES, STUDENT_TYPES, LEVELS } from "../data/options.js?v=8ca2f27d";
+import { UNIVERSITIES, STUDENT_TYPES, LEVELS } from "../data/options.js?v=f7ec7ab0";
 import { options, esc } from "../lib/dom.js?v=5a71cd6c";
 
 /** Latest graduation year in the form (see GRAD_YEARS in options.js). */

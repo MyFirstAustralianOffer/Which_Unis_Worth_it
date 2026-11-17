@@ -5,8 +5,8 @@
  * supabase/schema.sql), the page just explains what to do.
  */
 import { renderLayout } from "../components/layout.js?v=e611bad7";
-import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=f47178d6";
-import { setupFilters, readFilters } from "../components/entry-filters.js?v=5d23b99f";
+import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=9519148a";
+import { setupFilters, readFilters } from "../components/entry-filters.js?v=130424e3";
 import { signInBox, bindSignInBox } from "../components/signin-box.js?v=bc107f7e";
 import { fetchEntries, fetchFilterOptions, myProfile } from "../services/api.js?v=61030f35";
 import { initAuth, currentUser, authError } from "../services/auth.js?v=8ebe4f88";

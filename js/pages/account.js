@@ -7,8 +7,8 @@ import { signInBox, bindSignInBox } from "../components/signin-box.js?v=bc107f7e
 import { setWelcome } from "../components/toast.js?v=8a66a045";
 import { initAuth, currentUser, authError, signOut } from "../services/auth.js?v=8ebe4f88";
 import { myProfile, myStory, updateMyName } from "../services/api.js?v=61030f35";
-import { PATHS } from "../data/form-schema.js?v=1a168b75";
-import { shortUni } from "../data/options.js?v=8ca2f27d";
+import { PATHS } from "../data/form-schema.js?v=27cd5bf1";
+import { shortUni } from "../data/options.js?v=f7ec7ab0";
 import { $, esc, money } from "../lib/dom.js?v=5a71cd6c";
 
 renderLayout();

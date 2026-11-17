@@ -6,10 +6,10 @@
  *   validateQuestion(q, answers) → "" or the error message to show
  */
 import { esc, options, digitsOnly } from "../lib/dom.js?v=5a71cd6c";
-import { LEVELS } from "../data/options.js?v=8ca2f27d";
-import { ERRORS } from "../data/form-schema.js?v=1a168b75";
+import { LEVELS } from "../data/options.js?v=f7ec7ab0";
+import { ERRORS } from "../data/form-schema.js?v=27cd5bf1";
 import { icons } from "./icons.js?v=ecd0f942";
-import { courseInputHtml, bindCourseInput } from "./course-input.js?v=af05581f";
+import { courseInputHtml, bindCourseInput } from "./course-input.js?v=1cbff68c";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const filled = (v) => v !== undefined && v !== null && String(v).trim() !== "";

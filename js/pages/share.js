@@ -11,9 +11,9 @@
  * database's history.
  */
 import { renderLayout } from "../components/layout.js?v=e611bad7";
-import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=34363dbe";
+import { renderQuestion, bindQuestion, validateQuestion, fieldsOf, hintHtml } from "../components/question.js?v=1a8d2df3";
 import { icons } from "../components/icons.js?v=ecd0f942";
-import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=1a168b75";
+import { questionsFor, PATHS, START, ERRORS } from "../data/form-schema.js?v=27cd5bf1";
 import { submitResponse, myProfile, myStory } from "../services/api.js?v=61030f35";
 import { initAuth, currentUser, signOut, authError } from "../services/auth.js?v=8ebe4f88";
 import { signInBox, bindSignInBox } from "../components/signin-box.js?v=bc107f7e";

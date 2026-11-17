@@ -6,7 +6,7 @@
  */
 import { timeAgo } from "../lib/time.js?v=7bec7af8";
 import { esc, money } from "../lib/dom.js?v=5a71cd6c";
-import { shortUni } from "../data/options.js?v=8ca2f27d";
+import { shortUni } from "../data/options.js?v=f7ec7ab0";
 import { icons } from "./icons.js?v=ecd0f942";
 
 /** "Bachelor" + "Nursing" → "Bachelor of Nursing"; "Graduate Certificate in Data Science". */

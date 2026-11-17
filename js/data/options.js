@@ -7,6 +7,8 @@
 export const LEVELS = ["Bachelor", "Master", "Diploma", "Graduate Certificate", "Graduate Diploma", "PhD", "Other"];
 
 /**
+ * Mostly universities, plus a few other higher-education providers people
+ * studied at (e.g. King's Own Institute).
  * The University of Adelaide and UniSA merged into Adelaide University in 2026.
  * All three names stay because graduates finished under the old names.
  */
@@ -14,7 +16,7 @@ export const UNIVERSITIES = [
   "Adelaide University", "Australian Catholic University", "Australian National University", "Bond University",
   "CQUniversity", "Charles Darwin University", "Charles Sturt University", "Curtin University", "Deakin University",
   "Edith Cowan University", "Federation University", "Flinders University", "Griffith University",
-  "James Cook University", "La Trobe University", "Macquarie University", "Monash University", "Murdoch University",
+  "James Cook University", "King's Own Institute", "La Trobe University", "Macquarie University", "Monash University", "Murdoch University",
   "QUT", "RMIT University", "Southern Cross University", "Swinburne University of Technology",
   "Torrens University Australia", "University of Adelaide", "University of Canberra", "University of Divinity",
   "University of Melbourne", "University of New England", "UNSW Sydney", "University of Newcastle",
@@ -27,6 +29,7 @@ export const UNIVERSITIES = [
 /** Shorter names for database cards, e.g. "UNSW (2021) · Domestic". Others show in full. */
 export const UNI_SHORT_NAMES = {
   "UNSW Sydney": "UNSW",
+  "King's Own Institute": "KOI",
   "Monash University": "Monash",
   "Macquarie University": "Macquarie",
   "Deakin University": "Deakin",

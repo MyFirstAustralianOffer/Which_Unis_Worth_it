@@ -21,7 +21,7 @@
  */
 import {
   LEVELS, UNIVERSITIES, STUDENT_TYPES, GRAD_YEARS, GRADUATING_YEARS, START_YEARS, TIME_TO_JOB, TIME_LOOKING, JOB_IN_FIELD,
-} from "./options.js?v=8ca2f27d";
+} from "./options.js?v=f7ec7ab0";
 
 const SALARY_HELP = "Annual income before tax, in AUD, including super and bonuses.";
 
