@@ -2,7 +2,7 @@
  * Sign-in page. Google and email links come back here; once signed in,
  * people go on to the page they came from (?next=share.html etc.).
  */
-import { renderLayout } from "../components/layout.js?v=e611bad7";
+import { renderLayout } from "../components/layout.js?v=609b4672";
 import { signInBox, bindSignInBox } from "../components/signin-box.js?v=bc107f7e";
 import { initAuth, currentUser, authError, justSignedIn, safeNext } from "../services/auth.js?v=8ebe4f88";
 import { setWelcome } from "../components/toast.js?v=8a66a045";

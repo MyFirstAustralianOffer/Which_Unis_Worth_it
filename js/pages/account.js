@@ -2,11 +2,11 @@
  * My account: who you are, how you sign in, and the story you shared,
  * with "Update my story" (opens the form filled in with your answers).
  */
-import { renderLayout } from "../components/layout.js?v=e611bad7";
+import { renderLayout } from "../components/layout.js?v=609b4672";
 import { signInBox, bindSignInBox } from "../components/signin-box.js?v=bc107f7e";
 import { setWelcome } from "../components/toast.js?v=8a66a045";
 import { initAuth, currentUser, authError, signOut } from "../services/auth.js?v=8ebe4f88";
-import { myProfile, myStory, updateMyName } from "../services/api.js?v=61030f35";
+import { myProfile, myStory, updateMyName } from "../services/api.js?v=e6bfab92";
 import { PATHS } from "../data/form-schema.js?v=27cd5bf1";
 import { shortUni } from "../data/options.js?v=f7ec7ab0";
 import { $, esc, money } from "../lib/dom.js?v=5a71cd6c";

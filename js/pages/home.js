@@ -6,9 +6,9 @@
  * Placeholder cards shimmer until the cards arrive; if they can't load, the
  * saved picture of the database (assets/preview.png) is shown instead.
  */
-import { renderLayout } from "../components/layout.js?v=e611bad7";
+import { renderLayout } from "../components/layout.js?v=609b4672";
 import { entryCard, bindEntryToggles } from "../components/entry-card.js?v=9519148a";
-import { fetchFeatured } from "../services/api.js?v=61030f35";
+import { fetchFeatured } from "../services/api.js?v=e6bfab92";
 import { keepTimesFresh } from "../lib/time.js?v=7bec7af8";
 import { $ } from "../lib/dom.js?v=5a71cd6c";
 

@@ -48,6 +48,8 @@ begin
     select g.*, public.review_flags(g) as reasons
       from public.graduates g
      where coalesce(g.updated_at, g.submitted_at) >= since and public.review_flags(g) is not null
+       -- skip ones already marked "Looks fine" on the admin page (unless changed since)
+       and (g.reviewed_at is null or g.reviewed_at < coalesce(g.updated_at, g.submitted_at))
      order by coalesce(g.updated_at, g.submitted_at)
   loop
     flagged := flagged + 1;
@@ -94,6 +96,7 @@ begin
            || '<p style="margin:18px 0 0;font-size:14px;"><b>To take one off the site:</b> Supabase → Table editor → <b>graduates</b> → find the entry number (id) → untick <b>show_in_database</b>. It stays saved for analysis.</p>'
          end
       || '<p style="margin:18px 0 0;"><a href="' || editor || '" style="display:inline-block;background:#15213b;color:#fff;text-decoration:none;font-weight:700;padding:10px 18px;border-radius:999px;font-size:14px;">Open the Supabase table editor</a></p>'
+      || '<p style="margin:18px 0 0;font-size:14px;">Or review them on the <a href="https://returnonuni.com.au/admin.html#review" style="color:#15213b;font-weight:700;">admin page</a>: one click to mark each as fine or hide it.</p>'
       || '<p style="margin:22px 0 0;font-size:12px;color:#667085;">Sent every Monday by the Return on Uni database. Entry emails are not included here; look them up by id in Supabase if you need to contact someone.</p>'
       || '</div>');
 end $$;

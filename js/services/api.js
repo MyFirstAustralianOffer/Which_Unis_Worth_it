@@ -15,7 +15,7 @@ import { CONFIG } from "../config.js?v=cd936dce";
 import { accessToken } from "./auth.js?v=8ebe4f88";
 
 /** Calls a database function. Errors carry the database's message (written for people). */
-async function rpc(name, args = {}) {
+export async function rpc(name, args = {}) {
   const token = await accessToken();
   let res;
   try {

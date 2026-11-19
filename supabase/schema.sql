@@ -112,6 +112,17 @@ alter table public.graduates        add column if not exists updated_at timestam
 alter table public.current_students add column if not exists updated_at timestamptz;
 alter table public.future_students  add column if not exists updated_at timestamptz;
 
+-- When the admin last checked a flagged graduate entry ("Looks fine" on the admin page).
+alter table public.graduates add column if not exists reviewed_at timestamptz;
+
+-- Who can open the admin page (admin.html). Add or remove emails here, e.g.
+--   insert into public.admins (email) values ('someone@example.com');
+create table if not exists public.admins (
+  email     text primary key check (email = lower(email)),
+  added_at  timestamptz not null default now()
+);
+insert into public.admins (email) values ('utkarsh@myfirstaustralianoffer.com.au') on conflict do nothing;
+
 -- Every earlier version of an answer that was later changed, for analysis
 -- (e.g. how careers move on). Never shown on the site.
 create table if not exists public.response_history (
@@ -138,9 +149,10 @@ alter table public.current_students enable row level security;
 alter table public.future_students  enable row level security;
 alter table public.course_names     enable row level security;
 alter table public.response_history enable row level security;
+alter table public.admins           enable row level security;
 
 revoke all on public.profiles, public.graduates, public.current_students,
-              public.future_students, public.course_names, public.response_history from anon, authenticated;
+              public.future_students, public.course_names, public.response_history, public.admins from anon, authenticated;
 
 -- ---------------------------------------------------------------------
 -- Helpers
@@ -212,7 +224,15 @@ create trigger on_auth_user_created
 -- Functions the website calls
 -- ---------------------------------------------------------------------
 
--- { signed_in, email, name, contributed, path }
+-- Is the signed-in person an admin? (A verified email on the admins list.)
+create or replace function public.is_admin()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.admins a join auth.users u on lower(u.email) = a.email
+     where u.id = auth.uid() and u.email_confirmed_at is not null)
+$$;
+
+-- { signed_in, email, name, contributed, path, joined, is_admin }
 create or replace function public.my_profile()
 returns jsonb language plpgsql stable security definer set search_path = public as $$
 declare
@@ -226,7 +246,8 @@ begin
     'name', p.full_name,
     'contributed', p.contributed_at is not null,
     'path', p.contributed_path,
-    'joined', p.created_at);
+    'joined', p.created_at,
+    'is_admin', public.is_admin());
 end $$;
 
 -- Saves one form. p_path: graduated | studying | planning. p_answers: the form answers.
@@ -548,7 +569,7 @@ $$;
 -- To take one off the site: open the graduates table, find its id, untick show_in_database.
 drop view if exists public.entries_to_review;  -- recreated below (its columns changed)
 create view public.entries_to_review with (security_invoker = true) as
-  select g.id, g.submitted_at, g.updated_at, g.show_in_database as on_site, public.review_flags(g) as reasons,
+  select g.id, g.submitted_at, g.updated_at, g.reviewed_at, g.show_in_database as on_site, public.review_flags(g) as reasons,
          g.course_name, g.university, g.university_other, g.student_type, g.graduation_year,
          g.time_to_first_job, g.first_role, g.starting_salary, g."current_role", g.current_salary
     from public.graduates g
@@ -565,3 +586,19 @@ grant execute on function public.filter_options()                   to authentic
 grant execute on function public.featured_entries(int)              to anon, authenticated;
 grant execute on function public.my_story()                         to authenticated;
 grant execute on function public.update_my_name(text)               to authenticated;
+
+-- Admin page functions (supabase/admin.sql): signed-in people may call them, and each one
+-- checks is_admin() itself. Re-granted here so running this file again never locks the admin out.
+do $$
+declare f regprocedure;
+begin
+  for f in
+    select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+     where n.nspname = 'public' and p.proname like 'admin\_%'
+       and p.proname not in ('admin_guard', 'admin_form_path', 'admin_check_form', 'admin_write_log',
+                             'admin_review_state', 'admin_row')
+  loop
+    execute format('grant execute on function %s to authenticated', f);
+  end loop;
+end $$;
+

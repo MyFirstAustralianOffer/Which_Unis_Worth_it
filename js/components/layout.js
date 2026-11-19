@@ -11,6 +11,7 @@
 import { CONFIG } from "../config.js?v=cd936dce";
 import { esc } from "../lib/dom.js?v=5a71cd6c";
 import { initAuth, currentUser, signOut } from "../services/auth.js?v=8ebe4f88";
+import { myProfile } from "../services/api.js?v=e6bfab92";
 import { showWelcome, setWelcome } from "./toast.js?v=8a66a045";
 import { showStorageNotice, resetSiteData } from "./storage-notice.js?v=8bce1efe";
 
@@ -87,7 +88,21 @@ export function renderLayout() {
   document.querySelectorAll('[data-layout="footer"]').forEach(footer);
   showStorageNotice();
   renderAccount();
-  initAuth().then(() => { renderAccount(); showWelcome(currentUser()); });
+  initAuth().then(() => {
+    renderAccount();
+    showWelcome(currentUser());
+    // Admins get an "Admin" link in the account menu (the database decides who's an admin).
+    if (currentUser()) {
+      myProfile().then((p) => {
+        if (!p.is_admin) return;
+        document.querySelectorAll(".account-menu .account-link").forEach((link) => {
+          if (!link.parentElement.querySelector(".admin-link")) {
+            link.insertAdjacentHTML("afterend", `<a class="account-link admin-link" href="admin.html">Admin</a>`);
+          }
+        });
+      });
+    }
+  });
   // Add ?reset to any page URL to clear everything the site saved on this device.
   if (new URLSearchParams(location.search).has("reset")) {
     history.replaceState(null, "", location.pathname + location.hash);
